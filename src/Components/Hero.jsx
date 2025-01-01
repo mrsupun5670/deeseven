@@ -1,16 +1,19 @@
 import React from "react";
 import manImage from "../assets/MAN.png";
 import circuls from "../assets/CIRCULS.png";
+import Carasoul from "./Carasoul";
 
 function Hero() {
   return (
-    <div className="absolute hidden md:block inset-0 overflow-hidden" style={styles.carasoul}>
+    <div className="relative hidden md:block overflow-hidden w-100 h-[500px] md:h-[600px] lg:h-[800px] -mt-48" style={styles.carasoul}>
       <img
         src={manImage}
         alt="Top Layer"
-        className="absolute top-0 left-0 object-contain"
+        style={styles.man}
       />
+      <Carasoul />
     </div>
+
   );
 } 
 
@@ -19,8 +22,14 @@ const styles = {
     backgroundImage: `url(${circuls})`,
     backgroundRepeat: "no-repeat",
     backgroundSize: "contain",
-    backgroundPosition: "top",
+    backgroundPosition: "center",
   },
+  man: {
+    position: "absolute",
+    height: "100%",
+    width: "100%",
+    objectFit: "contain"
+  }
 };
 
 export default Hero;

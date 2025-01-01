@@ -1,12 +1,10 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faShoppingCart,
-  faHeart,
-  faUser,
   faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import logo from "../assets/logo.png";
+import NavBar from "./NavBar";
 
 function Header() {
   return (
@@ -25,26 +23,7 @@ function Header() {
         </div>
       </div>
       <hr className="border-t border-gray-300" />
-      <nav className="flex flex-wrap justify-between items-center p-4">
-        <ul className="flex flex-wrap space-x-4 text-sm sm:space-x-6 text-center">
-          <li className="hover:underline text-[#ffb700]">Home</li>
-          <li className="hover:underline">Women's</li>
-          <li className="hover:underline">Store</li>
-          <li className="hover:underline">About Us</li>
-          <li className="hover:underline">Contact</li>
-        </ul>
-        <ul className="flex space-x-4 text-center mt-4 sm:mt-0">
-          <li className="hover:text-[#ffb700]">
-            <FontAwesomeIcon icon={faUser} size="lg" />
-          </li>
-          <li className="hover:text-[#ffb700]">
-            <FontAwesomeIcon icon={faHeart} size="lg" />
-          </li>
-          <li className="hover:text-[#ffb700]">
-            <FontAwesomeIcon icon={faShoppingCart} size="lg" />
-          </li>
-        </ul>
-      </nav>
+      <NavBar />
     </div>
   );
 }

@@ -13,7 +13,6 @@ export default function Index() {
     <div className="bg-gray-200 min-h-screen relative">
       <div className="relative z-0">
         <Header />
-        <Carasoul />
         <Hero/>
 
         {/* <div className="sm:w-full md:w-4/6 mx-auto flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8 py-8 px-4">
