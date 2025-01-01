@@ -1,0 +1,8 @@
+@font-face {
+  font-family: 'Beyonders';
+  src: url('./assets/Beyonders.ttf') format('truetype');
+}
+
+.font-beyonder {
+  font-family: 'Beyonders', sans-serif;
+}
