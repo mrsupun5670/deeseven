@@ -22,7 +22,7 @@ function Carasoul() {
   }, []);
 
   return (
-    <section className="relative mt-48 inset-0 lg:h-[814px] text-center bg-gray-300 overflow-hidden -z-10">
+    <section className="relative mt-48 inset-0 lg:h-[814px] text-center bg-gray-300  -z-10">
       {/* Scrolling Text Layer 1 */}
       <div
         ref={text1Ref}

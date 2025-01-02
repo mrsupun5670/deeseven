@@ -37,7 +37,7 @@ function NavBar() {
   return (
     <nav className="flex flex-wrap justify-between p-4 relative mb-8">
       {/* Hamburger Icon for Mobile */}
-      <div className="block md:hidden relative z-20 -top-28 left-72">
+      <div className="block md:hidden absolute -top-28 right-2">
         <FontAwesomeIcon
           icon={menuOpen ? faXmark : faBars}
           size="lg"
@@ -70,7 +70,7 @@ function NavBar() {
         ref={menuRef}
         className={`${
           menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
-        } absolute md:hidden overflow-hidden transition-all duration-700 ease-in-out opacity-90 bg-slate-200 w-72 left-6 z-10`}
+        } absolute flex justify-center text-center md:hidden right-5 overflow-hidden transition-all duration-700 ease-in-out opacity-90 bg-slate-200 left-6 z-10`}
       >
         <ul className="flex flex-col space-y-4 p-4 text-black">
           <a href="#">
