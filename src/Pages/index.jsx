@@ -7,15 +7,16 @@ import { faTruckArrowRight } from "@fortawesome/free-solid-svg-icons/faTruckArro
 import Header from "../Components/Header";
 import Hero from "../Components/Hero";
 import Carasoul from "../Components/Carasoul";
+import MobileCarousal from "../Components/MobileCarousal";
 
 export default function Index() {
   return (
     <div className="bg-gray-200 min-h-screen relative">
-      <div className="relative z-0">
+      <div className="relative p-5 z-0">
         <Header />
-        <Hero/>
-
-        {/* <div className="sm:w-full md:w-4/6 mx-auto flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8 py-8 px-4">
+        <Hero />
+        <MobileCarousal />
+        <div className="w-full md:w-100 mx-auto flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8 py-8 px-4">
           <FeatureCard
             title="Free Delivery"
             text="Enjoy Fast Free Delivery On Every Order With Reliable Shipping Guaranteed."
@@ -31,7 +32,7 @@ export default function Index() {
             text="We Provide High Quality Products With Satisfaction Guaranteed."
             icon={faShieldAlt}
           />
-        </div> */}
+        </div>
         <ProductSection title="New Arrivals" />
         <ProductSection title="Men's Collection" />
         <ProductSection title="Women's Collection" />

@@ -5,7 +5,7 @@ import Carasoul from "./Carasoul";
 
 function Hero() {
   return (
-    <div className="relative hidden md:block overflow-hidden w-100 h-[500px] md:h-[600px] lg:h-[800px] -mt-48" style={styles.carasoul}>
+    <div className="relative hidden md:block overflow-hidden w-100 md:h-[500px] lg:h-[814px] lg:-mt-48" style={styles.carasoul}>
       <img
         src={manImage}
         alt="Top Layer"
