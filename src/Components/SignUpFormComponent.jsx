@@ -5,11 +5,9 @@ import SocialButton from '../Components/SocialButton';
 import logo from "../assets/logo.png";
 import model from "../assets/model.webp";
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
-import { Link } from 'react-router';
 
-function SignUpFormComponent() {
+function SignUpFormComponent({ onClose, onsignIn }) {
   return (
-    <div className="min-h-screen bg-[#ffb700] flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-lg overflow-hidden max-w-4xl w-full flex">
         {/* Left Side - Image */}
         <div className="w-1/2 relative hidden md:block">
@@ -27,10 +25,9 @@ function SignUpFormComponent() {
           <button 
             className="absolute right-4 top-4 p-1 rounded-full hover:bg-gray-100 transition-colors"
             aria-label="Close"
-          >
-            <Link to="/">
+            onClick={onClose}
+          >         
               <X className="w-5 h-5 text-gray-500" />
-            </Link>
           </button>
 
           {/* Logo */}
@@ -99,14 +96,13 @@ function SignUpFormComponent() {
             {/* Login Link */}
             <p className="flex justify-center gap-1 text-gray-600">
               Already have an account?
-              <p className="text-[#ffb700] hover:underline">
-                <Link to="/signin">Sign in</Link>
-              </p>
+              <button onClick={onsignIn} className="text-[#ffb700] hover:underline">
+                Sign in
+              </button>
             </p>
           </div>
         </div>
       </div>
-    </div>
   )
 }
 

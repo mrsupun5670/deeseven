@@ -21,7 +21,7 @@ const BottomNavBar = () => {
 
   return (
     // Fixed position at bottom, only visible on small screens (max-width: 768px)
-    <div className="fixed bottom-3 left-0 right-0 bg-gray-900 border-t rounded-lg border-white md:hidden">
+    <div className="fixed bottom-3 left-3 right-3 bg-gray-900 border-t rounded-lg border-white md:hidden">
       <nav className="flex justify-between items-center px-4 py-2">
         {navItems.map(({ id, label, icon: Icon, url }) => (
           <button

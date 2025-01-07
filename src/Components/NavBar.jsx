@@ -7,10 +7,40 @@ import {
   faBars,
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
+import LoginForm from "./LoginForm";
+import SignUpFormComponent from "./SignUpFormComponent";
+import CartComponent from "./CartComponent";
 
 function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const handleCartClick = () => {
+    setIsCartOpen(true);
+  };
+
+  const handleCartClose = () => {
+    setIsCartOpen(false);
+  };
+
+  const handleSignInClick = () => {
+    setIsSignInOpen(true);
+    setIsSignUpOpen(false);
+  };
+
+  const handleSignUpClick = () => {
+    setIsSignUpOpen(true);
+    setIsSignInOpen(false);
+  };
+
+  const handleClose = () => {
+    setIsSignInOpen(false);
+    setIsSignUpOpen(false);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -42,7 +72,7 @@ function NavBar() {
           icon={menuOpen ? faXmark : faBars}
           size="lg"
           className="text-black cursor-pointer"
-          onClick={toggleMenu} 
+          onClick={toggleMenu}
         />
       </div>
 
@@ -88,35 +118,66 @@ function NavBar() {
           <a href="#">
             <li className="hover:text-[#ffb700]">Contact</li>
           </a>
-          <a href="#">
-            <li className="hover:text-[#ffb700]">My Account</li>
-          </a>
-          <a href="#">
-            <li className="hover:text-[#ffb700]">My Wishlist</li>
-          </a>
-          <a href="#">
-            <li className="hover:text-[#ffb700]">My Cart</li>
-          </a>
         </ul>
       </div>
 
       {/* Icons for Medium & Large Screens */}
       <ul className="hidden md:flex space-x-4 text-center text-black">
-        <a href="#">
+        <button onClick={handleSignInClick}>
           <li className="hover:text-[#ffb700]">
             <FontAwesomeIcon icon={faUser} size="lg" />
           </li>
-        </a>
+        </button>
+
+        {/* Rendering the popup logic */}
+
+        {isSignInOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <LoginForm onClose={handleClose} onSignUp={handleSignUpClick} />
+          </div>
+        )}
+
+        {isSignUpOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <SignUpFormComponent
+              onClose={handleClose}
+              onsignIn={handleSignInClick}
+            />
+          </div>
+        )}
+
         <a href="#">
           <li className="hover:text-[#ffb700]">
             <FontAwesomeIcon icon={faHeart} size="lg" />
           </li>
         </a>
-        <a href="#">
+        <button onClick={handleCartClick}>
           <li className="hover:text-[#ffb700]">
             <FontAwesomeIcon icon={faShoppingCart} size="lg" />
           </li>
-        </a>
+        </button>
+
+        {isCartOpen && (
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            <CartComponent
+              onClose={handleCartClose}
+              items={[
+                {
+                  name: "T-Shirt",
+                  price: 20,
+                  quantity: 2,
+                  image: "https://tshirt.lk/wp-content/uploads/2024/01/Tshirts-300x300.jpg",
+                },
+                {
+                  name: "Jeans",
+                  price: 50,
+                  quantity: 1,
+                  image: "https://objectstorage.ap-mumbai-1.oraclecloud.com/n/softlogicbicloud/b/cdn/o/products/157720305--1--1621961837.jpeg",
+                },
+              ]}
+            />
+          </div>
+        )}
       </ul>
     </nav>
   );
