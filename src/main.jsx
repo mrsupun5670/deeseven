@@ -10,6 +10,7 @@ import Signin from './Pages/Signin.jsx';
 createRoot(document.getElementById('root')).render(
  <BrowserRouter>
     <Routes>
+      <Route path="*" element={<h1>Not Found</h1>} />
       <Route path="/" element={<Index />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signin" element={<Signin />} />

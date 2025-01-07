@@ -7,6 +7,7 @@ import { faTruckArrowRight } from "@fortawesome/free-solid-svg-icons/faTruckArro
 import Header from "../Components/Header";
 import Hero from "../Components/Hero";
 import MobileCarousal from "../Components/MobileCarousal";
+import BottomNavBar from "../Components/BottomNavBar";
 
 export default function Index() {
   return (
@@ -36,6 +37,7 @@ export default function Index() {
         <ProductSection title="Men's Collection" />
         <ProductSection title="Women's Collection" />
       </div>
+      <BottomNavBar />
     </div>
   );
 }
