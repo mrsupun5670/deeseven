@@ -6,7 +6,6 @@ import { faLockOpen } from "@fortawesome/free-solid-svg-icons/faLockOpen";
 import { faTruckArrowRight } from "@fortawesome/free-solid-svg-icons/faTruckArrowRight";
 import Header from "../Components/Header";
 import Hero from "../Components/Hero";
-import Carasoul from "../Components/Carasoul";
 import MobileCarousal from "../Components/MobileCarousal";
 
 export default function Index() {
