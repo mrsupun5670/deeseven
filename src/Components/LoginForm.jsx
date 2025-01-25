@@ -10,17 +10,7 @@ function LoginForm({ onClose, onSignUp }) {
   return (
     
       <div className="bg-white rounded-3xl shadow-lg overflow-hidden max-w-4xl w-full flex">
-        {/* Left Side - Image */}
-        <div className="w-1/2 relative hidden md:block">
-          <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-black/30" />
-          <img 
-            src={model}
-            alt="Models wearing Deezeven clothing"
-            className="w-full h-full object-cover"
-          />
-        </div>
-
-        {/* Right Side - Form */}
+        {/* Left Side - Form */}
         <div className="w-full md:w-1/2 p-8 relative">
           {/* Close Button */}
           <button 
@@ -93,6 +83,17 @@ function LoginForm({ onClose, onSignUp }) {
             </p>
           </div>
         </div>
+
+        {/* Right Side - Image */}
+        <div className="w-1/2 relative hidden md:block">
+          <div className="absolute inset-0 bg-gradient-to-br from-black/10 to-black/30" />
+          <img 
+            src={model}
+            alt="Models wearing Deezeven clothing"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
       </div>
   )
 }
