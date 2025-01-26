@@ -161,20 +161,6 @@ function NavBar() {
           <div className="fixed inset-0 flex items-center justify-center z-50">
             <CartComponent
               onClose={handleCartClose}
-              items={[
-                {
-                  name: "T-Shirt",
-                  price: 20,
-                  quantity: 2,
-                  image: "https://tshirt.lk/wp-content/uploads/2024/01/Tshirts-300x300.jpg",
-                },
-                {
-                  name: "Jeans",
-                  price: 50,
-                  quantity: 1,
-                  image: "https://objectstorage.ap-mumbai-1.oraclecloud.com/n/softlogicbicloud/b/cdn/o/products/157720305--1--1621961837.jpeg",
-                },
-              ]}
             />
           </div>
         )}
