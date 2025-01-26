@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 export default function ProductSection({ title }) {
   return (
     <section className="text-center mb-8">
