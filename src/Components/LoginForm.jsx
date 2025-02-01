@@ -9,7 +9,7 @@ import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
 function LoginForm({ onClose, onSignUp }) {
   return (
     
-      <div className="bg-white rounded-3xl shadow-lg overflow-hidden max-w-4xl w-full flex">
+      <div className="bg-white rounded-3xl items-center shadow-lg overflow-hidden max-w-4xl w-full flex">
         {/* Left Side - Form */}
         <div className="w-full md:w-1/2 p-8 relative">
           {/* Close Button */}
@@ -22,14 +22,7 @@ function LoginForm({ onClose, onSignUp }) {
               
           </button>
 
-          {/* Logo */}
-          <div className="mb-8">
-            <img 
-              src={logo}
-              alt="Deezeven Logo"
-              className="h-8"
-            />
-          </div>
+         
 
           {/* Form Content */}
           <div className="space-y-6">
@@ -75,7 +68,7 @@ function LoginForm({ onClose, onSignUp }) {
             </button>
 
             {/* Login Link */}
-            <p className="flex justify-center gap-1 text-gray-600">
+            <p className="flex justify-center gap-1 text-sm text-gray-600">
               New to deezeven. Create your account
               <button onClick={onSignUp} className="text-[#ffb700] hover:underline">
                 Sign up

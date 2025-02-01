@@ -77,8 +77,8 @@ function CartComponent({ onClose }) {
               <div className="flex justify-between">
                 <div>
                   <h3 className="font-medium">{item.name}</h3>
-                  <p className="text-gray-500 text-sm">{item.variant}</p>
-                  <p className="mt-1">LKR {item.price.toLocaleString()}</p>
+                  <p className="text-gray-500 text-sm text-start">{item.variant}</p>
+                  <p className="mt-1 text-start">LKR {item.price.toLocaleString()}</p>
                 </div>
                 <button 
                   className="p-1 hover:bg-gray-100 rounded-full h-fit"
@@ -113,7 +113,7 @@ function CartComponent({ onClose }) {
           <span className="font-medium">LKR 1000.00</span>
         </div>
         <button className="w-full bg-black text-white py-3 rounded font-medium hover:bg-gray-800">
-          CHECK OUT
+          CHECKOUT
         </button>
         <button className="w-full py-3 text-center hover:bg-gray-100 rounded">
           CONTINUE SHOPPING
