@@ -55,13 +55,7 @@ const CustomersList = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Customers</h1>
-        <button
-          onClick={() => navigate("/admin/customers/add")}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Customer</span>
-        </button>
+       
       </div>
 
       <div className="overflow-x-auto">

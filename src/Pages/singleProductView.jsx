@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "./components/Header";
-import ProductDetails from "./components/SingleProduct";
-import MoreDesigns from "./components/SimilarProducts";
+import SingleProduct from "../Components/SingleProduct";
+import SimilarProducts from "../components/SimilarProducts";
 import Footer from "./components/Footer";
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
     <div className="font-sans">
       {/* <Header /> */}
       <main className="px-8 py-4">
-        <SingleProduct />
+        <SingleProduct  />
         <SimilarProducts />
       </main>
       <Footer />

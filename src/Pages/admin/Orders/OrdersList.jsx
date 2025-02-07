@@ -2,8 +2,7 @@ import React from 'react';
 
 const OrdersList = () => {
   const orders = [
-    { id: 1, customer: 'John Doe', status: 'pending', total: '$120.00', date: '2024-02-05' },
-    // Add more orders...
+    { id: 1, customer: 'John Doe', status: 'pending', total: '120.00', date: '2024-02-05' },
   ];
 
   return (
@@ -39,7 +38,7 @@ const OrdersList = () => {
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Total
+                Total (Rs.)
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                 Date
