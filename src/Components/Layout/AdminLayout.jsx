@@ -1,20 +1,14 @@
-// src/components/Layout/AdminLayout.jsx
-import React, { useState } from 'react';
-import { Menu } from 'lucide-react';
-import { Outlet } from 'react-router-dom';
-import { navigationConfig } from '../../config/navigation';
-import Sidebar from '../Sidebar/Sidebar';
+import React, { useState } from "react";
+import { Outlet } from "react-router-dom";
+import { Menu } from "lucide-react";
+import Sidebar from "../Sidebar/Sidebar";
 
-export default function  AdminLayout (){
+export default function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <Sidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-        navigationItems={navigationConfig}
-      />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm">
@@ -34,4 +28,4 @@ export default function  AdminLayout (){
       </div>
     </div>
   );
-};
+}

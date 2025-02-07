@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
 import { useNavigate } from "react-router";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
+import { Download, Plus } from "lucide-react";
 
 const CustomersList = () => {
   const navigate = useNavigate();
@@ -36,7 +38,6 @@ const CustomersList = () => {
       email: "emilyjohnson@example.com",
       address: "12, Park Avenue, Jaffna",
     },
-    // Add more customers...
   ];
 
   // Function to open the modal with selected customer's address
@@ -51,11 +52,43 @@ const CustomersList = () => {
     setSelectedCustomer(null);
   };
 
+  // Function to generate and download PDF
+  const printPDF = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(16);
+    doc.text("Customers", 14, 15);
+
+    const tableColumn = ["Customer ID", "Name", "Mobile", "Email", "Address"];
+    const tableRows = customers.map((customer) => [
+      customer.id,
+      customer.name,
+      customer.mobile,
+      customer.email,
+      customer.address,
+    ]);
+
+    doc.autoTable({
+      startY: 25,
+      head: [tableColumn],
+      body: tableRows,
+      theme: "grid",
+    });
+
+    doc.autoPrint();
+    window.open(doc.output("bloburl"), "_blank");
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Customers</h1>
-       
+        <button
+          onClick={printPDF}
+          className="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 flex items-center space-x-2"
+        >
+          <Download size={16} />
+          <span>Print</span>
+        </button>
       </div>
 
       <div className="overflow-x-auto">
@@ -90,11 +123,11 @@ const CustomersList = () => {
                   <div className="flex space-x-2 justify-end">
                     <button
                       onClick={() => openModal(customer)}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="px-3 py-1 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                     >
                       View Address
                     </button>
-                    <button className="text-red-600 hover:text-red-800">
+                    <button className="px-3 py-1 text-white bg-red-600 rounded-lg hover:bg-red-700">
                       Delete
                     </button>
                   </div>
