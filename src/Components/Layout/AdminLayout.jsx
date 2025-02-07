@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 import { navigationConfig } from '../../config/navigation';
 import Sidebar from '../Sidebar/Sidebar';
 
-export const AdminLayout = () => {
+export default function  AdminLayout (){
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
