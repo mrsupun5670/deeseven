@@ -7,6 +7,7 @@ import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
 
 function SignUpFormComponent({ onClose, onsignIn }) {
 
+  // Hide the API URL
   const APIURL = import.meta.env.VITE_API_URL;
 
   const [firstName, setFirstName] = useState("");
