@@ -17,6 +17,7 @@
         "@heroicons/react": "^2.2.0",
         "@react-spring/web": "^9.7.5",
         "apexcharts": "^4.4.0",
+        "dotenv": "^16.4.7",
         "file-saver": "^2.0.5",
         "framer-motion": "^12.1.0",
         "gsap": "^3.12.5",

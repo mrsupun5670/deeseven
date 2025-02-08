@@ -13,12 +13,13 @@ import ProductCategories from "./Pages/admin/Products/ProductCategories.jsx";
 import SalesOverview from "./Pages/admin/Sales/SalesOverview.jsx";
 import SalesReports from "./Pages/admin/Sales/SalesReports.jsx";
 import TransactionHistory from "./Pages/admin/payments/TransactionHistory.jsx";
+import Index from "./Pages/index.jsx";
 
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Navigate to="/admin/dashboard" />} />
+      <Route path="/" element={<Index />} />
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />

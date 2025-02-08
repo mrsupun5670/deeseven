@@ -1,12 +1,61 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { X } from 'lucide-react';
 import Input from '../Components/Input';
 import SocialButton from '../Components/SocialButton';
-import logo from "../assets/logo.png";
 import model from "../assets/model.webp";
 import { faFacebook, faGoogle } from '@fortawesome/free-brands-svg-icons';
+import { useNavigate } from 'react-router';
 
 function LoginForm({ onClose, onSignUp }) {
+
+  const APIURL = import.meta.env.VITE_API_URL;
+
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const [errors, setErrors] = useState({ email: '', password: '' });
+
+  const navigate = useNavigate();
+
+  const loginUser = async (email, password) => {
+    const response = await fetch(`${APIURL}/SigninController.php`, {
+      method: 'POST',
+      headers: {
+      'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+    console.log(data);
+  }
+
+  const handleSignIn = () => {
+    let newErrors = { email: '', password: '' };
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = 'Invalid email format';
+    }
+
+    if (!password) {
+      newErrors.password = 'Password is required';
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters long';
+    }
+
+    setErrors(newErrors);
+
+    if (!newErrors.email && !newErrors.password) {
+      if (email == "admin@gmail.com" && password == "admin123") {
+        navigate('/admin/dashboard');
+        localStorage.setItem('userRole', 'admin');
+      } else {
+        localStorage.setItem('userRole', 'user');
+        loginUser(email, password);
+        // navigate(0);
+      }
+    }
+  }
   return (
     
       <div className="bg-white rounded-3xl items-center shadow-lg overflow-hidden max-w-4xl w-full flex">
@@ -23,7 +72,6 @@ function LoginForm({ onClose, onSignUp }) {
           </button>
 
          
-
           {/* Form Content */}
           <div className="space-y-6">
             {/* Header */}
@@ -35,15 +83,12 @@ function LoginForm({ onClose, onSignUp }) {
             </div>
 
             {/* Email & Password Fields */}
-            <Input type="email" placeholder="Email here" />
-            <Input type="password" placeholder="Password" />
+            <Input type="email" placeholder="Email here" value={email} onChange={(e) => setEmail(e.target.value)} />
+            {errors.email && <span className="text-red-500 text-sm">{errors.email}</span>}
+            <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            {errors.password && <span className="text-red-500 text-sm">{errors.password}</span>}
 
             {/* Forgot Password Link */}
-
-
-
-
-
             {/* Forgot Password Link */}    
 
             {/* Divider */}
@@ -63,7 +108,7 @@ function LoginForm({ onClose, onSignUp }) {
             </div>
 
             {/* Submit Button */}
-            <button className="w-full bg-yellow-400 text-black font-medium py-3 rounded-full hover:bg-yellow-500 transition-colors">
+            <button onClick={handleSignIn} className="w-full bg-yellow-400 text-black font-medium py-3 rounded-full hover:bg-yellow-500 transition-colors">
               Sign In
             </button>
 
