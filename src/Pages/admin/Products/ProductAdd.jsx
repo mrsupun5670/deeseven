@@ -92,7 +92,7 @@ const ProductAdd = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium">Category</label>
               <select className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
@@ -101,17 +101,7 @@ const ProductAdd = () => {
                 <option value="category-b">Category B</option>
               </select>
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Brand</label>
-              <select className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                <option value="">Select brand</option>
-                <option value="brand-a">Brand A</option>
-                <option value="brand-b">Brand B</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
             <div className="space-y-2">
               <label className="text-sm font-medium">Colors</label>
               <select className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
