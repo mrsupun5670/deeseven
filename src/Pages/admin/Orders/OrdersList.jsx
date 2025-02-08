@@ -10,6 +10,21 @@ const OrdersList = () => {
     { id: 103, customer: "Mark Johnson", status: "Canceled", total: "12000", date: "2024-02-03" },
   ]);
 
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Function to handle "View" button click
+  const handleView = (order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+
+  // Function to close modal
+  const handleClose = () => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
+  };
+
   // Function to print orders list as a PDF
   const printOrders = () => {
     const doc = new jsPDF();
@@ -57,7 +72,7 @@ const OrdersList = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (Rs.)</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                            <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
@@ -89,6 +104,27 @@ const OrdersList = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Order Details Modal */}
+      {isModalOpen && selectedOrder && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-semibold mb-4">Order Details</h2>
+            
+            <p><strong>Order ID:</strong> {selectedOrder.id}</p>
+            <p><strong>Customer:</strong> {selectedOrder.customer}</p>
+            <p><strong>Status:</strong> {selectedOrder.status}</p>
+            <p><strong>Total:</strong> Rs. {selectedOrder.total}</p>
+            <p><strong>Date:</strong> {selectedOrder.date}</p>
+
+            <div className="flex justify-end mt-4">
+              <button onClick={handleClose} className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

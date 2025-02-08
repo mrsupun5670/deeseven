@@ -17,6 +17,7 @@
         "@heroicons/react": "^2.2.0",
         "@react-spring/web": "^9.7.5",
         "apexcharts": "^4.4.0",
+        "file-saver": "^2.0.5",
         "framer-motion": "^12.1.0",
         "gsap": "^3.12.5",
         "jspdf": "^2.5.2",
@@ -27,7 +28,9 @@
         "react-dom": "^18.3.1",
         "react-router": "^7.1.1",
         "react-router-dom": "^7.1.5",
-        "swiper": "^11.2.0"
+        "recharts": "^2.15.1",
+        "swiper": "^11.2.0",
+        "xlsx": "^0.18.5"
     },
     "devDependencies": {
         "@eslint/js": "^9.13.0",

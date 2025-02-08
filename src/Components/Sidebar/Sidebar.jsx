@@ -41,7 +41,6 @@ const navigationConfig = [
     submenu: [
       { title: "Sales Overview", path: "/admin/sales/overview" },
       { title: "Reports", path: "/admin/sales/reports" },
-      { title: "Analytics", path: "/admin/sales/analytics" },
     ],
   },
   {
