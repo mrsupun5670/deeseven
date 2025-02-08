@@ -48,9 +48,8 @@ const navigationConfig = [
     path: "/admin/payments",
     icon: CreditCard,
     submenu: [
-      { title: "Transaction History", path: "/admin/payments/history" },
-      { title: "Payment Methods", path: "/admin/payments/methods" },
-      { title: "Refunds", path: "/admin/payments/refunds" },
+      { title: "Transaction History", path: "/admin/payments/history" }
+      
     ],
   },
 ];

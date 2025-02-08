@@ -25,13 +25,11 @@ const topProducts = [
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-// Helper function to format currency in LKR
 const formatLKR = (value) => {
   return `Rs. ${new Intl.NumberFormat('si-LK').format(value)}`;
 };
 
 const SalesOverview = () => {
-  // Stats cards data with LKR
   const stats = [
     {
       title: 'Total Sales',

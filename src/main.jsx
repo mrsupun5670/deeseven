@@ -12,10 +12,8 @@ import OrdersList from "./Pages/admin/Orders/OrdersList.jsx";
 import ProductCategories from "./Pages/admin/Products/ProductCategories.jsx";
 import SalesOverview from "./Pages/admin/Sales/SalesOverview.jsx";
 import SalesReports from "./Pages/admin/Sales/SalesReports.jsx";
-// import SalesAnalytics from "./Pages/admin/Sales/SalesAnalytics.jsx";
-// import PaymentHistory from "./Pages/admin/Payments/PaymentHistory.jsx";
-// import PaymentMethods from "./Pages/admin/Payments/PaymentMethods.jsx";
-// import PaymentRefunds from "./Pages/admin/Payments/PaymentRefunds.jsx";
+import TransactionHistory from "./Pages/admin/payments/TransactionHistory.jsx";
+
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -43,12 +41,10 @@ createRoot(document.getElementById("root")).render(
           <Route path="reports" element={<SalesReports />} />
         </Route>
         
-        {/* <Route path="payments">
-          <Route index element={<PaymentHistory />} />
-          <Route path="history" element={<PaymentHistory />} />
-          <Route path="methods" element={<PaymentMethods />} />
-          <Route path="refunds" element={<PaymentRefunds />} />
-        </Route> */}
+        <Route path="payments">
+          <Route index element={<TransactionHistory />} />
+          <Route path="history" element={<TransactionHistory />} />
+        </Route>
       </Route>
     </Routes>
   </BrowserRouter>
