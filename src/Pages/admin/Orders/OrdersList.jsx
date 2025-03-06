@@ -1,17 +1,42 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Printer } from "lucide-react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 
 const OrdersList = () => {
-  const [orders] = useState([
-    { id: 101, customer: "John Doe", status: "Pending", total: "5000", date: "2024-02-05" },
-    { id: 102, customer: "Jane Smith", status: "Completed", total: "8000", date: "2024-02-04" },
-    { id: 103, customer: "Mark Johnson", status: "Canceled", total: "12000", date: "2024-02-03" },
-  ]);
+  const APIURL = import.meta.env.VITE_API_URL;
+
+  const [orders,setOrders] = useState([]);
 
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch(`${APIURL}/admin/orders/ListOrdersController.php`, {
+          credentials: "include", // Ensures cookies (session) are sent
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.response === true) {
+            setOrders(data.orders); // Set orders from API
+          } else {
+            alert(data.message);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        alert("Failed to load orders. Please try again later.");      }
+    };
+
+    fetchOrders();
+  }, []);
 
   // Function to handle "View" button click
   const handleView = (order) => {
@@ -76,8 +101,8 @@ const OrdersList = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-            {orders.map((order) => (
-              <tr key={order.id}>
+          {orders.length > 0 ? (
+            orders.map((order) => (              <tr key={order.id}>
                 <td className="px-6 py-4">{order.id}</td>
                 <td className="px-6 py-4">{order.customer}</td>
                 <td className="px-6 py-4">
@@ -100,15 +125,23 @@ const OrdersList = () => {
                   </button>
                 </td>
               </tr>
-            ))}
+             ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="text-center p-2">
+                  No orders found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Order Details Modal */}
       {isModalOpen && selectedOrder && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"   onClick={handleClose}
+>
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-xl font-semibold mb-4">Order Details</h2>
             
             <p><strong>Order ID:</strong> {selectedOrder.id}</p>
