@@ -26,11 +26,18 @@ function LoginForm({ onClose, onSignUp }) {
 
     if (response.ok && response.status == 200) {
       const data = await response.json();
-      if (data.response == true && data.message == "Customer Success") {
-        localStorage.setItem("userRole", "user");
+
+      sessionStorage.setItem("authToken", data.token)
+
+      if (data.response == true && data.role == "customer") {
+        sessionStorage.setItem("userRole", "customer");
+        sessionStorage.setItem("user", JSON.stringify(data.user));
         navigate(0);
-      } else if (data.response == true && data.message == "Admin Success") {
-        localStorage.setItem("userRole", "admin");
+        console.log("success");
+        
+      } else if (data.response == true && data.role == "admin") {
+        sessionStorage.setItem("userRole", "admin");
+        sessionStorage.setItem("admin", JSON.stringify(data.user));
         navigate("/admin/dashboard");
       } else {
         alert(data.message);

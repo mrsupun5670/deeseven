@@ -18,6 +18,7 @@ const OrdersList = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`,
           },
         });
 
@@ -25,9 +26,15 @@ const OrdersList = () => {
           const data = await response.json();
           if (data.response === true) {
             setOrders(data.orders); // Set orders from API
-            
           } else {
             alert(data.message);
+
+            if(data.message === "Unauthorized") {
+              sessionStorage.removeItem("authToken");
+              sessionStorage.removeItem("userRole");
+              sessionStorage.removeItem("admin");
+              window.location.href = "/";
+            }
           }
         }
       } catch (error) {
