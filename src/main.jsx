@@ -16,6 +16,7 @@ import TransactionHistory from "./Pages/admin/payments/TransactionHistory.jsx";
 import Index from "./Pages/index.jsx";
 import MyAccount from "./Pages/MyAccount.jsx";
 import Checkout from "./Pages/Checkout.jsx";
+import CategoryView from "./Pages/CategoryView.jsx";
 
 
 createRoot(document.getElementById("root")).render(
@@ -24,6 +25,8 @@ createRoot(document.getElementById("root")).render(
       <Route path="/" element={<Index />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/myaccount" element={<MyAccount />} />
+      <Route path="/men" element={<CategoryView />} />
+      <Route path="/women" element={<CategoryView />} />
 
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />

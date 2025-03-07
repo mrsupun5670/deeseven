@@ -81,11 +81,11 @@ function NavBar() {
         <a href="#">
           <li className="hover:text-[#ffb700]">Home</li>
         </a>
-        <a href="#">
-          <li className="hover:text-[#ffb700]">Women's</li>
+        <a href="/men">
+          <li className="hover:text-[#ffb700]">Men's</li>
         </a>
-        <a href="#">
-          <li className="hover:text-[#ffb700]">Store</li>
+        <a href="/women">
+          <li className="hover:text-[#ffb700]">Women's</li>
         </a>
         <a href="#">
           <li className="hover:text-[#ffb700]">About Us</li>
@@ -107,10 +107,10 @@ function NavBar() {
             <li className="hover:text-[#ffb700]">Home</li>
           </a>
           <a href="#">
-            <li className="hover:text-[#ffb700]">Women's</li>
+            <li className="hover:text-[#ffb700]">Men's</li>
           </a>
           <a href="#">
-            <li className="hover:text-[#ffb700]">Store</li>
+            <li className="hover:text-[#ffb700]">Women's</li>
           </a>
           <a href="#">
             <li className="hover:text-[#ffb700]">About Us</li>

@@ -3,7 +3,7 @@ import image from "../assets/image.jpg";
 import { useState } from "react";
 import ProductCard from "../Components/ProductCard";
 
-function ProductView(category) {
+function ProductView({category}) {
 
   const items = [
     { title: "T-Shirt", qty: "25", image: "https://via.placeholder.com/150" },
@@ -80,4 +80,4 @@ function ProductView(category) {
   );
 }
 
-export default CategoryView;
+export default ProductView;

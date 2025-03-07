@@ -26,7 +26,9 @@ export default function ProductSection({ title }) {
   }, []);
 
   const filterProducts = products.filter((product => {
-    // if(title === "New Arrivals") return product.ca
+    if(title === "New Arrivals") return product.date_added;
+    if(title === "Men's Collection") return product.category_name == "Men";
+    if(title === "Women's Collection") return product.category_name == "Women";
   }))
 
   return (
@@ -35,7 +37,7 @@ export default function ProductSection({ title }) {
       <h3 className="text-xl sm:text-2xl font-semibold mb-4">{title}</h3>
       <div className="relative">
       <div className="flex overflow-x-auto scrollbar-hide space-x-6 p-4">
-      {products.map((product) => (
+      {filterProducts.map((product) => (
         <Link
           to={`/product/${product.product_id}`}
           key={product.product_id}
