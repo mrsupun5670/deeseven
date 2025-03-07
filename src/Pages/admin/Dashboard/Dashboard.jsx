@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Users, Package, DollarSign, BarChart2 } from "lucide-react";
 import AnimatedContent from "../../../Components/AnimatedContent";
 import LineChart from "../../../Components/LineChart";
 import BarChart from "../../../Components/BarChart";
 import TopProducts from "../../../Components/TopProducts";
+import { useNavigate } from "react-router";
 
 const StatCard = ({ title, value, icon: Icon, trend }) => (
+
   <div>
     <AnimatedContent
       distance={150}
@@ -31,6 +33,32 @@ const StatCard = ({ title, value, icon: Icon, trend }) => (
 );
 
 export default function Dashboard() {
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUserLogin = () => {
+      if(sessionStorage.getItem("userRole") !== "admin") {
+        if(sessionStorage.getItem("admin") === null) {
+        navigate("/");
+        }
+      }
+    }
+    checkUserLogin();
+  }, [])
+
+  useEffect(() => {
+    window.history.pushState(null, null, window.location.pathname);
+    window.addEventListener("popstate", () => {
+      window.history.pushState(null, null, window.location.pathname);
+    });
+
+    return () => {
+      window.removeEventListener("popstate", () => {});
+    };
+  }, []);
+
+
   const stats = [
     { title: "Today Sold", value: "28", icon: BarChart2, trend: 12 },
     { title: "Today Sales", value: "Rs.125030.00", icon: DollarSign, trend: -2 },
