@@ -11,7 +11,8 @@ import BottomNavBar from "../Components/BottomNavBar";
 
 export default function Index() {
   return (
-    <div className="bg-gray-200 min-h-screen relative">
+    <div className="bg-gray-200 min-h-screen relative flex justify-center">
+        <div className="w-full max-w-[1280px]"> 
       <div className="relative p-5 z-0">
         <Header />
         <Hero />
@@ -38,6 +39,7 @@ export default function Index() {
         <ProductSection title="Women's Collection" />
       </div>
       <BottomNavBar />
-    </div>
+    </div>    </div>
+
   );
 }
