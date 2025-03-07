@@ -14,12 +14,17 @@ import SalesOverview from "./Pages/admin/Sales/SalesOverview.jsx";
 import SalesReports from "./Pages/admin/Sales/SalesReports.jsx";
 import TransactionHistory from "./Pages/admin/payments/TransactionHistory.jsx";
 import Index from "./Pages/index.jsx";
+import MyAccount from "./Pages/MyAccount.jsx";
+import Checkout from "./Pages/Checkout.jsx";
 
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<Index />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/myaccount" element={<MyAccount />} />
+
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />

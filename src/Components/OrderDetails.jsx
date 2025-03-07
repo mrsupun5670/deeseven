@@ -40,7 +40,6 @@ export default function OrderDetails() {
     }
   }, []);
 
-
   const removeItem = (id) => {
     setCartItems(cartItems.filter((item) => item.id !== id));
   };
@@ -91,7 +90,6 @@ export default function OrderDetails() {
                   <div className="flex gap-2 mt-2">
                     <span>x</span>
                     <span>{item.quantity}</span>
-                   
                   </div>
                 </div>
               </div>
@@ -118,6 +116,7 @@ export default function OrderDetails() {
         <p>TOTAL</p>
         <p>Rs. 2700.00</p>
       </div>
+     
     </div>
   );
 }

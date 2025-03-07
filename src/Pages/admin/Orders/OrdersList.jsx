@@ -14,8 +14,7 @@ const OrdersList = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch(`${APIURL}/admin/orders/ListOrdersController.php`, {
-          credentials: "include", // Ensures cookies (session) are sent
+        const response = await fetch(`${APIURL}/ListOrdersController.php`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -26,6 +25,7 @@ const OrdersList = () => {
           const data = await response.json();
           if (data.response === true) {
             setOrders(data.orders); // Set orders from API
+            
           } else {
             alert(data.message);
           }

@@ -54,6 +54,7 @@ const BillingDetails = () => {
           </div>
         </div>
       </form>
+     
     </div>
   );
 };

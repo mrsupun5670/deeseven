@@ -4,7 +4,7 @@ import BillingDetails from "../Components/BillingDetails";
 import ShippingDetails from "../Components/ShippingDetails";
 import logo from "../assets/logo.png";
 
-export default function CheckoutPage() {
+export default function Checkout() {
   const [useBillingForShipping, setUseBillingForShipping] = useState(true);
 
   return (
@@ -29,6 +29,11 @@ export default function CheckoutPage() {
             </label>
           </div>
           {!useBillingForShipping && <ShippingDetails />}
+          <div className="flex flex-row  font-bold mt-4 mb-4">
+        <button className="bg-black w-full text-white font-bold p-4 hover:bg-gray-800 rounded-full">
+          Place Order
+        </button>
+      </div>
         </div>
 
         <div className="md:w-1/3 w-full order-1 md:order-2">
