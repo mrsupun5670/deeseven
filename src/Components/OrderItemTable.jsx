@@ -1,6 +1,9 @@
 import React from "react";
 
 export default function OrderItemTable({ orderItems }) {
+  // Check if orderItems is defined and is an array
+  const validOrderItems = Array.isArray(orderItems) ? orderItems : [];
+
   return (
     <div>
       <table className="w-full rounded-lg shadow">
@@ -10,23 +13,33 @@ export default function OrderItemTable({ orderItems }) {
               Product
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              Quantity
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+              Unit Price (Rs.)
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
               Total (Rs.)
             </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
-          {orderItems.length > 0 ? (
-            orderItems.map((orderItem) => (
-              <tr key={orderItem.id}>
+          {validOrderItems.length > 0 ? (
+            validOrderItems.map((orderItem) => (
+              <tr key={orderItem.order_item_id}>
                 <td className="px-6 py-4">
-                  {orderItem.title} - {orderItem.size} x {orderItem.qty}
+                  {orderItem.product_title} - {orderItem.size}
                 </td>
-                <td className="px-6 py-4">{orderItem.price}</td>
+                <td className="px-6 py-4">{orderItem.qty}</td>
+                <td className="px-6 py-4">{orderItem.product_price}</td>
+                <td className="px-6 py-4">
+                  {orderItem.qty * orderItem.product_price}
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="2" className="text-center p-2">
+              <td colSpan="4" className="text-center p-2">
                 No order items found.
               </td>
             </tr>

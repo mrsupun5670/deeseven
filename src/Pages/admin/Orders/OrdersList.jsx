@@ -1,14 +1,15 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Printer } from "lucide-react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
+import OrderItemTable from "../../../Components/OrderItemTable"; // Import OrderItemTable component
 
 const OrdersList = () => {
   const APIURL = import.meta.env.VITE_API_URL;
 
-  const [orders,setOrders] = useState([]);
-
+  const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [orderItems, setOrderItems] = useState([]); // Store order items here
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -28,8 +29,7 @@ const OrdersList = () => {
             setOrders(data.orders); // Set orders from API
           } else {
             alert(data.message);
-
-            if(data.message === "Unauthorized") {
+            if (data.message === "Unauthorized") {
               sessionStorage.removeItem("authToken");
               sessionStorage.removeItem("userRole");
               sessionStorage.removeItem("admin");
@@ -39,7 +39,8 @@ const OrdersList = () => {
         }
       } catch (error) {
         console.error("Error fetching orders:", error);
-        alert("Failed to load orders. Please try again later.");      }
+        alert("Failed to load orders. Please try again later.");
+      }
     };
 
     fetchOrders();
@@ -48,6 +49,7 @@ const OrdersList = () => {
   // Function to handle "View" button click
   const handleView = (order) => {
     setSelectedOrder(order);
+    setOrderItems(order.items); // Set order items for the selected order
     setIsModalOpen(true);
   };
 
@@ -55,6 +57,7 @@ const OrdersList = () => {
   const handleClose = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
+    setOrderItems([]); // Clear order items when closing the modal
   };
 
   // Function to print orders list as a PDF
@@ -108,31 +111,34 @@ const OrdersList = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-          {orders.length > 0 ? (
-            orders.map((order) => (              <tr key={order.id}>
-                <td className="px-6 py-4">{order.id}</td>
-                <td className="px-6 py-4">{order.customer}</td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-xs font-semibold rounded-full 
-                    ${order.status === "Pending" ? "bg-yellow-100 text-yellow-800" : ""}
-                    ${order.status === "Completed" ? "bg-green-100 text-green-800" : ""}
-                    ${order.status === "Canceled" ? "bg-red-100 text-red-800" : ""}`}
-                  >
-                    {order.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4">{order.total}</td>
-                <td className="px-6 py-4">{order.date}</td>
-                <td className="px-6 py-4 text-end">
-                  <button 
-                    onClick={() => handleView(order)} 
-                    className="px-3 py-1 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
-                  >
-                    View
-                  </button>
-                </td>
-              </tr>
-             ))
+            {orders.length > 0 ? (
+              orders.map((order) => (
+                <tr key={order.id}>
+                  <td className="px-6 py-4">IN{order.number}</td>
+                  <td className="px-6 py-4">{order.customer}</td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full 
+                        ${order.status === "Paid" ? "bg-yellow-100 text-yellow-800" : ""}
+                        ${order.status === "Processing" ? "bg-green-100 text-green-800" : ""}
+                        ${order.status === "Shipped" ? "bg-blue-100 text-blue-800" : ""}
+                        ${order.status === "Delivered" ? "bg-gray-100 text-gray-800" : ""}`}
+                    >
+                      {order.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">{order.total}</td>
+                  <td className="px-6 py-4">{order.date}</td>
+                  <td className="px-6 py-4 text-end">
+                    <button
+                      onClick={() => handleView(order)}
+                      className="px-3 py-1 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                    >
+                      View
+                    </button>
+                  </td>
+                </tr>
+              ))
             ) : (
               <tr>
                 <td colSpan="6" className="text-center p-2">
@@ -146,19 +152,15 @@ const OrdersList = () => {
 
       {/* Order Details Modal */}
       {isModalOpen && selectedOrder && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"   onClick={handleClose}
->
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-xl font-semibold mb-4">Order Details</h2>
-            
-            <p><strong>Order ID:</strong> {selectedOrder.id}</p>
-            <p><strong>Customer:</strong> {selectedOrder.customer}</p>
-            <p><strong>Status:</strong> {selectedOrder.status}</p>
-            <p><strong>Total:</strong> Rs. {selectedOrder.total}</p>
-            <p><strong>Date:</strong> {selectedOrder.date}</p>
-
-            <div className="flex justify-end mt-4">
-              <button onClick={handleClose} className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600">
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full">
+            <h2 className="text-xl font-bold mb-4">Order Number: {selectedOrder.number}</h2>
+            <div>
+              <h3 className="font-semibold mb-2">Items:</h3>
+              <OrderItemTable items={orderItems} /> 
+            </div>
+            <div className="flex justify-between mt-4">
+              <button onClick={handleClose} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
                 Close
               </button>
             </div>
