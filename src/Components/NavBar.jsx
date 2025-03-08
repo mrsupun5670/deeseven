@@ -10,14 +10,17 @@ import {
 import LoginForm from "./LoginForm";
 import SignUpFormComponent from "./SignUpFormComponent";
 import CartComponent from "./CartComponent";
+import { useNavigate } from "react-router";
 
 function NavBar() {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
 
   const handleCartClick = () => {
     setIsCartOpen(true);
@@ -28,8 +31,14 @@ function NavBar() {
   };
 
   const handleSignInClick = () => {
-    setIsSignInOpen(true);
-    setIsSignUpOpen(false);
+    if(sessionStorage.getItem("userRole") == "customer"){
+      var user = JSON.parse(sessionStorage.getItem("user"));
+      console.log(user);
+      navigate('/account')
+    } else {
+      setIsSignInOpen(true);
+      setIsSignUpOpen(false);
+    }
   };
 
   const handleSignUpClick = () => {
@@ -78,7 +87,7 @@ function NavBar() {
 
       {/* Navigation Links for Medium & Large Screens */}
       <ul className="hidden md:flex space-x-6 text-m text-center text-black">
-        <a href="#">
+        <a href="/">
           <li className="hover:text-[#ffb700]">Home</li>
         </a>
         <a href="/men">

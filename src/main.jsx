@@ -26,9 +26,10 @@ createRoot(document.getElementById("root")).render(
       <Route path="/" element={<Index />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/myaccount" element={<MyAccount />} />
-      <Route path="/men" element={<CategoryView />} />
-      <Route path="/women" element={<CategoryView />} />
+      <Route path="/men" element={<CategoryView title="Men" />} />
+      <Route path="/women" element={<CategoryView title="Women" />} />
       <Route path="/product/:id" element={<SingleProduct />} />
+      <Route path="/account" element={<MyAccount />} />
 
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />

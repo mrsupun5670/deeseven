@@ -4,6 +4,7 @@ import "swiper/css/scrollbar";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import Header from "./Header";
+import HashLoader from "react-spinners/HashLoader";
 // import Breadcrumb from "./Breadcrumb";
 
 export default function SingleProduct() {
@@ -14,7 +15,7 @@ export default function SingleProduct() {
   const [qty, setQty] = useState(1);
   const [selectedSize, setSelectedSize] = useState("");
   const [subImages, setSubImages] = useState([]);
-
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
   console.log(id);
 
@@ -25,6 +26,7 @@ export default function SingleProduct() {
           `${APIURL}/fetchSingleProduct.php?id=${id}`
         );
         const data = await response.json();
+        setLoading(true);
         if(data.status){
           setProduct(data.data);
           setMainImage(data.data.images[0].image_url);
@@ -32,9 +34,12 @@ export default function SingleProduct() {
           
         } else {
           alert(data.message);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error fetching product:", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProduct();
@@ -60,7 +65,18 @@ export default function SingleProduct() {
   return (
     <>
       <Header />
-      <section className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+        <HashLoader
+          color="#FFB700"
+          loading={loading}
+          size={50}
+          aria-label="Loading Spinner"
+          data-testid="loader"
+        />
+      </div>
+      ) : (
+        <section className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="grid md:grid-cols-4 gap-4">
           <div className="hidden md:flex md:col-span-1 flex-col space-y-4">
             {subImages.map((image, index) => (
@@ -113,7 +129,7 @@ export default function SingleProduct() {
             {product.title}
           </h1>
           <p className="text-lg sm:text-xl font-semibold text-gray-700 mb-4 text-start">
-            Rs.{product.price}
+            Rs.{product.price.toFixed(2)}
           </p>
 
           {/* Product Description */}
@@ -128,16 +144,17 @@ export default function SingleProduct() {
                 About the fabric
               </h2>
               <ul className="list-disc pl-5 text-gray-600">
-                <li>Fabric composition: Polyester mixed cotton</li>
-                <li>Fabric pattern: Solid</li>
-                <li>Fit type: Comfort Fit</li>
-                <li>Length: Regular</li>
+                {product.fabric.map((fabric, index) => {
+                  return <li key={index}>{fabric.about}</li>;
+                })}
               </ul>
             </div>
 
             <div>
               <h2 className="text-lg font-bold mb-2 text-start">Fabric Care</h2>
-              <p className="text-gray-600 text-start ">Machine wash</p>
+              {product.fabric_care.map((care, index) => {
+                return <p className="text-gray-600 text-start " key={index}>{care.fabric_care}</p>;
+              })}
             </div>
           </div>
 
@@ -148,23 +165,16 @@ export default function SingleProduct() {
                 Add-on Features
               </h2>
               <ul className="list-disc pl-5 text-gray-600">
-                <li>Comfortable</li>
-                <li>Great fit on</li>
-                <li>Authentic branding</li>
-                <li>
-                  Care instructions on the satin care label for machine wash
-                  directions
-                </li>
-                <li>Comfortable heat seals</li>
+                {product.add_on_features.map((feature, index) => {
+                  return <li key={index}>{feature.features}</li>;
+                })}
               </ul>
             </div>
 
             <div>
               <h2 className="text-lg font-bold mb-2 text-start">Note</h2>
               <p className="text-gray-600 text-start">
-                The item may slightly vary from the displayed image in terms of
-                color due to lighting conditions or the display used to view,
-                and the fabric material from color to color and size to size.
+                {product.note}
               </p>
             </div>
           </div>
@@ -222,6 +232,7 @@ export default function SingleProduct() {
           </div>
         </div>
       </section>
+      )}
     </>
   );
 }

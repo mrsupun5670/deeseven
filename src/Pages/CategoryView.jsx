@@ -3,9 +3,9 @@ import ProductCard from "../Components/ProductCard";
 import image from "../assets/image.jpg";
 import CategoryCard from "../Components/CategoryCard";
 import { useState } from "react";
+import Header from "../Components/Header";
 
-function CategoryView() {
-
+function CategoryView({title}) {
   const items = [
     { title: "T-Shirt", qty: "25", image: "https://via.placeholder.com/150" },
     { title: "Jeans", qty: "15", image: "https://via.placeholder.com/150" },
@@ -36,7 +36,7 @@ function CategoryView() {
     { title: "Shorts", qty: "22", image: "https://via.placeholder.com/150" },
     { title: "Cap", qty: "30", image: "https://via.placeholder.com/150" },
     { title: "Socks", qty: "40", image: "https://via.placeholder.com/150" },
-    { title: "Gloves", qty: "8", image: "https://via.placeholder.com/150" }
+    { title: "Gloves", qty: "8", image: "https://via.placeholder.com/150" },
   ];
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,36 +48,45 @@ function CategoryView() {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
 
-  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const nextPage = () =>
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
   return (
-    <div className="p-8  flex flex-col">
-      <div className=" mb-10">
-        <p className=" font-bold text-6xl">Men's</p>
-      </div>
-      <div className="gap-4 grid grid-cols-2 md:grid-cols-4">
-      {currentItems.map((item, index) => (
-          <CategoryCard key={index} title={item.title} qty={item.qty} image={image} />
-        ))}
-      </div>
+    <>
+      <Header />
+      <div className="p-8  flex flex-col">
+        <div className=" mb-10">
+          <p className=" font-bold text-6xl">{title}</p>
+        </div>
+        <div className="gap-4 grid grid-cols-2 md:grid-cols-4">
+          {currentItems.map((item, index) => (
+            <CategoryCard
+              key={index}
+              title={item.title}
+              qty={item.qty}
+              image={image}
+            />
+          ))}
+        </div>
 
-      <div className="mt-8 flex justify-center items-center gap-2">
-        {[...Array(totalPages)].map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentPage(index + 1)}
-            className={`px-4 py-2 rounded-md border transition ${
-              currentPage === index + 1
-                ? "bg-gray-300 text-gray-700 font-bold" 
-                : "bg-white border-gray-300 hover:bg-blue-500 hover:text-white"
-            }`}
-          >
-            {index + 1}
-          </button>
-        ))}
+        <div className="mt-8 flex justify-center items-center gap-2">
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentPage(index + 1)}
+              className={`px-4 py-2 rounded-md border transition ${
+                currentPage === index + 1
+                  ? "bg-gray-300 text-gray-700 font-bold"
+                  : "bg-white border-gray-300 hover:bg-blue-500 hover:text-white"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

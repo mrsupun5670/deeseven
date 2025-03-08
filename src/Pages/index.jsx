@@ -8,9 +8,11 @@ import Header from "../Components/Header";
 import Hero from "../Components/Hero";
 import MobileCarousal from "../Components/MobileCarousal";
 import BottomNavBar from "../Components/BottomNavBar";
+import Footer from "../Components/Footer";
 
 export default function Index() {
   return (
+    <>
     <div className="bg-gray-200 min-h-screen relative">
       <div className="relative z-0">
         <Header />
@@ -41,5 +43,7 @@ export default function Index() {
       </div>
       <BottomNavBar />
     </div>
+    <Footer />
+    </>
   );
 }
