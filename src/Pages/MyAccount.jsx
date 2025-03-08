@@ -177,8 +177,8 @@ export default function MyAccount() {
               <p>60470</p>
               <div className="flex flex-row gap-2 items-center">
                 <Mail className="w-4 h-4 " />
-                <span>+94 77 201 0 915</span>
-              </div>{" "}
+                <span>supun9402@gmail.com</span>
+              </div>
               <div className="flex flex-row gap-2 items-center">
                 <Phone className="w-4 h-4 " />
                 <span>+94 77 201 0 915</span>
