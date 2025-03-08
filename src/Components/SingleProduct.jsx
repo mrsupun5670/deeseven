@@ -29,8 +29,7 @@ export default function SingleProduct() {
           setProduct(data.data);
           setMainImage(data.data.images[0].image_url);
           setSubImages(data.data.images);
-
-          console.log(data.data);
+          
         } else {
           alert(data.message);
         }
@@ -41,6 +40,7 @@ export default function SingleProduct() {
     fetchProduct();
   },[id]);
 
+  console.log(subImages);
 
   const handleIncrease = () => {
     setQty(qty + 1);
@@ -56,10 +56,6 @@ export default function SingleProduct() {
     setSelectedSize(size);
   };
 
-  //   const breadcrumbPaths = [
-  //     { name: "Gents", link: "/Gents" },
-  //     { name: "Crew Neck T-Shirt", link: "/CrewNeckTshirt" },
-  //   ];
   return (
     <>
       <Header />
@@ -74,41 +70,40 @@ export default function SingleProduct() {
                 className={`w-20 h-20 object-cover cursor-pointer border rounded-md ${
                   mainImage === image ? "border-gray-400" : "border-gray-200"
                 } hover:border-gray-400`}
-                onClick={() => setMainImage(image)}
+                onClick={() => setMainImage(image.image_url)}
               />
             ))}
           </div>
 
-          <div className="flex md:hidden overflow-x-auto space-x-4 scrollbar-hide">
-            {subImages.map((image, index) => {
-              return (
-                <img 
+          <div className="md:flex md:col-span-3 flex justify-center h-full w-full">
+            <img
+              src={mainImage}
+              alt="Product"
+              className="w-full h-full object-contain border border-gray-200 rounded-md"
+            />
+          </div>
+
+          <div className="md:hidden flex gap-2">
+            {subImages.map((image, index) => (
+              <img
                 key={index}
                 src={image.image_url}
                 alt={`Thumbnail ${index + 1}`}
                 className={`w-20 h-20 object-cover cursor-pointer border rounded-md ${
-                  mainImage === image.image_url ? "border-gray-400" : "border-gray-200"
+                  mainImage === image ? "border-gray-400" : "border-gray-200"
                 } hover:border-gray-400`}
-                onClick={() => handleImageClick(image.image_url)}
-                />
-              )
-            })}
+                onClick={() => setMainImage(image.image_url)}
+              />
+            ))}
           </div>
-
-          <div className="hidden md:flex md:col-span-3 flex justify-center">
-            <img
-              src={mainImage}
-              alt="Product"
-              className="w-full h-auto object-contain border border-gray-200 rounded-md"
-            />
-          </div>
+          
         </div>
 
         <div className="max-w-4xl mx-auto p-4 sm:p-6 bg-white shadow-md rounded-lg">
           {/* Breadcrumb */}
           <nav className="flex flex-wrap items-center space-x-2 text-sm mb-3 text-gray-600">
             <span className="hover:text-black">
-              Home / Shop / {product.title}
+              Home / {product.category_name} / {product.title}
             </span>
           </nav>
 
