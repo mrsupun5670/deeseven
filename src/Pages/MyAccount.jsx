@@ -150,7 +150,7 @@ export default function MyAccount() {
                         <td className="px-6 py-4 text-end">
                           <button
                             onClick={() => handleView(order)}
-                            className="px-3 py-1 text-white bg-gray-600 rounded-lg hover:bg-gray-700"
+                            className="px-3 py-1 text-gray-600 text:hover:bg-gray-700"
                           >
                             View
                           </button>
@@ -168,8 +168,8 @@ export default function MyAccount() {
               </table>
             </div>
           )}
-          <div className="flex flex-row w-full mt-10 gap-4">
-            <div className="w-1/2 bg-white border rounded-md p-8">
+          <div className="flex flex-col md:flex-row w-full mt-10 gap-4">
+            <div className="w-full  bg-white border rounded-md p-8">
               <p className="font-bold text-2xl mb-2">Billing Address</p>
               <p>Gangani Products,</p>
               <p>Near Jayanthi School,</p>
@@ -184,7 +184,7 @@ export default function MyAccount() {
                 <span>+94 77 201 0 915</span>
               </div>
             </div>
-            <div className="w-1/2 bg-white border rounded-md p-8">
+            <div className="w-full  bg-white border rounded-md p-8">
               <p className="font-bold text-2xl mb-2">Shipping Address</p>
               <p>Gangani Products,</p>
               <p>Near Jayanthi School,</p>

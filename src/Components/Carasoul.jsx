@@ -29,7 +29,7 @@ function Carasoul() {
         className="absolute inset-0 flex items-center justify-center md:text-[150px] lg:text-[180px] font-bold opacity-20 text-gray-500 -top-1/2 whitespace-nowrap"
       >
         {Array(8)
-          .fill("DEESEVEN")
+          .fill("DEEZEVEN")
           .map((text, index) => (
             <span key={`text1-${index}`} className="mr-4 font-beyonder">
               {text}
@@ -44,7 +44,7 @@ function Carasoul() {
       >
         <span className="mr-4 font-beyonder">R</span>
         {Array(9)
-          .fill("DEESEVEN")
+          .fill("DEEZEVEN")
           .map((text, index) => (
             <span key={`text2-${index}`} className="mr-4 font-beyonder">
               {text}
