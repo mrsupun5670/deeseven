@@ -55,6 +55,7 @@ export default function SingleProduct() {
   const handleSizeClick = (size) => {
     setSelectedSize(size);
   };
+//  console.log(product);
 
   return (
     <>
