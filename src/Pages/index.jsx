@@ -11,8 +11,8 @@ import BottomNavBar from "../Components/BottomNavBar";
 
 export default function Index() {
   return (
-    <div className="bg-gray-200 min-h-screen relative ">
-      <div className="relative p-5 z-0">
+    <div className="bg-gray-200 min-h-screen relative">
+      <div className="relative z-0">
         <Header />
         <Hero />
         <div className="block md:hidden -mx-5 overflow-hidden -mt-9">

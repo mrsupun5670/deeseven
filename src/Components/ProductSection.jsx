@@ -46,7 +46,7 @@ export default function ProductSection({ title }) {
           <div className="relative w-full h-full">
             {/* Product Image */}
             <img
-              src={product.images[0]?.image_url}
+              src={product.images[0]?.image_url || "/images/placeholder.jpg"}
               alt={product.title}
               className="w-full h-full object-cover rounded-lg"
             />
@@ -68,5 +68,4 @@ export default function ProductSection({ title }) {
       </button>
     </section>
   );
-  // 
 }

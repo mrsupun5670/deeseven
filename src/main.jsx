@@ -17,6 +17,7 @@ import Index from "./Pages/index.jsx";
 import MyAccount from "./Pages/MyAccount.jsx";
 import Checkout from "./Pages/Checkout.jsx";
 import CategoryView from "./Pages/CategoryView.jsx";
+import SingleProduct from "./Components/SingleProduct.jsx";
 
 
 createRoot(document.getElementById("root")).render(
@@ -27,6 +28,7 @@ createRoot(document.getElementById("root")).render(
       <Route path="/myaccount" element={<MyAccount />} />
       <Route path="/men" element={<CategoryView />} />
       <Route path="/women" element={<CategoryView />} />
+      <Route path="/product/:id" element={<SingleProduct />} />
 
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashboard />} />
