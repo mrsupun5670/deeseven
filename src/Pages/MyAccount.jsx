@@ -3,6 +3,8 @@ import Header from "../Components/Header";
 import BottomNavBar from "../Components/BottomNavBar";
 import { useState } from "react";
 import OrderItemTable from "../Components/OrderItemTable";
+import { Mail, Phone } from "lucide-react";
+import Footer from "../Components/Footer";
 
 export default function MyAccount() {
   const [orders, setOrders] = useState([
@@ -68,27 +70,31 @@ export default function MyAccount() {
   };
 
   return (
-    <div className="bg-gray-200 min-h-screen relative flex justify-center">
-      <div className="w-full max-w-[1280px]">
+    <div className="bg-gray-200 min-h-screen relative ">
         <div className="relative p-5 z-0">
           <Header />
 
           <div className="flex flex-row">
-            <p className="font-bold text-3xl">
-              {selectedOrder ? `Order Details - ${selectedOrder.id}` : "My Account - Orders"}
+            <p className="font-bold text-2xl">
+              {selectedOrder
+                ? `Order Details - ${selectedOrder.id}`
+                : "My Account - Orders"}
             </p>
           </div>
 
           {selectedOrder ? (
             <div className="mt-10">
-              <button onClick={handleBack} className="mb-4 px-4 py-2 bg-gray-500 text-white rounded-lg">
+              <button
+                onClick={handleBack}
+                className="mb-4 px-4 py-2 bg-gray-500 text-white rounded-lg"
+              >
                 Back to Orders
               </button>
               <OrderItemTable orderItems={orderItems} />
             </div>
           ) : (
             <div className="overflow-x-auto mt-10">
-              <table className="w-full rounded-lg shadow">
+              <table className="w-full border rounded-lg shadow">
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
@@ -162,9 +168,36 @@ export default function MyAccount() {
               </table>
             </div>
           )}
+          <div className="flex flex-row w-full mt-10 gap-4">
+            <div className="w-1/2 bg-white border rounded-md p-8">
+              <p className="font-bold text-2xl mb-2">Billing Address</p>
+              <p>Gangani Products,</p>
+              <p>Near Jayanthi School,</p>
+              <p>Nikaweratiya</p>
+              <p>60470</p>
+              <div className="flex flex-row gap-2 items-center">
+                <Mail className="w-4 h-4 " />
+                <span>+94 77 201 0 915</span>
+              </div>{" "}
+              <div className="flex flex-row gap-2 items-center">
+                <Phone className="w-4 h-4 " />
+                <span>+94 77 201 0 915</span>
+              </div>
+            </div>
+            <div className="w-1/2 bg-white border rounded-md p-8">
+              <p className="font-bold text-2xl mb-2">Shipping Address</p>
+              <p>Gangani Products,</p>
+              <p>Near Jayanthi School,</p>
+              <p>Nikaweratiya</p>
+              <p>60470</p>
+              <div className="flex flex-row gap-2 items-center">
+                <Phone className="w-4 h-4 " />
+                <span>+94 77 201 0 915</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <BottomNavBar />
-      </div>
+        <Footer />
     </div>
   );
 }
