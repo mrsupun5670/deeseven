@@ -6,3 +6,36 @@
 .font-beyonder {
   font-family: 'Beyonders', sans-serif;
 }
+
+.magnifier-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.magnifier-container:hover .main-image {
+  transform: scale(1.5);
+}
+
+.magnifier {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  display: none;
+}
+
+.magnifier-container:hover .magnifier {
+  display: block;
+}

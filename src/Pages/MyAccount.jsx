@@ -5,6 +5,7 @@ import { useState } from "react";
 import OrderItemTable from "../Components/OrderItemTable";
 import { Mail, Phone } from "lucide-react";
 import Footer from "../Components/Footer";
+import { useNavigate } from "react-router";
 
 export default function MyAccount() {
   const [orders, setOrders] = useState([
@@ -48,6 +49,9 @@ export default function MyAccount() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
 
+  const navigate = useNavigate();
+  const user = JSON.parse(sessionStorage.getItem("user"));
+
   const sampleOrderItems = {
     ORD001: [
       { id: 1, title: "T-Shirt", size: "M", qty: 2, price: 2000 },
@@ -69,17 +73,29 @@ export default function MyAccount() {
     setOrderItems([]);
   };
 
+  const logout = () => {
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("userRole")
+    navigate("/");
+  }
+
   return (
     <div className="bg-gray-200 min-h-screen relative ">
         <div className="relative p-5 z-0">
           <Header />
 
-          <div className="flex flex-row">
+          <div className="flex flex-row justify-between items-center">
             <p className="font-bold text-2xl">
               {selectedOrder
                 ? `Order Details - ${selectedOrder.id}`
                 : "My Account - Orders"}
             </p>
+            <button
+                onClick={logout}
+                className="mb-4 px-4 py-2 bg-red-500 text-white rounded-lg"
+              >
+                Logout
+              </button>
           </div>
 
           {selectedOrder ? (

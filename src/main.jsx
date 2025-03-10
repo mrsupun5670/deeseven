@@ -18,46 +18,49 @@ import MyAccount from "./Pages/MyAccount.jsx";
 import Checkout from "./Pages/Checkout.jsx";
 import CategoryView from "./Pages/CategoryView.jsx";
 import SingleProduct from "./Components/SingleProduct.jsx";
-
+import CartProvider from "./context/CartProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Index />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/myaccount" element={<MyAccount />} />
-      <Route path="/men" element={<CategoryView title="Men" />} />
-      <Route path="/women" element={<CategoryView title="Women" />} />
-      <Route path="/product/:id" element={<SingleProduct />} />
-      <Route path="/account" element={<MyAccount />} />
+  <CartProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="*" element={<div>404 - Page Not Found</div>} />
+        <Route path="/" element={<Index />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/myaccount" element={<MyAccount />} />
+        <Route path="/men" element={<CategoryView title="Men" />} />
+        <Route path="/women" element={<CategoryView title="Women" />} />
+        <Route path="/product/:id" element={<SingleProduct />} />
+        <Route path="/account" element={<MyAccount />} />
 
-      <Route path="/admin" element={<AdminLayout />}>
-        <Route index element={<Dashboard />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        
-        <Route path="orders" element={<OrdersList />} />
-        
-        <Route path="products">
-          <Route index element={<ProductsList />} />
-          <Route path="view" element={<ProductsList />} />
-          <Route path="add" element={<ProductAdd />} />
-          <Route path="edit" element={<ProductEdit />} />
-          <Route path="categories" element={<ProductCategories />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+
+          <Route path="orders" element={<OrdersList />} />
+
+          <Route path="products">
+            <Route index element={<ProductsList />} />
+            <Route path="view" element={<ProductsList />} />
+            <Route path="add" element={<ProductAdd />} />
+            <Route path="edit" element={<ProductEdit />} />
+            <Route path="categories" element={<ProductCategories />} />
+          </Route>
+
+          <Route path="customers" element={<CustomersList />} />
+
+          <Route path="sales">
+            <Route index element={<SalesOverview />} />
+            <Route path="overview" element={<SalesOverview />} />
+            <Route path="reports" element={<SalesReports />} />
+          </Route>
+
+          <Route path="payments">
+            <Route index element={<TransactionHistory />} />
+            <Route path="history" element={<TransactionHistory />} />
+          </Route>
         </Route>
-        
-        <Route path="customers" element={<CustomersList />} />
-        
-        <Route path="sales">
-          <Route index element={<SalesOverview />} />
-          <Route path="overview" element={<SalesOverview />} />
-          <Route path="reports" element={<SalesReports />} />
-        </Route>
-        
-        <Route path="payments">
-          <Route index element={<TransactionHistory />} />
-          <Route path="history" element={<TransactionHistory />} />
-        </Route>
-      </Route>
-    </Routes>
-  </BrowserRouter>
+      </Routes>
+    </BrowserRouter>
+  </CartProvider>
 );

@@ -1,51 +1,26 @@
-import React, {useState} from "react";
+import React from "react";
 import { X, Minus, Plus, Share } from "lucide-react";
+import { useCart } from "../context/CartProvider";
 
 function CartComponent({ onClose }) {
-
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'Fearless Tee - Unisex',
-      variant: 'Jet Black / XS',
-      price: 3950,
-      quantity: 1,
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQ6FMldDBgU1fzSw1UzJCy4wYdOBZNfVhMwA&s'
-    },
-    {
-      id: 2,
-      name: 'Globe Stride Baby Tee',
-      variant: 'Sheer White / S',
-      price: 4450,
-      quantity: 1,
-      image: 'https://rough.lk/wp-content/uploads/2023/11/0338-Navy-Blue-M.jpg'
-    },
-    {
-      id: 3,
-      name: 'Astro Tee V2 - Oversize - Unisex',
-      variant: 'Alpine Green / XS',
-      price: 3950,
-      quantity: 2,
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcScJNbz5buuBAKcvcQAJz9d3db7Nf0qXnPqhQ&s'
-    }
-  ]);
+  const { cart, dispatch } = useCart();
 
   const updateQuantity = (id, change) => {
-    setCartItems(cartItems.map(item => {
-      if (item.id === id) {
-        const newQuantity = Math.max(1, item.quantity + change);
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
-    }));
+    if(change < 1) return;
+    dispatch({
+      type: "UPDATE_QUANTITY",
+      payload: { id, qty: change },
+    });
   };
 
   const removeItem = (id) => {
-    setCartItems(cartItems.filter(item => item.id !== id));
+    dispatch({ type: "REMOVE_FROM_CART", payload: id });
   };
 
+  const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
   return (
-    <div className="fixed top-0 right-0 bottom-24 md:bottom-0  w-1/4 min-w-[350px]  bg-white shadow-lg flex flex-col">
+    <div className="fixed top-0 right-0 bottom-24 md:bottom-0 w-1/4 min-w-[350px] bg-white shadow-lg flex flex-col">
       {/* Header */}
       <div className="p-4 border-b flex justify-between items-center">
         <div className="flex items-center gap-3">
@@ -66,21 +41,23 @@ function CartComponent({ onClose }) {
 
       {/* Cart Items */}
       <div className="flex-1 overflow-auto p-4 space-y-4">
-        {cartItems.map((item) => (
+        {cart.map((item) => (
           <div key={item.id} className="flex gap-4">
-            <img 
+            <img
               src={item.image}
-              alt={item.name}
+              alt={item.title}
               className="w-24 h-24 object-cover rounded"
             />
             <div className="flex-1">
               <div className="flex justify-between">
                 <div>
-                  <h3 className="font-medium">{item.name}</h3>
-                  <p className="text-gray-500 text-sm text-start">{item.variant}</p>
-                  <p className="mt-1 text-start">LKR {item.price.toLocaleString()}</p>
+                  <h3 className="font-medium">{item.title}</h3>
+                  <p className="text-gray-500 text-sm text-start">{item.size}</p>
+                  <p className="mt-1 text-start">LKR {(item.price * item.qty).toLocaleString()}
+
+                  </p>
                 </div>
-                <button 
+                <button
                   className="p-1 hover:bg-gray-100 rounded-full h-fit"
                   onClick={() => removeItem(item.id)}
                 >
@@ -88,16 +65,16 @@ function CartComponent({ onClose }) {
                 </button>
               </div>
               <div className="flex gap-2 mt-2">
-                <button 
+                <button
                   className="p-1 hover:bg-gray-100 rounded-full"
-                  onClick={() => updateQuantity(item.id, -1)}
+                  onClick={() => updateQuantity(item.id, item.qty - 1)}
                 >
                   <Minus className="w-4 h-4" />
                 </button>
-                <span>{item.quantity}</span>
-                <button 
+                <span>{item.qty}</span>
+                <button
                   className="p-1 hover:bg-gray-100 rounded-full"
-                  onClick={() => updateQuantity(item.id, 1)}
+                  onClick={() => updateQuantity(item.id, item.qty + 1)}
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -106,16 +83,18 @@ function CartComponent({ onClose }) {
           </div>
         ))}
       </div>
+
       {/* Total and Checkout */}
       <div className="p-4 border-t space-y-4">
         <div className="flex justify-between">
           <span>Total</span>
-          <span className="font-medium">LKR 1000.00</span>
+          <span className="font-medium">LKR {total.toLocaleString()}</span>
         </div>
         <button className="w-full bg-black text-white py-3 rounded font-medium hover:bg-gray-800">
           CHECKOUT
         </button>
-        <button className="w-full py-3 text-center hover:bg-gray-100 rounded">
+        <button className="w-full py-3 text-center hover:bg-gray-100 rounded"
+        onClick={onClose}>
           CONTINUE SHOPPING
         </button>
       </div>
