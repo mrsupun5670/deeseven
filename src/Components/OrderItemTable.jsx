@@ -1,7 +1,7 @@
 import React from "react";
 
 export default function OrderItemTable({ orderItems }) {
-  // Check if orderItems is defined and is an array
+
   const validOrderItems = Array.isArray(orderItems) ? orderItems : [];
 
   return (

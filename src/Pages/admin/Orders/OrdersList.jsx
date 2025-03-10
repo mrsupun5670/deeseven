@@ -26,7 +26,7 @@ const OrdersList = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.response === true) {
-            setOrders(data.orders); // Set orders from API
+            setOrders(data.orders); 
           } else {
             alert(data.message);
             if (data.message === "Unauthorized") {
@@ -46,10 +46,38 @@ const OrdersList = () => {
     fetchOrders();
   }, []);
 
+  const fetchOrderItems = async (orderId) => {
+    try {
+      const response = await fetch(`${APIURL}/GetOrderItemsController.php?order_id=${orderId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.response === true) {
+          console.log(data.message);
+          console.log(data.items);
+
+          setOrderItems(data.items);
+
+        } else {
+          alert(data.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching order items:", error);
+      alert("Failed to load order items. Please try again later.");
+    }
+  };
+
   // Function to handle "View" button click
   const handleView = (order) => {
     setSelectedOrder(order);
-    setOrderItems(order.items); // Set order items for the selected order
+    fetchOrderItems(order.id); // Fetch order items for the selected order
     setIsModalOpen(true);
   };
 
@@ -150,20 +178,14 @@ const OrdersList = () => {
         </table>
       </div>
 
-      {/* Order Details Modal */}
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full">
             <h2 className="text-xl font-bold mb-4">Order Number: {selectedOrder.number}</h2>
-            <div>
-              <h3 className="font-semibold mb-2">Items:</h3>
-              <OrderItemTable items={orderItems} /> 
-            </div>
-            <div className="flex justify-between mt-4">
-              <button onClick={handleClose} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                Close
-              </button>
-            </div>
+            <OrderItemTable items={orderItems} />
+            <button onClick={handleClose} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+              Close
+            </button>
           </div>
         </div>
       )}
