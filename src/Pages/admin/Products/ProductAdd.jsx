@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowLeft, Minus, Plus, Upload, X } from "lucide-react";
+import {Plus, Upload, X } from "lucide-react";
 
 const ProductAdd = () => {
   const [quantity, setQuantity] = useState(1);
@@ -75,7 +75,7 @@ const ProductAdd = () => {
   };
 
   return (
-    <div className="w-full mx-auto p-6 space-y-6">
+    <div className="w-full mx-auto  md:p-6 space-y-6">
       <div className="flex items-center space-x-4 mb-6">
         <h1 className="text-2xl font-bold">Add New Product</h1>
       </div>
