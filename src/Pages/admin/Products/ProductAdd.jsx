@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {Plus, Upload, X } from "lucide-react";
 
 const ProductAdd = () => {
-  const [quantity, setQuantity] = useState(1);
   const [images, setImages] = useState(Array(3).fill(null));
   const [sizes, setSizes] = useState([
     { size: "XS", quantity: 0 },
@@ -12,7 +11,7 @@ const ProductAdd = () => {
     { size: "XL", quantity: 0 },
     { size: "XXL", quantity: 0 },
     { size: "XXXL", quantity: 0 },
-    { size: "XXXXXL", quantity: 0 },
+    { size: "XXXXL", quantity: 0 },
   ]);
 
   const [fabricDetails, setFabricDetails] = useState([{ key: Date.now(), value: "" }]);
@@ -29,7 +28,7 @@ const ProductAdd = () => {
       }));
       setImages(newImages);
     } else {
-      alert("Please select exactly 3 images.");
+      alert("Please select 3 images.");
     }
   };
 
@@ -37,21 +36,6 @@ const ProductAdd = () => {
     const newImages = [...images];
     newImages[index] = null;
     setImages(newImages);
-  };
-
-  const handleQuantityChange = (e) => {
-    const value = parseInt(e.target.value) || 0;
-    if (value >= 0) {
-      setQuantity(value);
-    }
-  };
-
-  const incrementQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const decrementQuantity = () => {
-    setQuantity((prev) => (prev > 0 ? prev - 1 : 0));
   };
 
   const handleAddField = (setFunction) => {
@@ -75,7 +59,7 @@ const ProductAdd = () => {
   };
 
   return (
-    <div className="w-full mx-auto  md:p-6 space-y-6">
+    <div className="w-full mx-auto   space-y-6">
       <div className="flex items-center space-x-4 mb-6">
         <h1 className="text-2xl font-bold">Add New Product</h1>
       </div>
