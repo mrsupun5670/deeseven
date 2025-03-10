@@ -1,8 +1,8 @@
 import React from "react";
 
-export default function OrderItemTable({ orderItems }) {
+export default function OrderItemTable({ items }) {
 
-  const validOrderItems = Array.isArray(orderItems) ? orderItems : [];
+  const validOrderItems = Array.isArray(items) ? items : [];
 
   return (
     <div>

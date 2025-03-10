@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Printer } from "lucide-react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import OrderItemTable from "../../../Components/OrderItemTable"; // Import OrderItemTable component
+import OrderItemTable from "../../../Components/OrderItemTable";
 
 const OrdersList = () => {
   const APIURL = import.meta.env.VITE_API_URL;
 
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [orderItems, setOrderItems] = useState([]); // Store order items here
+  const [orderItems, setOrderItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const modalRef = useRef(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -26,7 +27,7 @@ const OrdersList = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.response === true) {
-            setOrders(data.orders); 
+            setOrders(data.orders);
           } else {
             alert(data.message);
             if (data.message === "Unauthorized") {
@@ -59,11 +60,7 @@ const OrdersList = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.response === true) {
-          console.log(data.message);
-          console.log(data.items);
-
           setOrderItems(data.items);
-
         } else {
           alert(data.message);
         }
@@ -74,21 +71,36 @@ const OrdersList = () => {
     }
   };
 
-  // Function to handle "View" button click
   const handleView = (order) => {
     setSelectedOrder(order);
     fetchOrderItems(order.id); // Fetch order items for the selected order
     setIsModalOpen(true);
   };
 
-  // Function to close modal
   const handleClose = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
-    setOrderItems([]); // Clear order items when closing the modal
+    setOrderItems([]); 
   };
 
-  // Function to print orders list as a PDF
+  const handleOutsideClick = (event) => {
+    if (modalRef.current && !modalRef.current.contains(event.target)) {
+      handleClose();
+    }
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    } else {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isModalOpen]);
+
   const printOrders = () => {
     const doc = new jsPDF();
     doc.setFontSize(16);
@@ -96,7 +108,7 @@ const OrdersList = () => {
 
     const tableColumn = ["Order ID", "Customer", "Status", "Total (Rs.)", "Date"];
     const tableRows = orders.map((order) => [
-      order.id,
+      "IN"+order.number,
       order.customer,
       order.status,
       order.total,
@@ -180,7 +192,7 @@ const OrdersList = () => {
 
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full">
+          <div ref={modalRef} className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full">
             <h2 className="text-xl font-bold mb-4">Order Number: {selectedOrder.number}</h2>
             <OrderItemTable items={orderItems} />
             <button onClick={handleClose} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
