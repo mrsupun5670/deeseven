@@ -11,6 +11,24 @@ const OrdersList = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
+  const [trackingNumber, setTrackingNumber] = useState("");
+  const [trackingLink, setTrackingLink] = useState("");
+  const [newStatus, setNewStatus] = useState("");
+  const [selectedCourier, setSelectedCourier] = useState("");
+  const couriers = [
+    { id: 1, name: "Sri Lanka Post", trackingLink: "https://www.srilankapost.lk/tracking" },
+    { id: 2, name: "Prompt Express", trackingLink: "https://www.prompt.lk/tracking" },
+    { id: 3, name: "Domex", trackingLink: "https://www.domex.lk/tracking" },
+    { id: 4, name: "Pronto Lanka", trackingLink: "https://www.pronto.lk/tracking" },
+    { id: 5, name: "Certis Lanka", trackingLink: "https://www.certis.lk/tracking" },
+    { id: 6, name: "Parcel.lk", trackingLink: "https://www.parcel.lk/tracking" },
+    { id: 7, name: "UPS", trackingLink: "https://www.ups.com/tracking" },
+    { id: 8, name: "DHL", trackingLink: "https://www.dhl.com/tracking" },
+    { id: 9, name: "FedEx", trackingLink: "https://www.fedex.com/tracking" },
+    { id: 10, name: "Koombiyo Delivery", trackingLink: "https://www.koombiyo.lk/tracking" },
+    { id: 11, name: "Custom", trackingLink: "" },
+  ];
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -20,7 +38,7 @@ const OrdersList = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`,
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
           },
         });
 
@@ -49,13 +67,16 @@ const OrdersList = () => {
 
   const fetchOrderItems = async (orderId) => {
     try {
-      const response = await fetch(`${APIURL}/GetOrderItemsController.php?order_id=${orderId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`,
-        },
-      });
+      const response = await fetch(
+        `${APIURL}/GetOrderItemsController.php?order_id=${orderId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -73,14 +94,75 @@ const OrdersList = () => {
 
   const handleView = (order) => {
     setSelectedOrder(order);
-    fetchOrderItems(order.id); // Fetch order items for the selected order
+    fetchOrderItems(order.id);
     setIsModalOpen(true);
   };
 
   const handleClose = () => {
     setIsModalOpen(false);
+    setIsStatusModalOpen(false);
     setSelectedOrder(null);
-    setOrderItems([]); 
+    setOrderItems([]);
+    setTrackingNumber("");
+    setTrackingLink("");
+    setNewStatus("");
+    setSelectedCourier("");
+  };
+
+  const handleStatusClick = (order) => {
+    setSelectedOrder(order);
+    setTrackingNumber(order.trackingNumber || "");
+    setTrackingLink(order.trackingLink || "");
+    setNewStatus(order.status);
+    setSelectedCourier(order.courier || "");
+    setIsStatusModalOpen(true);
+  };
+
+  const handleStatusUpdate = async () => {
+    try {
+      const response = await fetch(
+        `${APIURL}/UpdateOrderStatusController.php`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify({
+            orderId: selectedOrder.id,
+            status: newStatus,
+            trackingNumber,
+            trackingLink,
+            courier: selectedCourier,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.response === true) {
+          alert("Order status and tracking information updated successfully.");
+          handleClose();
+          const updatedOrders = orders.map((order) =>
+            order.id === selectedOrder.id
+              ? {
+                  ...order,
+                  status: newStatus,
+                  trackingNumber,
+                  trackingLink,
+                  courier: selectedCourier,
+                }
+              : order
+          );
+          setOrders(updatedOrders);
+        } else {
+          alert(data.message);
+        }
+      }
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      alert("Failed to update order status. Please try again later.");
+    }
   };
 
   const handleOutsideClick = (event) => {
@@ -90,7 +172,7 @@ const OrdersList = () => {
   };
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (isModalOpen || isStatusModalOpen) {
       document.addEventListener("mousedown", handleOutsideClick);
     } else {
       document.removeEventListener("mousedown", handleOutsideClick);
@@ -99,16 +181,22 @@ const OrdersList = () => {
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [isModalOpen]);
+  }, [isModalOpen, isStatusModalOpen]);
 
   const printOrders = () => {
     const doc = new jsPDF();
     doc.setFontSize(16);
     doc.text("Orders Report", 14, 15);
 
-    const tableColumn = ["Order ID", "Customer", "Status", "Total (Rs.)", "Date"];
+    const tableColumn = [
+      "Order ID",
+      "Customer",
+      "Status",
+      "Total (Rs.)",
+      "Date",
+    ];
     const tableRows = orders.map((order) => [
-      "IN"+order.number,
+      "IN" + order.number,
       order.customer,
       order.status,
       order.total,
@@ -142,12 +230,24 @@ const OrdersList = () => {
         <table className="w-full bg-white rounded-lg shadow">
           <thead>
             <tr className="bg-gray-50">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total (Rs.)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Order ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Customer
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Status
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Total (Rs.)
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Date
+              </th>
+              <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
@@ -158,11 +258,28 @@ const OrdersList = () => {
                   <td className="px-6 py-4">{order.customer}</td>
                   <td className="px-6 py-4">
                     <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full 
-                        ${order.status === "Paid" ? "bg-yellow-100 text-yellow-800" : ""}
-                        ${order.status === "Processing" ? "bg-green-100 text-green-800" : ""}
-                        ${order.status === "Shipped" ? "bg-blue-100 text-blue-800" : ""}
-                        ${order.status === "Delivered" ? "bg-gray-100 text-gray-800" : ""}`}
+                      className={`px-2 py-1 text-xs font-semibold rounded-full cursor-pointer 
+                        ${
+                          order.status === "Paid"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : ""
+                        }
+                        ${
+                          order.status === "Processing"
+                            ? "bg-green-100 text-green-800"
+                            : ""
+                        }
+                        ${
+                          order.status === "Shipped"
+                            ? "bg-blue-100 text-blue-800"
+                            : ""
+                        }
+                        ${
+                          order.status === "Delivered"
+                            ? "bg-gray-100 text-gray-800"
+                            : ""
+                        }`}
+                      onClick={() => handleStatusClick(order)}
                     >
                       {order.status}
                     </span>
@@ -192,11 +309,116 @@ const OrdersList = () => {
 
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
-          <div ref={modalRef} className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full">
-            <h2 className="text-xl font-bold mb-4">Order Number: {selectedOrder.number}</h2>
+          <div
+            ref={modalRef}
+            className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full"
+          >
+            <h2 className="text-xl font-bold mb-4">
+              Order Number: {selectedOrder.number}
+            </h2>
             <OrderItemTable items={orderItems} />
-            <button onClick={handleClose} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+            <button
+              onClick={handleClose}
+              className="px-4 py-2 mt-4 bg-red-600 text-white rounded-md hover:bg-red-700"
+            >
               Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {isStatusModalOpen && selectedOrder && (
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+          <div
+            ref={modalRef}
+            className="bg-white p-6 rounded-lg shadow-lg max-w-xl w-full"
+          >
+            <h2 className="text-xl font-bold mb-4">Update Order Status</h2>
+            <div className="mb-4">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="status"
+              >
+                Status
+              </label>
+              <select
+                id="status"
+                value={newStatus}
+                onChange={(e) => setNewStatus(e.target.value)}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              >
+                <option value="Paid">Paid</option>
+                <option value="Processing">Processing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="courier"
+              >
+                Courier Service
+              </label>
+              <select
+                id="courier"
+                value={selectedCourier}
+                onChange={(e) => {
+                  setSelectedCourier(e.target.value);
+                  const selectedCourier = couriers.find(courier => courier.name === e.target.value);
+                  setTrackingLink(selectedCourier ? selectedCourier.trackingLink : "");
+                }}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              >
+                <option value="">Select Courier</option>
+                {couriers.map((courier) => (
+                  <option key={courier.id} value={courier.name}>
+                    {courier.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="trackingNumber"
+              >
+                Tracking Number
+              </label>
+              <input
+                type="text"
+                id="trackingNumber"
+                value={trackingNumber}
+                onChange={(e) => setTrackingNumber(e.target.value)}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                className="block text-gray-700 text-sm font-bold mb-2"
+                htmlFor="trackingLink"
+              >
+                Tracking Link
+              </label>
+              <input
+                type="text"
+                id="trackingLink"
+                value={trackingLink}
+                onChange={(e) => setTrackingLink(e.target.value)}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+            <button
+              onClick={handleStatusUpdate}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+            >
+              Update
+            </button>
+            <button
+              onClick={handleClose}
+              className="px-4 py-2 ml-4 bg-red-600 text-white rounded-md hover:bg-red-700"
+            >
+              Cancel
             </button>
           </div>
         </div>
