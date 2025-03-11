@@ -1,23 +1,85 @@
-import React, { useState } from "react";
-import {Plus, Upload, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Plus, Upload, X } from "lucide-react";
 
 const ProductAdd = () => {
+  const APIURL = import.meta.env.VITE_API_URL;
+
   const [images, setImages] = useState(Array(3).fill(null));
-  const [sizes, setSizes] = useState([
-    { size: "XS", quantity: 0 },
-    { size: "S", quantity: 0 },
-    { size: "M", quantity: 0 },
-    { size: "L", quantity: 0 },
-    { size: "XL", quantity: 0 },
-    { size: "XXL", quantity: 0 },
-    { size: "XXXL", quantity: 0 },
-    { size: "XXXXL", quantity: 0 },
-  ]);
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [sizes, setSizes] = useState([]);
 
   const [fabricDetails, setFabricDetails] = useState([{ key: Date.now(), value: "" }]);
   const [note, setNote] = useState([{ key: Date.now(), value: "" }]);
   const [fabricCare, setFabricCare] = useState([{ key: Date.now(), value: "" }]);
   const [addOnFeatures, setAddOnFeatures] = useState([{ key: Date.now(), value: "" }]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(`${APIURL}/LoadAddProductUIData.php`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`,
+        },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.response === true) {
+            setCategories(data.categories);
+            setSubCategories(data.sub_categories);
+          } else {
+            alert(data.message);
+            if (data.message === "Unauthorized") {
+              sessionStorage.removeItem("authToken");
+              sessionStorage.removeItem("userRole");
+              sessionStorage.removeItem("admin");
+              window.location.href = "/";
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        alert("Failed to load categories. Please try again later.");
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    if (selectedSubCategory) {
+      const fetchSizesBySubCategory = async () => {
+        try {
+          const response = await fetch(`${APIURL}/GetSizeBySubCategory.php`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`,
+            },
+            body: JSON.stringify({ sub_category_id: selectedSubCategory }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (data.response === true) {
+              setSizes(data.sizes);
+            } else {
+              alert(data.message);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching sizes:", error);
+          alert("Failed to load sizes. Please try again later.");
+        }
+      };
+
+      fetchSizesBySubCategory();
+    }
+  }, [selectedSubCategory]);
 
   const handleImageChange = (e) => {
     const files = e.target.files;
@@ -58,8 +120,12 @@ const ProductAdd = () => {
     setSizes(newSizes);
   };
 
+  const handleSubCategoryChange = (e) => {
+    setSelectedSubCategory(e.target.value);
+  };
+
   return (
-    <div className="w-full mx-auto   space-y-6">
+    <div className="w-full mx-auto space-y-6">
       <div className="flex items-center space-x-4 mb-6">
         <h1 className="text-2xl font-bold">Add New Product</h1>
       </div>
@@ -204,19 +270,26 @@ const ProductAdd = () => {
               <label className="text-sm font-medium">Category</label>
               <select className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
                 <option value="">Select category</option>
-                <option value="red">Men</option>
-                <option value="blue">Women</option>
-                <option value="green">Unisex</option>
+                {categories.map((category) => (
+                  <option key={category.category_id} value={category.category_id}>
+                    {category.category_name}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium">Sub Category</label>
-              <select className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
-                <option value="">Select category</option>
-                <option value="red">Trouser</option>
-                <option value="blue">Pants</option>
-                <option value="green">Shorts</option>
+              <select
+                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                onChange={handleSubCategoryChange}
+              >
+                <option value="">Select sub-category</option>
+                {subCategories.map((subCategory) => (
+                  <option key={subCategory.sub_category_id} value={subCategory.sub_category_id}>
+                    {subCategory.sub_category_name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="space-y-2">
@@ -235,7 +308,7 @@ const ProductAdd = () => {
                 <div key={index} className="flex items-center space-x-2">
                   <input
                     type="text"
-                    value={size.size}
+                    value={size.size_name}
                     onChange={(e) => handleSizeQuantityChange(index, 'size', e.target.value)}
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     disabled
@@ -243,7 +316,7 @@ const ProductAdd = () => {
                   <input
                     type="number"
                     min="0"
-                    value={size.quantity}
+                    value="0"
                     onChange={(e) => handleSizeQuantityChange(index, 'quantity', e.target.value)}
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-center"
                   />
