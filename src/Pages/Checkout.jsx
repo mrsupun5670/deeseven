@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OrderDetails from "../Components/OrderDetails";
 import BillingDetails from "../Components/BillingDetails";
 import ShippingDetails from "../Components/ShippingDetails";
@@ -6,6 +6,40 @@ import logo from "../assets/logo.png";
 
 export default function Checkout() {
   const [useBillingForShipping, setUseBillingForShipping] = useState(true);
+
+ useEffect(() => {
+    const fetchProducts = async () => {
+      const user = JSON.parse(sessionStorage.getItem("user"));
+
+      console.log(user);
+      // try {
+      //   const response = await fetch(`${APIURL}/GetCheckoutDataController.php`, {
+      //     method: "GET",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //   });
+
+      //   if (response.ok) {
+      //     const data = await response.json();
+      //     if (data.response) {
+      //       setProducts(data.products);
+      //     } else {
+      //       alert(data.message);
+      //       if (data.message === "Unauthorized") {
+      //         sessionStorage.clear();
+      //         window.location.href = "/";
+      //       }
+      //     }
+      //   }
+      // } catch (error) {
+      //   console.error("Error fetching products:", error);
+      //   alert("Failed to load products. Please try again later.");
+      // }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="p-8 flex justify-center">
