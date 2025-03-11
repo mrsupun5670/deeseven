@@ -6,6 +6,7 @@ import OrderItemTable from "../Components/OrderItemTable";
 import { Mail, Phone } from "lucide-react";
 import Footer from "../Components/Footer";
 import { useNavigate } from "react-router";
+import { useCart } from "../context/CartProvider";
 
 export default function MyAccount() {
   const [orders, setOrders] = useState([
@@ -48,6 +49,7 @@ export default function MyAccount() {
 
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [orderItems, setOrderItems] = useState([]);
+  const {dispatch} = useCart();
 
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem("user"));
@@ -76,6 +78,16 @@ export default function MyAccount() {
   const logout = () => {
     sessionStorage.removeItem("user");
     sessionStorage.removeItem("userRole")
+    sessionStorage.removeItem("authToken")
+    sessionStorage.removeItem("cart")
+
+    dispatch(
+      {
+        type: "CLEAR_CART",
+        payload: null
+      }
+    )
+
     navigate("/");
   }
 
