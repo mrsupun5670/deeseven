@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import Input from "../Components/Input";
 import SocialButton from "../Components/SocialButton";
 import model from "../assets/model.webp";
 import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { useNavigate } from "react-router";
+import { toast } from "react-toastify";
 
 function LoginForm({ onClose, onSignUp }) {
   const APIURL = import.meta.env.VITE_API_URL;
@@ -12,8 +13,40 @@ function LoginForm({ onClose, onSignUp }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
+  const [userID, setUserID] = useState(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    syncSessionCart(userID);
+  }, [userID])
+
+  const syncSessionCart = async (id) => {
+    console.log(id);
+    
+    const cart = JSON.parse(sessionStorage.getItem("cart"));
+
+    if (cart) {
+      try {
+        const cartWithID = cart.map((item) => ({...item, emailID: userID}))
+        console.log("sync session cart");
+        console.log("cart: ", cartWithID);
+        
+        const response = await fetch(`${APIURL}/fetchCartItems.php`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(cartWithID)
+        });
+        const data = response.json();
+        console.log(data);
+        
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      }
+    }
+  };
 
   const loginUser = async (email, password) => {
     const response = await fetch(`${APIURL}/SigninController.php`, {
@@ -27,14 +60,15 @@ function LoginForm({ onClose, onSignUp }) {
     if (response.ok && response.status == 200) {
       const data = await response.json();
 
-      sessionStorage.setItem("authToken", data.token)
+      sessionStorage.setItem("authToken", data.token);
 
       if (data.response == true && data.role == "customer") {
         sessionStorage.setItem("userRole", "customer");
         sessionStorage.setItem("user", JSON.stringify(data.user));
-        navigate(0);
-        console.log("success");
+        setUserID(data.user.id)
+        console.log(data.user.id);
         
+        // navigate(0);
       } else if (data.response == true && data.role == "admin") {
         sessionStorage.setItem("userRole", "admin");
         sessionStorage.setItem("admin", JSON.stringify(data.user));
@@ -61,6 +95,7 @@ function LoginForm({ onClose, onSignUp }) {
       loginUser(email, password);
     }
   };
+
   return (
     <div className="bg-white rounded-3xl items-center shadow-lg overflow-hidden max-w-4xl w-full flex">
       {/* Left Side - Form */}
