@@ -9,14 +9,15 @@ import BottomNavBar from "./BottomNavBar";
 import "../global.css";
 import ProductImage from "./ProductImage";
 import { useCart } from "../context/CartProvider";
-import { ToastContainer ,toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { use } from "react";
 // import Breadcrumb from "./Breadcrumb";
 
 export default function SingleProduct() {
   const APIURL = import.meta.env.VITE_API_URL;
 
-  const {cart, dispatch} = useCart();
+  const { cart, dispatch } = useCart();
   const [product, setProduct] = useState({});
   const [mainImage, setMainImage] = useState("");
   const [qty, setQty] = useState(1);
@@ -40,7 +41,6 @@ export default function SingleProduct() {
           setProduct(data.data);
           setMainImage(data.data.images[0].image_url);
           setSubImages(data.data.images);
-          setMaxQty(data.data.qty);
         } else {
           alert(data.message);
           setLoading(false);
@@ -54,32 +54,46 @@ export default function SingleProduct() {
     fetchProduct();
   }, [id]);
 
+
   const handleIncrease = () => {
-    if (qty < maxQty) {
-      setQty(qty + 1);
+    if (selectedSize !== "") {
+      if (qty < maxQty) {
+        setQty(qty + 1);
+      }
+    } else {
+      toast.error("Please select a size", { theme: "dark" });
     }
   };
 
   const handleDecrease = () => {
-    if (qty > 1) {
-      setQty(qty - 1);
+    if (selectedSize !== "") {
+      if (qty > 1) {
+        setQty(qty - 1);
+      }
+    } else {
+      toast.error("Please select a size", { theme: "dark" });
     }
   };
 
-  const handleSizeClick = (size) => {
+  const handleSizeClick = (size, qty) => {
     setSelectedSize(size);
+    // setQty(qty);
+    setMaxQty(qty);
+    setIsAddToCartClicked(false);
   };
 
   const addToCart = () => {
     setIsAddToCartClicked(true);
     if (selectedSize === "") {
-      toast.error("Please select a size", {theme: "dark"});
+      toast.error("Please select a size", { theme: "dark" });
       return;
     }
-    
-    const exsistingItem = cart.find((item) => item.id === product.product_id);
-    if(exsistingItem) {
-      toast.info("Item already in cart", {theme: "colored"});
+
+    const exsistingItem = cart.find(
+      (item) => item.id === product.product_id && item.size === selectedSize
+    );
+    if (exsistingItem) {
+      toast.info("Item already in cart", { theme: "colored" });
       return;
     }
 
@@ -93,10 +107,12 @@ export default function SingleProduct() {
         qty: qty,
         image: mainImage,
       },
-    })
+    });
 
-    toast.success("Item added to cart", {theme: "light"});
-  }
+    toast.success("Item added to cart", { theme: "light" });
+  };
+
+  // console.log(product);
 
   return (
     <>
@@ -129,7 +145,11 @@ export default function SingleProduct() {
             </div>
 
             <div className="md:flex md:col-span-3 flex justify-center h-[500px] md:h-[700px] w-full p-6 image-container">
-              <ProductImage mainImage={mainImage} product={product} className="object-contain" />
+              <ProductImage
+                mainImage={mainImage}
+                product={product}
+                className="object-contain"
+              />
             </div>
 
             <div className="md:hidden flex gap-2 p-6">
@@ -228,7 +248,9 @@ export default function SingleProduct() {
                     return (
                       <button
                         key={index}
-                        onClick={() => handleSizeClick(size.size_name)}
+                        onClick={() =>
+                          handleSizeClick(size.size_name, size.qty)
+                        }
                         className={`border rounded-lg px-4 py-2 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400 ${
                           selectedSize === size.size_name
                             ? "bg-gray-400 text-white"
@@ -242,7 +264,9 @@ export default function SingleProduct() {
                 </div>
               </div>
               <span className="text-red-600 text-sm">
-                {addToCartClicked && selectedSize === "" ? "Please select a size" : ""}
+                {addToCartClicked && selectedSize === ""
+                  ? "Please select a size"
+                  : ""}
               </span>
 
               <div className="w-full gap-2 flex items-center">
@@ -262,7 +286,10 @@ export default function SingleProduct() {
               </div>
 
               <div className="w-full flex gap-4">
-                <button className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto" onClick={addToCart}>
+                <button
+                  className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
+                  onClick={addToCart}
+                >
                   ADD TO CART
                 </button>
                 <ToastContainer />

@@ -21,6 +21,15 @@ function NavBar() {
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  const popupRef = useRef(null);
+
+  const handleOutsideClick = (e) => {
+    if (popupRef.current && !popupRef.current.contains(e.target)) {
+      setIsCartOpen(false);
+      setIsSignInOpen(false);
+      setIsSignUpOpen(false);
+    }
+  };
 
   const handleCartClick = () => {
     setIsCartOpen(true);
@@ -72,6 +81,11 @@ function NavBar() {
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+      document.addEventListener("mousedown", handleOutsideClick);
+      return () => document.removeEventListener("mousedown", handleOutsideClick);
+    }, []);
 
   return (
     <nav className="flex flex-wrap justify-between p-4 relative mb-8">
@@ -154,25 +168,44 @@ function NavBar() {
             />
           </div>
         )}
-
-        <a href="#">
-          <li className="hover:text-[#ffb700]">
-            <FontAwesomeIcon icon={faHeart} size="lg" />
-          </li>
-        </a>
         <button onClick={handleCartClick}>
           <li className="hover:text-[#ffb700]">
             <FontAwesomeIcon icon={faShoppingCart} size="lg" />
           </li>
         </button>
 
-        {isCartOpen && (
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            <CartComponent
-              onClose={handleCartClose}
+        {/* Cart Popup */}
+      {isCartOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div ref={popupRef}>
+            <CartComponent onClose={() => setIsCartOpen(false)} />
+          </div>
+        </div>
+      )}
+
+      {/* Sign-In Popup */}
+      {isSignInOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div ref={popupRef}>
+            <LoginForm
+              onClose={() => setIsSignInOpen(false)}
+              onSignUp={handleSignUpClick}
             />
           </div>
-        )}
+        </div>
+      )}
+
+      {/* Sign-Up Popup */}
+      {isSignUpOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div ref={popupRef}>
+            <SignUpFormComponent
+              onClose={() => setIsSignUpOpen(false)}
+              onSignIn={() => setIsSignInOpen(true)}
+            />
+          </div>
+        </div>
+      )}
       </ul>
     </nav>
   );

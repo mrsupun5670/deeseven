@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import Input from "../Components/Input";
 import SocialButton from "../Components/SocialButton";
@@ -17,14 +17,18 @@ function LoginForm({ onClose, onSignUp }) {
 
   const navigate = useNavigate();
 
-  const syncSessionCart = async (email) => {
-    const cart = JSON.parse(sessionStorage.getItem("cart"));
-    const user = email;
+  useEffect(() => {
+    syncSessionCart(userID);
+  }, [userID])
 
-    if (cart && user) {
+  const syncSessionCart = async (id) => {
+    console.log(id);
+    
+    const cart = JSON.parse(sessionStorage.getItem("cart"));
+
+    if (cart) {
       try {
-        
-        const cartWithEmail = cart.map((item) => ({...item, emailID: userID}))
+        const cartWithID = cart.map((item) => ({...item, emailID: userID}))
         console.log("sync session cart");
         console.log("cart: ", cartWithID);
         
@@ -62,6 +66,8 @@ function LoginForm({ onClose, onSignUp }) {
         sessionStorage.setItem("userRole", "customer");
         sessionStorage.setItem("user", JSON.stringify(data.user));
         setUserID(data.user.id)
+        console.log(data.user.id);
+        
         // navigate(0);
       } else if (data.response == true && data.role == "admin") {
         sessionStorage.setItem("userRole", "admin");
@@ -87,7 +93,6 @@ function LoginForm({ onClose, onSignUp }) {
 
     if (!newErrors.email && !newErrors.password) {
       loginUser(email, password);
-      syncSessionCart(email);
     }
   };
 
