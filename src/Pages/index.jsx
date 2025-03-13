@@ -17,10 +17,10 @@ export default function Index() {
       <div className="relative z-0">
         <Header />
         <Hero />
-        <div className="block md:hidden -mx-5 overflow-hidden -mt-9">
+        <div className="block md:hidden overflow-hidden -mt-9">
           <MobileCarousal />
         </div>
-        <div className="w-full md:w-100 mx-auto flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8 py-8 px-4">
+        <div className="container mx-auto px-14 w-full md:w-100 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8 py-8">
           <FeatureCard
             title="Free Delivery"
             text="Enjoy Fast Free Delivery On Every Order With Reliable Shipping Guaranteed."

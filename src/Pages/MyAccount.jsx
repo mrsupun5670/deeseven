@@ -225,6 +225,7 @@ export default function MyAccount() {
             </div>
           </div>
         </div>
+        <BottomNavBar />
         <Footer />
     </div>
   );

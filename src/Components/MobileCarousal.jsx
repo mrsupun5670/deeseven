@@ -22,7 +22,7 @@ function MobileCarousel() {
   }, []);
 
   return (
-    <div className="relative inset-0 text-center bg-gray-300 min-h-[200px] overflow-hidden">
+    <div className="w-full relative inset-0 text-center bg-gray-300 min-h-[200px] overflow-hidden">
       {/* Scrolling Text Layer 1 */}
       <div
         ref={text1Ref}
