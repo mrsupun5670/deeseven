@@ -1,11 +1,41 @@
 import { useEffect, useState, useReducer } from "react";
 
+const initialState = {
+  firstName: "",
+  lastName: "",
+  streetAddress: "",
+  additionalInfo: "",
+  district: "",
+  city: "",
+  emailAddress: "",
+  mobileNumber: "",
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "SET_CUSTOMER_DATA":
+      return {
+        ...state,
+        ...action.payload,
+      };
+    case "UPDATE_FIELD":
+      return {
+        ...state,
+        [action.field]: action.value,
+      };
+    default:
+      return state;
+  }
+};
+
 const BillingDetails = () => {
   const APIURL = import.meta.env.VITE_API_URL;
 
+  const [formData, dispatch] = useReducer(reducer, initialState);
   const [districts, setDistricts] = useState([]);
   const [cities, setCities] = useState([]);
   const [customer, setCustomer] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchDistricts = async () => {
@@ -21,9 +51,6 @@ const BillingDetails = () => {
           const data = await response.json();
           if (data.response) {
             setDistricts(data.districts);
-
-            fetchCustomer();
-
           }
         }
       } catch (error) {
@@ -31,7 +58,61 @@ const BillingDetails = () => {
       }
     };
 
+    const fetchCustomer = async () => {
+      try {
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        if (!user) {
+          alert("User data not found. Please log in again.");
+          sessionStorage.clear();
+          window.location.href = "/";
+          return;
+        }
+
+        const response = await fetch(
+          `${APIURL}/GetCheckoutDataController.php?id=${user.customer_id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.response) {
+            setCustomer(data.customer);
+            dispatch({
+              type: "SET_CUSTOMER_DATA",
+              payload: {
+                firstName: data.customer.fname || "",
+                lastName: data.customer.lname || "",
+                streetAddress: data.customer.line1 || "",
+                additionalInfo: data.customer.line2 || "",
+                district: data.customer.district_id || "",
+                city: data.customer.city_id || "",
+                emailAddress: data.customer.email || "",
+                mobileNumber: data.customer.mobile || "",
+              },
+            });
+          } else {
+            alert(data.message);
+            if (data.message === "Unauthorized") {
+              sessionStorage.clear();
+              window.location.href = "/";
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching customer data:", error);
+        alert("Failed to load customer data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchDistricts();
+    fetchCustomer();
   }, []);
 
   const handleChange = (e) => {
@@ -41,47 +122,6 @@ const BillingDetails = () => {
       field: name,
       value: value,
     });
-  };
-
-  const fetchCustomer = async () => {
-    try {
-      const user = JSON.parse(sessionStorage.getItem("user"));
-      if (!user) {
-        alert("User data not found. Please log in again.");
-        sessionStorage.clear();
-        window.location.href = "/";
-        return;
-      }
-
-      const response = await fetch(
-        `${APIURL}/GetCheckoutDataController.php?id=${user.customer_id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.response) {
-          setCustomer(data.customer);
-          console.log(data.customer);
-        } else {
-          alert(data.message);
-          if (data.message === "Unauthorized") {
-            sessionStorage.clear();
-            window.location.href = "/";
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching customer data:", error);
-      alert("Failed to load customer data. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleDistrictChange = async (e) => {
@@ -119,6 +159,10 @@ const BillingDetails = () => {
     }
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="mt-4">
       <h2 className="text-xl font-bold">Billing Address</h2>
@@ -129,7 +173,7 @@ const BillingDetails = () => {
               type="text"
               placeholder="First Name"
               name="firstName"
-              value={customer.fname}
+              value={formData.firstName}
               onChange={handleChange}
               className="p-2 border rounded w-full"
             />
@@ -137,7 +181,7 @@ const BillingDetails = () => {
               type="text"
               placeholder="Last Name"
               name="lastName"
-              value={customer.lname}
+              value={formData.lastName}
               onChange={handleChange}
               className="p-2 border rounded w-full"
             />
@@ -146,7 +190,7 @@ const BillingDetails = () => {
             type="text"
             placeholder="Street Address"
             name="streetAddress"
-            value={customer.line1}
+            value={formData.streetAddress}
             onChange={handleChange}
             className="p-2 border rounded w-full"
           />
@@ -154,7 +198,7 @@ const BillingDetails = () => {
             type="text"
             placeholder="Additional Address Info"
             name="additionalInfo"
-            value={customer.line2}
+            value={formData.additionalInfo}
             onChange={handleChange}
             className="p-2 border rounded w-full"
           />
@@ -162,7 +206,7 @@ const BillingDetails = () => {
           <div className="flex gap-4 text-gray-400">
             <select
               name="district"
-              value={customer.district_id}
+              value={formData.district}
               onChange={handleDistrictChange}
               className="p-2 border rounded w-full"
             >
@@ -181,7 +225,7 @@ const BillingDetails = () => {
             </select>
             <select
               name="city"
-              value={customer.city_id}
+              value={formData.city}
               onChange={handleChange}
               className="p-2 border rounded w-full"
             >
@@ -200,7 +244,7 @@ const BillingDetails = () => {
             type="text"
             placeholder="Email Address"
             name="emailAddress"
-            value={customer.email}
+            value={formData.emailAddress}
             onChange={handleChange}
             className="p-2 border rounded w-full"
           />
@@ -209,7 +253,7 @@ const BillingDetails = () => {
               type="text"
               placeholder="Mobile Number"
               name="mobileNumber"
-              value={customer.mobile}
+              value={formData.mobileNumber}
               onChange={handleChange}
               className="p-2 border rounded w-full"
             />
