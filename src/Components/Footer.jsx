@@ -2,8 +2,8 @@ import { Mail, Phone } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-200 px-8 pt-10 pb-24 md:pb-10">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="container mx-auto px-14 pt-10 pb-24 md:pb-10">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         
         <div>
           <h3 className="text-lg font-semibold">Deezeven Clothing Company</h3>

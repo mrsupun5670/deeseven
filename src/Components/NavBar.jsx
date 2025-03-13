@@ -35,10 +35,6 @@ function NavBar() {
     setIsCartOpen(true);
   };
 
-  const handleCartClose = () => {
-    setIsCartOpen(false);
-  };
-
   const handleSignInClick = () => {
     if(sessionStorage.getItem("userRole") == "customer"){
       var user = JSON.parse(sessionStorage.getItem("user"));
@@ -88,7 +84,7 @@ function NavBar() {
     }, []);
 
   return (
-    <nav className="flex flex-wrap justify-between p-4 relative mb-8">
+    <nav className="flex flex-wrap justify-between p-4 mt-2 relative mb-8">
       {/* Hamburger Icon for Mobile */}
       <div className="block md:hidden absolute -top-28 right-2">
         <FontAwesomeIcon
@@ -126,13 +122,13 @@ function NavBar() {
         } absolute flex justify-center text-center md:hidden right-5 overflow-hidden transition-all duration-700 ease-in-out opacity-90 bg-slate-200 left-6 z-10`}
       >
         <ul className="flex flex-col space-y-4 p-4 text-black">
-          <a href="#">
+          <a href="/">
             <li className="hover:text-[#ffb700]">Home</li>
           </a>
-          <a href="#">
+          <a href="/men">
             <li className="hover:text-[#ffb700]">Men's</li>
           </a>
-          <a href="#">
+          <a href="/women">
             <li className="hover:text-[#ffb700]">Women's</li>
           </a>
           <a href="#">

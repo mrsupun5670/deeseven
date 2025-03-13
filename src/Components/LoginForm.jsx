@@ -32,7 +32,7 @@ function LoginForm({ onClose, onSignUp }) {
         console.log("sync session cart");
         console.log("cart: ", cartWithID);
         
-        const response = await fetch(`${APIURL}/fetchCartItems.php`, {
+        const response = await fetch(`${APIURL}/SyncCartItems.php`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -68,7 +68,7 @@ function LoginForm({ onClose, onSignUp }) {
         setUserID(data.user.id)
         console.log(data.user.id);
         
-        // navigate(0);
+        navigate(0);
       } else if (data.response == true && data.role == "admin") {
         sessionStorage.setItem("userRole", "admin");
         sessionStorage.setItem("admin", JSON.stringify(data.user));

@@ -1,20 +1,23 @@
 import React from "react";
-import Header from "./components/Header";
 import SingleProduct from "../Components/SingleProduct";
 import SimilarProducts from "../components/SimilarProducts";
-import Footer from "./components/Footer";
+import BottomNavBar from "../Components/BottomNavBar";
+import Header from "../Components/Header";
+import Footer from "../Components/Footer";
 
-function App() {
+function SingleProductPage() {
   return (
     <div className="font-sans">
-      {/* <Header /> */}
+      <Header />
       <main className="px-8 py-4">
         <SingleProduct  />
         <SimilarProducts />
       </main>
+      <br />
+      <BottomNavBar />
       <Footer />
     </div>
   );
 }
 
-export default App;
+export default SingleProductPage;

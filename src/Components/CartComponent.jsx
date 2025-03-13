@@ -1,14 +1,75 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Minus, Plus, Share } from "lucide-react";
 import { useCart } from "../context/CartProvider";
 import { useNavigate } from "react-router";
 import HashLoader from "react-spinners/HashLoader";
 
 function CartComponent({ onClose }) {
+  const APIURL = import.meta.env.VITE_API_URL;
 
   const { cart, dispatch } = useCart();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [storedUserId, setStoredUserId] = useState(null);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const storedUser = JSON.parse(sessionStorage.getItem("user"));
+    if (storedUser) {
+      syncCartWithDatabase(storedUser.id);
+      setStoredUserId(storedUser.id);
+    }
+  }, []);
+
+  const syncCartWithDatabase = async (userId) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${APIURL}/FetchCartItems.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ user_id: userId }),
+      });
+      const data = await response.json();
+      if (data.status) {
+        console.log(data.cart);
+
+        dispatch({ type: "SYNC_CART", payload: data.cart });
+      }
+    } catch (error) {
+      console.error("Error syncing cart:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeItemFromDatabase = async (storedUserId, product_id, size) => {
+    console.log(storedUserId, product_id, size);
+    
+    try {
+      const response = await fetch(`${APIURL}/RemoveCartItems.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: storedUserId,
+          size: size,
+          product_id: product_id,
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      
+      if (data.status) {
+        dispatch({ type: "SYNC_CART", payload: data.cart });
+      }
+    } catch (error) {
+      console.error("Error removing item from database:", error);
+    }
+  };
 
   const handleClick = (item) => {
     setLoading(true);
@@ -27,7 +88,12 @@ function CartComponent({ onClose }) {
     });
   };
 
-  const removeItem = (id, size) => {
+  const removeItem = (id, product_id, size) => {
+    console.log("id ", product_id);
+    
+    if ((storedUserId)) {
+      removeItemFromDatabase(storedUserId, product_id, size);
+    }
     dispatch({
       type: "REMOVE_FROM_CART",
       payload: {
@@ -69,11 +135,11 @@ function CartComponent({ onClose }) {
         </div>
       )}
       {/* Free Shipping Banner */}
-      <div className="bg-gray-50 p-2 text-center text-sm">
+      {/* <div className="bg-gray-50 p-2 text-center text-sm">
         <p className="text-purple-600 font-medium">
           CONGRATS! FREE SHIPPING UNLOCKED
         </p>
-      </div>
+      </div> */}
 
       {/* Cart Items */}
       <div className="flex-1 overflow-auto p-4 space-y-4">
@@ -105,7 +171,7 @@ function CartComponent({ onClose }) {
                 <div>
                   <button
                     className="p-1 hover:bg-gray-100 rounded-full h-fit"
-                    onClick={() => removeItem(item.id, item.size)}
+                    onClick={() => removeItem(item.id, item.product_id, item.size)}                
                   >
                     <X className="w-4 h-4" />
                   </button>
