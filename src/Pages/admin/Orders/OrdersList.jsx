@@ -3,6 +3,8 @@ import { Printer } from "lucide-react";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import OrderItemTable from "../../../Components/OrderItemTable";
+import { ToastContainer,toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const OrdersList = () => {
   const APIURL = import.meta.env.VITE_API_URL;
@@ -16,19 +18,7 @@ const OrdersList = () => {
   const [trackingLink, setTrackingLink] = useState("");
   const [newStatus, setNewStatus] = useState("");
   const [selectedCourier, setSelectedCourier] = useState("");
-  const couriers = [
-    { id: 1, name: "Sri Lanka Post", trackingLink: "https://www.srilankapost.lk/tracking" },
-    { id: 2, name: "Prompt Express", trackingLink: "https://www.prompt.lk/tracking" },
-    { id: 3, name: "Domex", trackingLink: "https://www.domex.lk/tracking" },
-    { id: 4, name: "Pronto Lanka", trackingLink: "https://www.pronto.lk/tracking" },
-    { id: 5, name: "Certis Lanka", trackingLink: "https://www.certis.lk/tracking" },
-    { id: 6, name: "Parcel.lk", trackingLink: "https://www.parcel.lk/tracking" },
-    { id: 7, name: "UPS", trackingLink: "https://www.ups.com/tracking" },
-    { id: 8, name: "DHL", trackingLink: "https://www.dhl.com/tracking" },
-    { id: 9, name: "FedEx", trackingLink: "https://www.fedex.com/tracking" },
-    { id: 10, name: "Koombiyo Delivery", trackingLink: "https://www.koombiyo.lk/tracking" },
-    { id: 11, name: "Custom", trackingLink: "" },
-  ];
+  const [couriers, setCouriers] = useState([]);
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -109,12 +99,33 @@ const OrdersList = () => {
     setSelectedCourier("");
   };
 
-  const handleStatusClick = (order) => {
+  const handleStatusClick = async (order) => {
     setSelectedOrder(order);
-    setTrackingNumber(order.trackingNumber || "");
-    setTrackingLink(order.trackingLink || "");
-    setNewStatus(order.status);
-    setSelectedCourier(order.courier || "");
+    try {
+      const response = await fetch(`${APIURL}/GetOrderStatusController.php?order_id=${order.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.response === true) {
+          setCouriers(data.couriers);
+          setTrackingNumber(data.orderDetails.tracking_number || "");
+          setTrackingLink(data.orderDetails.courier_service_link || "");
+          setNewStatus(data.orderDetails.status);
+          setSelectedCourier(data.orderDetails.courier_service_name || "");
+        } else {
+          toast.error(data.message, { theme: "light" });
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      toast.error("Failed to load order details. Please try again later.", { theme: "light" });
+    }
     setIsStatusModalOpen(true);
   };
 
@@ -133,7 +144,7 @@ const OrdersList = () => {
             status: newStatus,
             trackingNumber,
             trackingLink,
-            courier: selectedCourier,
+            courierServiceId: couriers.find(courier => courier.name === selectedCourier)?.id,
           }),
         }
       );
@@ -141,7 +152,7 @@ const OrdersList = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.response === true) {
-          alert("Order status and tracking information updated successfully.");
+          toast.success("Order status and tracking information updated successfully.", { theme: "light" });
           handleClose();
           const updatedOrders = orders.map((order) =>
             order.id === selectedOrder.id
@@ -156,12 +167,12 @@ const OrdersList = () => {
           );
           setOrders(updatedOrders);
         } else {
-          alert(data.message);
+          toast.error(data.message, { theme: "light" });
         }
       }
     } catch (error) {
       console.error("Error updating order status:", error);
-      alert("Failed to update order status. Please try again later.");
+      toast.error("Failed to update order status. Please try again later.", { theme: "light" });
     }
   };
 
@@ -366,7 +377,7 @@ const OrdersList = () => {
                 onChange={(e) => {
                   setSelectedCourier(e.target.value);
                   const selectedCourier = couriers.find(courier => courier.name === e.target.value);
-                  setTrackingLink(selectedCourier ? selectedCourier.trackingLink : "");
+                  setTrackingLink(selectedCourier ? selectedCourier.tracking_link : "");
                 }}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               >
@@ -423,6 +434,7 @@ const OrdersList = () => {
           </div>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };
