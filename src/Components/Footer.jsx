@@ -20,7 +20,6 @@ const Footer = () => {
           <ul className="text-gray-600 space-y-1 mt-2">
             <li><a href="#">Women’s Clothing</a></li>
             <li><a href="#">Men’s Clothing</a></li>
-           
           </ul>
         </div>
 

@@ -308,12 +308,22 @@ export default function SingleProduct() {
               </div>
 
               <div className="w-full flex gap-4 flex-wrap">
-                <button
-                  className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
-                  onClick={addToCart}
-                >
-                  ADD TO CART
-                </button>
+                {product.product_status === 1 ? (
+                  <button
+                    className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
+                    onClick={addToCart}
+                  >
+                    ADD TO CART
+                  </button>
+                ) : (
+                  <button
+                  disabled
+                    className="bg-black disabled:opacity-50 text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
+                    onClick={addToCart}
+                  >
+                    ADD TO CART
+                  </button>
+                )}
                 <ToastContainer />
                 <button className="text-black px-6 py-2 rounded-lg hover:bg-neutral-400 hover:border-black border w-full sm:w-auto">
                   Size Guide
@@ -323,7 +333,10 @@ export default function SingleProduct() {
           </div>
         </section>
       )}
-      <SimilarProducts subCategory={product.sub_category_name} />
+      <SimilarProducts
+        subCategory={product.sub_category_name}
+        productId={product.product_id}
+      />
     </>
   );
 }

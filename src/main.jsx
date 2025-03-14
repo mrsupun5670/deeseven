@@ -17,9 +17,9 @@ import Index from "./Pages/index.jsx";
 import MyAccount from "./Pages/MyAccount.jsx";
 import Checkout from "./Pages/Checkout.jsx";
 import CategoryView from "./Pages/CategoryView.jsx";
-import SingleProduct from "./Components/SingleProduct.jsx";
 import CartProvider from "./context/CartProvider.jsx";
 import SingleProductPage from "./Pages/singleProductView.jsx";
+import Store from "./Pages/Store.jsx";
 
 createRoot(document.getElementById("root")).render(
   <CartProvider>
@@ -33,6 +33,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/women" element={<CategoryView title="Women" />} />
         <Route path="/product/:id" element={<SingleProductPage />} />
         <Route path="/account" element={<MyAccount />} />
+        <Route path="/store" element={<Store />} />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />

@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import ProductCard from "../Components/ProductCard";
-import CategoryCard from "../Components/CategoryCard";
 import { useState } from "react";
 import Header from "../Components/Header";
 import BottomNavBar from "../Components/BottomNavBar";
