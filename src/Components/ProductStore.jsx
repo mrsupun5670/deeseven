@@ -14,7 +14,6 @@ const ProductStore = () => {
       try {
         const response = await fetch(`${APIURL}/ViewProductsController.php`);
         const data = await response.json();
-        console.log(data.data);
         setLoading(true);
         if (data.status) {
           setProducts(data.data);

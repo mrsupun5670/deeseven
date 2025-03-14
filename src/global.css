@@ -39,3 +39,30 @@
 .magnifier-container:hover .magnifier {
   display: block;
 }
+
+/* Ensure arrows are vertically centered */
+.swiper-button-prev,
+.swiper-button-next {
+  color: #FFB700 !important; /* Arrow color */
+  font-size: 16px !important; /* Arrow size */
+  width: 50px !important; /* Background size */
+  height: 50px !important;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Center arrows properly */
+  top: 50% !important;  
+  transform: translateY(-50%) !important;
+}
+
+/* Hide arrows on small screens */
+@media (max-width: 640px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    display: none !important;
+  }
+}
+

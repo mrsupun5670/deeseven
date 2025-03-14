@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
-import { Home, Search, ShoppingBag, User } from "lucide-react";
-import { Link } from "react-router";
+import { Home, ShoppingBag, Store, User } from "lucide-react";
+import { Link } from "react-router-dom";
 import CartComponent from "./CartComponent";
 import SignUpFormComponent from "./SignUpFormComponent";
 import LoginForm from "./LoginForm";
@@ -10,7 +10,6 @@ const BottomNavBar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
-  const searchInputRef = useRef(null);
 
   const popupRef = useRef(null);
 
@@ -61,19 +60,21 @@ const BottomNavBar = () => {
         </Link>
 
         {/* Search Button */}
-        <button
+        <Link
+        to={"/store"}
+        key={activeTab}
           onClick={() => setActiveTab("search")}
           className={`flex flex-col items-center space-y-1 flex-1 py-2 ${
             activeTab === "search" ? "text-[#ffb700]" : "text-white"
           }`}
         >
-          <Search
+          <Store
             className={`w-6 h-6 ${
               activeTab === "search" ? "text-[#ffb700]" : "text-white"
             }`}
           />
           <span className="text-xs">Search</span>
-        </button>
+        </Link>
 
         {/* Cart Button */}
         <button

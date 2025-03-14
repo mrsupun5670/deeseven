@@ -2,7 +2,7 @@ import { Mail, Phone } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="container mx-auto px-14 pt-10 pb-24 md:pb-10">
+    <footer className="container mx-auto px-4 md:px-14 pt-10 pb-24 md:pb-10">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         
         <div>

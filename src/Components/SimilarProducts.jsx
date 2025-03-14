@@ -19,7 +19,7 @@ const SimilarProducts = ({ subCategory, productId }) => {
         const data = await response.json();
 
         if (data.status) {
-          setProducts(data.data);
+          setProducts(data.data);  v
         } else {
           setProducts([]);
         }
