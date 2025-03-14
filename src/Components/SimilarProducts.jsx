@@ -1,28 +1,57 @@
-const SimilarProducts = () => {
-    return (
-      <section className="container mx-auto mt-12">
-        <h3 className="text-xl font-bold mb-6">You May Also Like</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {[...Array(6)].map((_, index) => (
-            <div
-              key={index}
-              className="bg-white border rounded-md overflow-hidden shadow-sm"
-            >
-              <img
-                src="https://samplelib.com/lib/preview/png/sample-boat-400x300.png"
-                alt="Product"
-                className="w-full h-auto"
-              />
-              <div className="p-4">
-                <p className="font-bold">Comfort Fit T-shirt</p>
-                <p className="text-gray-500">Rs. 990.00</p>
+import { useState, useEffect } from "react";
+import HashLoader from "react-spinners/HashLoader";
+
+const SimilarProducts = ({ subCategory }) => {
+  const APIURL = import.meta.env.VITE_API_URL;
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${APIURL}/LoadSimillerProducts.php?subCategory=${encodeURIComponent(subCategory)}`);
+        const data = await response.json();
+        
+        if (data.status) {
+          console.log(data.data);
+          setProducts(data.data);
+        } else {
+          setProducts([]); 
+        }
+      } catch (error) {
+        console.error("Error fetching similar products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [subCategory]); 
+
+  return (
+    <section className="container mx-auto mt-12 px-14">
+      <h3 className="text-xl font-bold mb-6">You May Also Like</h3>
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {loading ? (
+          <HashLoader color="#FFB700" loading={loading} size={50} aria-label="Loading Spinner" data-testid="loader" />
+        ) : (
+          products.length > 0 ? (
+            products.map((product) => (
+              <div key={product.product_id} className="bg-white border rounded-md overflow-hidden shadow-sm">
+                <img src={product.images[0].image_url} alt={product.product_name} className="w-full h-auto" />
+                <div className="p-4">
+                  <p className="font-bold">{product.product_name}</p>
+                  <p className="text-gray-500">Rs. {product.price.toFixed(2)}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  };
-  
-  export default SimilarProducts;
-  
+            ))
+          ) : (
+            <p className="text-gray-500">No similar products found.</p>
+          )
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default SimilarProducts;

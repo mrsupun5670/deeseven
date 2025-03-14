@@ -8,6 +8,8 @@ import ProductImage from "./ProductImage";
 import { useCart } from "../context/CartProvider";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SimilarProducts from "./SimilarProducts";
+
 export default function SingleProduct() {
   const APIURL = import.meta.env.VITE_API_URL;
 
@@ -27,11 +29,11 @@ export default function SingleProduct() {
 
   useEffect(() => {
     const storedUser = JSON.parse(sessionStorage.getItem("user"));
-    if (storedUser!= null) {
+    if (storedUser != null) {
       setStoredUserId(storedUser.id);
     }
-  }, [])
-  
+  }, []);
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -76,7 +78,7 @@ export default function SingleProduct() {
       if (data.status) {
         dispatch({ type: "SYNC_CART", payload: data.cart });
       }
-      if(data.message === "Cart updated") {
+      if (data.message === "Cart updated") {
         toast.success("Item added to cart", { theme: "light" });
       }
     } catch (error) {
@@ -129,6 +131,7 @@ export default function SingleProduct() {
     }
 
     if (storedUserId) {
+      console.log(storedUserId);
       addToCartDatabase(storedUserId, selectedSize, qty, product.product_id);
     }
 
@@ -160,181 +163,167 @@ export default function SingleProduct() {
           />
         </div>
       ) : (
-        <section className="container mx-auto px-4  overflow-x-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-3">
-            {/* Product Image Section */}
-            <div className="w-full">
-              {/* Main Image */}
-              <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] mb-4">
-                <ProductImage
-                  mainImage={mainImage}
-                  product={product}
-                  className="w-full h-full object-contain"
-                />
+        <section className="container mx-auto flex flex-col lg:flex-row gap-4 mb-3 px-2 sm:px-6">
+          {/* Thumbnails - Hidden on small screens */}
+          <div className="hidden md:flex flex-col gap-4">
+            {subImages.map((image, index) => (
+              <img
+                key={index}
+                src={image.image_url}
+                alt={`Thumbnail ${index + 1}`}
+                className={`w-full sm:w-20 h-full sm:h-20 object-cover cursor-pointer border rounded-md ${
+                  mainImage === image ? "border-gray-400" : "border-gray-200"
+                } hover:border-gray-400`}
+                onClick={() => setMainImage(image.image_url)}
+              />
+            ))}
+          </div>
+
+          {/* Main Image */}
+          <div className="flex justify-center items-center w-[50%] p-2 sm:p-6">
+            <ProductImage
+              mainImage={mainImage}
+              product={product}
+              className="object-contain w-full h-[350px] sm:h-[500px] md:h-[700px]"
+            />
+          </div>
+
+          {/* Thumbnails - Visible only on small screens */}
+          <div className="md:hidden flex gap-2 p-2 sm:p-6 overflow-auto">
+            {subImages.map((image, index) => (
+              <img
+                key={index}
+                src={image.image_url}
+                alt={`Thumbnail ${index + 1}`}
+                className={`w-16 sm:w-20 h-16 sm:h-20 object-cover cursor-pointer border rounded-md ${
+                  mainImage === image ? "border-gray-400" : "border-gray-200"
+                } hover:border-gray-400`}
+                onClick={() => setMainImage(image.image_url)}
+              />
+            ))}
+          </div>
+
+          {/* Product Details */}
+          <div className="max-w-4xl mx-auto p-4 sm:p-6 bg-white shadow-md rounded-lg w-full">
+            <nav className="flex flex-wrap items-center space-x-2 text-sm mb-3 text-gray-600">
+              <span className="hover:text-black">
+                Home / {product.category_name} / {product.title}
+              </span>
+            </nav>
+
+            <h1 className="text-lg sm:text-2xl font-bold mb-2 text-start">
+              {product.title}
+            </h1>
+            <p className="text-lg sm:text-xl font-semibold text-gray-700 mb-4 text-start">
+              Rs.{product.price.toFixed(2)}
+            </p>
+            <p className="text-gray-600 mb-6 text-start">
+              {product.description}
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h2 className="text-lg font-bold mb-2 text-start">
+                  About the fabric
+                </h2>
+                <ul className="list-disc pl-5 text-gray-600">
+                  {product.fabric.map((fabric, index) => (
+                    <li key={index}>{fabric.about}</li>
+                  ))}
+                </ul>
               </div>
-              
-              {/* Desktop Thumbnails (Side) */}
-              <div className="hidden md:flex flex-row justify-center gap-4">
-                {subImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image.image_url}
-                    alt={`Thumbnail ${index + 1}`}
-                    className={`w-16 h-16 object-contain cursor-pointer border rounded-md ${
-                      mainImage === image.image_url ? "border-gray-800" : "border-gray-200"
-                    } hover:border-gray-400`}
-                    onClick={() => setMainImage(image.image_url)}
-                  />
-                ))}
-              </div>
-              
-              {/* Mobile Thumbnails (Bottom) */}
-              <div className="md:hidden flex overflow-x-auto snap-x scrollbar-hide gap-2">
-                {subImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={image.image_url}
-                    alt={`Thumbnail ${index + 1}`}
-                    className={`flex-shrink-0 w-16 h-16 object-contain cursor-pointer border rounded-md snap-start ${
-                      mainImage === image.image_url ? "border-gray-800" : "border-gray-200"
-                    } hover:border-gray-400`}
-                    onClick={() => setMainImage(image.image_url)}
-                  />
+              <div>
+                <h2 className="text-lg font-bold mb-2 text-start">
+                  Fabric Care
+                </h2>
+                {product.fabric_care.map((care, index) => (
+                  <p className="text-gray-600 text-start " key={index}>
+                    {care.fabric_care}
+                  </p>
                 ))}
               </div>
             </div>
 
-            {/* Product Details Section */}
-            <div className="max-w-full p-4 sm:p-6 bg-white rounded-lg">
-              {/* Breadcrumb */}
-              <nav className="flex flex-wrap items-center space-x-2 text-sm mb-3 text-gray-600">
-                <span className="hover:text-black">
-                  Home / {product.category_name} / {product.title}
-                </span>
-              </nav>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h2 className="text-lg font-bold mb-2 text-start">
+                  Add-on Features
+                </h2>
+                <ul className="list-disc pl-5 text-gray-600">
+                  {product.add_on_features.map((feature, index) => (
+                    <li key={index}>{feature.features}</li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h2 className="text-lg font-bold mb-2 text-start">Note</h2>
+                <p className="text-gray-600 text-start">{product.note}</p>
+              </div>
+            </div>
 
-              {/* Product Title and Price */}
-              <h1 className="text-xl sm:text-2xl font-bold mb-2 text-start">
-                {product.title}
-              </h1>
-              <p className="text-lg sm:text-xl font-semibold text-gray-700 mb-4 text-start">
-                Rs.{product.price?.toFixed(2)}
-              </p>
-
-              {/* Product Description */}
-              <p className="text-gray-600 mb-6 text-start">
-                {product.description}
-              </p>
-
-              {/* Grid Section for Fabric Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <h2 className="text-lg font-bold mb-2 text-start">
-                    About the fabric
-                  </h2>
-                  <ul className="list-disc pl-5 text-gray-600">
-                    {product.fabric?.map((fabric, index) => {
-                      return <li key={index}>{fabric.about}</li>;
-                    })}
-                  </ul>
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-bold mb-2 text-start">
-                    Fabric Care
-                  </h2>
-                  {product.fabric_care?.map((care, index) => {
-                    return (
-                      <p className="text-gray-600 text-start " key={index}>
-                        {care.fabric_care}
-                      </p>
-                    );
-                  })}
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+              <div className="w-full sm:w-auto">
+                <label
+                  htmlFor="size"
+                  className="block text-lg font-bold mb-2 text-start"
+                >
+                  SIZE:
+                </label>
+                <div className="flex justify-start flex-wrap gap-2">
+                  {product.sizes.map((size, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSizeClick(size.size_name, size.qty)}
+                      className={`border rounded-lg px-3 py-2 text-sm sm:text-base hover:bg-gray-200 focus:ring-2 focus:ring-gray-400 ${
+                        selectedSize === size.size_name
+                          ? "bg-gray-400 text-white"
+                          : "bg-white"
+                      }`}
+                    >
+                      {size.size_name}
+                    </button>
+                  ))}
                 </div>
               </div>
+              <span className="text-red-600 text-sm">
+                {addToCartClicked && selectedSize === ""
+                  ? "Please select a size"
+                  : ""}
+              </span>
 
-              {/* Grid Section for Add-on Features and Note */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <h2 className="text-lg font-bold mb-2 text-start">
-                    Add-on Features
-                  </h2>
-                  <ul className="list-disc pl-5 text-gray-600">
-                    {product.add_on_features?.map((feature, index) => {
-                      return <li key={index}>{feature.features}</li>;
-                    })}
-                  </ul>
-                </div>
-
-                <div>
-                  <h2 className="text-lg font-bold mb-2 text-start">Note</h2>
-                  <p className="text-gray-600 text-start">{product.note}</p>
-                </div>
+              <div className="w-full gap-2 flex items-center">
+                <button
+                  className="border rounded-lg px-4 py-2 hover:bg-gray-200"
+                  onClick={handleDecrease}
+                >
+                  -
+                </button>
+                <span className="text-lg font-bold">{qty}</span>
+                <button
+                  className="border rounded-lg px-4 py-2 hover:bg-gray-200"
+                  onClick={handleIncrease}
+                >
+                  +
+                </button>
               </div>
 
-              {/* Size, Quantity, and Action Buttons */}
-              <div className="flex flex-col space-y-4">
-                <div>
-                  <label htmlFor="size" className="block text-lg font-bold mb-2 text-start">
-                    SIZE:
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    {product.sizes?.map((size, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleSizeClick(size.size_name, size.qty)}
-                        className={`border rounded-lg px-4 py-2 hover:bg-gray-200 focus:ring-2 focus:ring-gray-400 ${
-                          selectedSize === size.size_name ? "bg-gray-800 text-white" : "bg-white"
-                        }`}
-                      >
-                        {size.size_name}
-                      </button>
-                    ))}
-                  </div>
-                  
-                  {addToCartClicked && selectedSize === "" && (
-                    <span className="text-red-600 text-sm block mt-1">
-                      Please select a size
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex items-center space-x-4">
-                  <span className="text-lg font-medium">Quantity:</span>
-                  <div className="flex items-center border rounded-md">
-                    <button
-                      className="px-3 py-1 hover:bg-gray-100"
-                      onClick={handleDecrease}
-                    >
-                      -
-                    </button>
-                    <span className="px-4 py-1 font-medium">{qty}</span>
-                    <button
-                      className="px-3 py-1 hover:bg-gray-100"
-                      onClick={handleIncrease}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                  <button
-                    className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 w-full"
-                    onClick={addToCart}
-                  >
-                    ADD TO CART
-                  </button>
-                  <ToastContainer />
-                  <button className="text-black px-6 py-3 rounded-lg hover:bg-neutral-100 border border-black w-full">
-                    Size Guide
-                  </button>
-                </div>
+              <div className="w-full flex gap-4 flex-wrap">
+                <button
+                  className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
+                  onClick={addToCart}
+                >
+                  ADD TO CART
+                </button>
+                <ToastContainer />
+                <button className="text-black px-6 py-2 rounded-lg hover:bg-neutral-400 hover:border-black border w-full sm:w-auto">
+                  Size Guide
+                </button>
               </div>
             </div>
           </div>
         </section>
       )}
+      <SimilarProducts subCategory={product.sub_category_name} />
     </>
   );
 }
