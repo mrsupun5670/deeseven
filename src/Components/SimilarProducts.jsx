@@ -8,29 +8,31 @@ const SimilarProducts = ({ subCategory, productId }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          `${APIURL}/LoadSimillerProducts.php?id=${productId}&subCategory=${encodeURIComponent(
-            subCategory
-          )}`
-        );
-        const data = await response.json();
+    setTimeout(() => {
+      fetchProducts();
+    }, 2000);
+  }, [subCategory, productId]);
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${APIURL}/LoadSimillerProducts.php?id=${productId}&subCategory=${encodeURIComponent(
+          subCategory
+        )}`
+      );
+      const data = await response.json();
 
-        if (data.status) {
-          setProducts(data.data);  v
-        } else {
-          setProducts([]);
-        }
-      } catch (error) {
-        console.error("Error fetching similar products:", error);
-      } finally {
-        setLoading(false);
+      if (data.status) {
+        setProducts(data.data);
+      } else {
+        setProducts([]);
       }
-    };
-    fetchProducts();
-  }, [subCategory]);
+    } catch (error) {
+      console.error("Error fetching similar products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <section className="container mx-auto mt-12 px-14">
@@ -46,7 +48,10 @@ const SimilarProducts = ({ subCategory, productId }) => {
           />
         ) : products.length > 0 ? (
           products.map((product) => (
-            <Link to={`/product/${product.product_id}`} key={product.product_id}>
+            <Link
+              to={`/product/${product.product_id}`}
+              key={product.product_id}
+            >
               <div
                 key={product.product_id}
                 className="bg-white border rounded-md overflow-hidden shadow-sm"

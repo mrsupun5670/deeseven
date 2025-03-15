@@ -2,7 +2,7 @@ import { useContext, useEffect, useReducer } from "react";
 import { CartContext, cartReducer } from "./CartContext";
 
 export default function CartProvider  ({  children }) {
-    console.log("CartProvider rendered");
+    ("CartProvider rendered");
     const [cart, dispatch] = useReducer(cartReducer, [], () => {
         const savedCart = sessionStorage.getItem("cart");
         return savedCart ? JSON.parse(savedCart) : [];

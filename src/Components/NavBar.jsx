@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faShoppingCart,
-  faHeart,
   faUser,
   faBars,
   faXmark,
@@ -38,7 +37,6 @@ function NavBar() {
   const handleSignInClick = () => {
     if(sessionStorage.getItem("userRole") == "customer"){
       var user = JSON.parse(sessionStorage.getItem("user"));
-      console.log(user);
       navigate('/account')
     } else {
       setIsSignInOpen(true);
@@ -84,9 +82,9 @@ function NavBar() {
     }, []);
 
   return (
-    <nav className="flex flex-wrap justify-between p-4 mt-2 relative mb-8">
+    <nav className="flex flex-wrap justify-between px-4 mt-2 relative">
       {/* Hamburger Icon for Mobile */}
-      <div className="block md:hidden absolute -top-28 right-2">
+      <div className="block md:hidden absolute -top-24 right-2">
         <FontAwesomeIcon
           icon={menuOpen ? faXmark : faBars}
           size="lg"

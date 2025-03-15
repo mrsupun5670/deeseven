@@ -28,13 +28,10 @@ function CategoryView({ title }) {
         setLoading(true);
         if (data.status) {
           setProducts(data.data);
-          console.log(data.data);
         } else {
-          console.log(data.message);
           setLoading(false);
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
         return [];
       } finally {
         setLoading(false);
@@ -70,7 +67,7 @@ function CategoryView({ title }) {
           />
         </div>
       ) : (
-        <div className="px-4 md:px-8 md:mt-8 mt-4 flex flex-col max-w-7xl mx-auto">
+        <div className="px-4 md:px-8 md:mt-8 flex flex-col max-w-7xl mx-auto">
           <div className="mb-10">
             <p className="font-bold text-4xl md:text-6xl tracking-tight">
               {title}

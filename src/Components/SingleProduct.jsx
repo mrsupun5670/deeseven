@@ -110,8 +110,8 @@ export default function SingleProduct() {
 
   const handleSizeClick = (size, qty) => {
     setSelectedSize(size);
-    // setQty(qty);
     setMaxQty(qty);
+    setQty(1);
     setIsAddToCartClicked(false);
   };
 
@@ -131,7 +131,7 @@ export default function SingleProduct() {
     }
 
     if (storedUserId) {
-      console.log(storedUserId);
+      (storedUserId);
       addToCartDatabase(storedUserId, selectedSize, qty, product.product_id);
     }
 
@@ -163,7 +163,7 @@ export default function SingleProduct() {
           />
         </div>
       ) : (
-        <section className="container mx-auto flex flex-col lg:flex-row gap-4 mb-3 px-2 sm:px-6">
+        <section className="container mx-auto flex flex-col lg:flex-row gap-4 px-2 sm:px-6">
           {/* Thumbnails - Hidden on small screens */}
           <div className="hidden md:flex flex-col gap-4">
             {subImages.map((image, index) => (
@@ -273,7 +273,7 @@ export default function SingleProduct() {
                   {product.sizes.map((size, index) => (
                     <button
                       key={index}
-                      onClick={() => handleSizeClick(size.size_name, size.qty)}
+                      onClick={() => handleSizeClick(size.size_name, size.quantity)}
                       className={`border rounded-lg px-3 py-2 text-sm sm:text-base hover:bg-gray-200 focus:ring-2 focus:ring-gray-400 ${
                         selectedSize === size.size_name
                           ? "bg-gray-400 text-white"

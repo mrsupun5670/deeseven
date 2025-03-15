@@ -31,10 +31,10 @@ const ProductStore = () => {
 
   const filterCategories = products.filter((product) => {
     if (selectedCategory === "all") return product;
-    if (selectedCategory === "men") return product.category_name === "men";
-    if (selectedCategory === "women") return product.category_name === "women";
+    if (selectedCategory === "men") return product.category_name === "Men";
+    if (selectedCategory === "women") return product.category_name === "Women";
     if (selectedCategory === "unisex")
-      return product.category_name === "unisex";
+      return product.category_name === "Unisex";
   });
 
   return (

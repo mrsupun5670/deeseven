@@ -31,8 +31,8 @@ function Header() {
       } transition-all duration-300`}
     >
       <div className="w-full flex flex-wrap items-center md:justify-between py-2 justify-start sm:space-y-2">
-        <img src={logo} alt="Logo" className="w-32 md:w-40" />
-        <div className="w-full sm:w-auto mt-4">
+        <img src={logo} alt="Logo" className="w-20 md:w-40" />
+        <div className="w-full sm:w-auto mt-4 md:mt-4">
           <SearchBar />
         </div>
       </div>

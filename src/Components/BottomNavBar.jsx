@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Home, ShoppingBag, Store, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CartComponent from "./CartComponent";
 import SignUpFormComponent from "./SignUpFormComponent";
 import LoginForm from "./LoginForm";
@@ -10,6 +10,7 @@ const BottomNavBar = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const navigate = useNavigate();
 
   const popupRef = useRef(null);
 
@@ -22,11 +23,17 @@ const BottomNavBar = () => {
   };
 
   const toggleTab = (tab) => {
-    setActiveTab(tab);
-    if (tab === "cart") setIsCartOpen(!isCartOpen);
-    if (tab === "profile") {
-      setIsSignInOpen(!isSignInOpen);
-      setIsSignUpOpen(false);
+    setActiveTab(tab); 
+    if (tab === "cart") {
+      setIsCartOpen(!isCartOpen);
+    } else if (tab === "profile") {
+      if (sessionStorage.getItem("userRole") === "customer") {
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        navigate("/account");
+      } else {
+        setIsSignInOpen(!isSignInOpen);
+        setIsSignUpOpen(false);
+      }
     }
   };
 
@@ -61,19 +68,19 @@ const BottomNavBar = () => {
 
         {/* Search Button */}
         <Link
-        to={"/store"}
-        key={activeTab}
-          onClick={() => setActiveTab("search")}
+          to={"/store"}
+          key={activeTab}
+          onClick={() => setActiveTab("store")}
           className={`flex flex-col items-center space-y-1 flex-1 py-2 ${
-            activeTab === "search" ? "text-[#ffb700]" : "text-white"
+            activeTab === "store" ? "text-[#ffb700]" : "text-white"
           }`}
         >
           <Store
             className={`w-6 h-6 ${
-              activeTab === "search" ? "text-[#ffb700]" : "text-white"
+              activeTab === "store" ? "text-[#ffb700]" : "text-white"
             }`}
           />
-          <span className="text-xs">Search</span>
+          <span className="text-xs">Store</span>
         </Link>
 
         {/* Cart Button */}

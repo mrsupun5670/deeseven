@@ -33,7 +33,7 @@ function CartComponent({ onClose }) {
       });
       const data = await response.json();
       if (data.status) {
-        console.log(data.cart);
+        (data.cart);
 
         dispatch({ type: "SYNC_CART", payload: data.cart });
       }
@@ -45,7 +45,7 @@ function CartComponent({ onClose }) {
   };
 
   const removeItemFromDatabase = async (storedUserId, product_id, size) => {
-    console.log(storedUserId, product_id, size);
+    (storedUserId, product_id, size);
     
     try {
       const response = await fetch(`${APIURL}/RemoveCartItems.php`, {
@@ -61,7 +61,7 @@ function CartComponent({ onClose }) {
       });
 
       const data = await response.json();
-      console.log(data);
+      (data);
       
       if (data.status) {
         dispatch({ type: "SYNC_CART", payload: data.cart });
@@ -89,7 +89,7 @@ function CartComponent({ onClose }) {
   };
 
   const removeItem = (id, product_id, size) => {
-    console.log("id ", product_id);
+    ("id ", product_id);
     
     if ((storedUserId)) {
       removeItemFromDatabase(storedUserId, product_id, size);
