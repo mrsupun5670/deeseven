@@ -72,7 +72,7 @@ const ProductEdit = ({ productId }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Saving changes:', editableData);
+    ('Saving changes:', editableData);
   };
 
   return (

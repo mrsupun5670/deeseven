@@ -22,7 +22,7 @@
 }
 
 .magnifier-container:hover .main-image {
-  transform: scale(1.5);
+  transform: scale(2);
 }
 
 .magnifier {

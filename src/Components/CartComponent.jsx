@@ -33,8 +33,6 @@ function CartComponent({ onClose }) {
       });
       const data = await response.json();
       if (data.status) {
-        console.log(data.cart);
-
         dispatch({ type: "SYNC_CART", payload: data.cart });
       }
     } catch (error) {
@@ -45,8 +43,6 @@ function CartComponent({ onClose }) {
   };
 
   const removeItemFromDatabase = async (storedUserId, product_id, size) => {
-    console.log(storedUserId, product_id, size);
-    
     try {
       const response = await fetch(`${APIURL}/RemoveCartItems.php`, {
         method: "POST",
@@ -61,8 +57,7 @@ function CartComponent({ onClose }) {
       });
 
       const data = await response.json();
-      console.log(data);
-      
+
       if (data.status) {
         dispatch({ type: "SYNC_CART", payload: data.cart });
       }
@@ -80,8 +75,10 @@ function CartComponent({ onClose }) {
     }, 500);
   };
 
-  const updateQuantity = (id, size, newQty) => {
+  const updateQuantity = (id, size, maxQty, newQty) => {
     if (newQty < 1) return;
+    if(newQty > maxQty) return;
+
     dispatch({
       type: "UPDATE_QUANTITY",
       payload: { id, size, qty: newQty },
@@ -89,7 +86,6 @@ function CartComponent({ onClose }) {
   };
 
   const removeItem = (id, product_id, size) => {
-    console.log("id ", product_id);
     
     if ((storedUserId)) {
       removeItemFromDatabase(storedUserId, product_id, size);
@@ -185,7 +181,7 @@ function CartComponent({ onClose }) {
                 <button
                   className="p-1 hover:bg-gray-100 rounded-full"
                   onClick={() =>
-                    updateQuantity(item.id, item.size, item.qty - 1)
+                    updateQuantity(item.id, item.size, item.maxQty, item.qty - 1)
                   }
                 >
                   <Minus className="w-4 h-4" />
@@ -194,7 +190,7 @@ function CartComponent({ onClose }) {
                 <button
                   className="p-1 hover:bg-gray-100 rounded-full"
                   onClick={() =>
-                    updateQuantity(item.id, item.size, item.qty + 1)
+                    updateQuantity(item.id, item.size, item.maxQty, item.qty + 1)
                   }
                 >
                   <Plus className="w-4 h-4" />

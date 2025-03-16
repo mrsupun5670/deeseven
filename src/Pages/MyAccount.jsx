@@ -93,8 +93,8 @@ export default function MyAccount() {
 
   return (
     <div className="bg-gray-200 min-h-screen relative ">
-        <div className="relative p-5 z-0">
           <Header />
+        <div className="container mx-auto md:px-14 p-4 relative z-0">
 
           <div className="flex flex-row justify-between items-center">
             <p className="font-bold text-2xl">
