@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Plus, Upload, X } from "lucide-react";
 
 const ProductAdd = () => {
@@ -7,13 +9,24 @@ const ProductAdd = () => {
   const [images, setImages] = useState(Array(3).fill(null));
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
-  const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [sizes, setSizes] = useState([]);
 
-  const [fabricDetails, setFabricDetails] = useState([{ key: Date.now(), value: "" }]);
+  const [fabricDetails, setFabricDetails] = useState([
+    { key: Date.now(), value: "" },
+  ]);
   const [note, setNote] = useState([{ key: Date.now(), value: "" }]);
-  const [fabricCare, setFabricCare] = useState([{ key: Date.now(), value: "" }]);
-  const [addOnFeatures, setAddOnFeatures] = useState([{ key: Date.now(), value: "" }]);
+  const [fabricCare, setFabricCare] = useState([
+    { key: Date.now(), value: "" },
+  ]);
+  const [addOnFeatures, setAddOnFeatures] = useState([
+    { key: Date.now(), value: "" },
+  ]);
+
+  const [productTitle, setProductTitle] = useState("");
+  const [productDescription, setProductDescription] = useState("");
+  const [productCategory, setProductCategory] = useState("");
+  const [productPrice, setProductPrice] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -22,8 +35,8 @@ const ProductAdd = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`,
-        },
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
         });
 
         if (response.ok) {
@@ -32,7 +45,7 @@ const ProductAdd = () => {
             setCategories(data.categories);
             setSubCategories(data.sub_categories);
           } else {
-            alert(data.message);
+            toast.error(data.message);
             if (data.message === "Unauthorized") {
               sessionStorage.removeItem("authToken");
               sessionStorage.removeItem("userRole");
@@ -43,7 +56,7 @@ const ProductAdd = () => {
         }
       } catch (error) {
         console.error("Error fetching products:", error);
-        alert("Failed to load categories. Please try again later.");
+        toast.error("Failed to load categories. Please try again later.");
       }
     };
 
@@ -58,7 +71,7 @@ const ProductAdd = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${sessionStorage.getItem("authToken")}`,
+              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
             },
             body: JSON.stringify({ sub_category_id: selectedSubCategory }),
           });
@@ -68,12 +81,12 @@ const ProductAdd = () => {
             if (data.response === true) {
               setSizes(data.sizes);
             } else {
-              alert(data.message);
+              toast.error(data.message);
             }
           }
         } catch (error) {
           console.error("Error fetching sizes:", error);
-          alert("Failed to load sizes. Please try again later.");
+          toast.error("Failed to load sizes. Please try again later.");
         }
       };
 
@@ -87,10 +100,11 @@ const ProductAdd = () => {
       const newImages = Array.from(files).map((file, index) => ({
         url: URL.createObjectURL(file),
         name: file.name,
+        file: file,
       }));
       setImages(newImages);
     } else {
-      alert("Please select 3 images.");
+      toast.error("Please select 3 images.");
     }
   };
 
@@ -124,13 +138,71 @@ const ProductAdd = () => {
     setSelectedSubCategory(e.target.value);
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (images.length < 3) {
+      toast.error("Please select 3 images.");
+      return;
+    }
+
+    const productData = {
+      title: productTitle,
+      description: productDescription,
+      category_id: productCategory,
+      sub_category_id: selectedSubCategory,
+      price: productPrice,
+      fabric_details: fabricDetails.map((item) => item.value),
+      notes: note.map((item) => item.value),
+      fabric_care: fabricCare.map((item) => item.value),
+      add_on_features: addOnFeatures.map((item) => item.value),
+      sizes: sizes.map((size) => ({
+        size_id: size.size_id,
+        quantity: size.quantity || 0,
+      })),
+    };
+
+    const formData = new FormData();
+    formData.append("productData", JSON.stringify(productData));
+
+    images.forEach((image, index) => {
+      if (image) {
+        formData.append(`image_${index}`, image.file);
+      }
+    });
+
+    try {
+      const response = await fetch(`${APIURL}/AddProductController.php`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.response === true) {
+          toast.success("Product added successfully!");
+        } else {
+          toast.error(data.message);
+        }
+      } else {
+        toast.error("Failed to add product. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error saving product:", error);
+      toast.error("Failed to save product. Please try again later.");
+    }
+  };
+
   return (
     <div className="w-full mx-auto space-y-6">
       <div className="flex items-center space-x-4 mb-6">
         <h1 className="text-2xl font-bold">Add New Product</h1>
       </div>
 
-      <form className="space-y-8">
+      <form className="space-y-8" onSubmit={handleSubmit}>
         <div className="bg-white rounded-lg shadow-sm p-6 space-y-6">
           <div className="w-full space-y-2">
             <label className="text-sm font-medium">Product Title</label>
@@ -138,6 +210,8 @@ const ProductAdd = () => {
               type="text"
               className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
               placeholder="Enter product title"
+              value={productTitle}
+              onChange={(e) => setProductTitle(e.target.value)}
             />
           </div>
           <div className="w-full space-y-2">
@@ -146,6 +220,8 @@ const ProductAdd = () => {
               className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
               rows="2"
               placeholder="Enter product description"
+              value={productDescription}
+              onChange={(e) => setProductDescription(e.target.value)}
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -156,7 +232,9 @@ const ProductAdd = () => {
                   <input
                     type="text"
                     value={item.value}
-                    onChange={(e) => handleInputChange(index, setFabricDetails, e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(index, setFabricDetails, e.target.value)
+                    }
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter about the fabric"
                   />
@@ -185,7 +263,9 @@ const ProductAdd = () => {
                   <input
                     type="text"
                     value={item.value}
-                    onChange={(e) => handleInputChange(index, setNote, e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(index, setNote, e.target.value)
+                    }
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter note"
                   />
@@ -214,7 +294,9 @@ const ProductAdd = () => {
                   <input
                     type="text"
                     value={item.value}
-                    onChange={(e) => handleInputChange(index, setFabricCare, e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(index, setFabricCare, e.target.value)
+                    }
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter fabric care"
                   />
@@ -243,7 +325,9 @@ const ProductAdd = () => {
                   <input
                     type="text"
                     value={item.value}
-                    onChange={(e) => handleInputChange(index, setAddOnFeatures, e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange(index, setAddOnFeatures, e.target.value)
+                    }
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter add-on features"
                   />
@@ -268,10 +352,17 @@ const ProductAdd = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium">Category</label>
-              <select className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+              <select
+                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                value={productCategory}
+                onChange={(e) => setProductCategory(e.target.value)}
+              >
                 <option value="">Select category</option>
                 {categories.map((category) => (
-                  <option key={category.category_id} value={category.category_id}>
+                  <option
+                    key={category.category_id}
+                    value={category.category_id}
+                  >
                     {category.category_name}
                   </option>
                 ))}
@@ -282,11 +373,15 @@ const ProductAdd = () => {
               <label className="text-sm font-medium">Sub Category</label>
               <select
                 className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                value={selectedSubCategory}
                 onChange={handleSubCategoryChange}
               >
                 <option value="">Select sub-category</option>
                 {subCategories.map((subCategory) => (
-                  <option key={subCategory.sub_category_id} value={subCategory.sub_category_id}>
+                  <option
+                    key={subCategory.sub_category_id}
+                    value={subCategory.sub_category_id}
+                  >
                     {subCategory.sub_category_name}
                   </option>
                 ))}
@@ -298,6 +393,8 @@ const ProductAdd = () => {
                 type="number"
                 className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                 placeholder="0.00"
+                value={productPrice}
+                onChange={(e) => setProductPrice(e.target.value)}
               />
             </div>
           </div>
@@ -309,15 +406,23 @@ const ProductAdd = () => {
                   <input
                     type="text"
                     value={size.size_name}
-                    onChange={(e) => handleSizeQuantityChange(index, 'size', e.target.value)}
+                    onChange={(e) =>
+                      handleSizeQuantityChange(index, "size", e.target.value)
+                    }
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     disabled
                   />
                   <input
                     type="number"
                     min="0"
-                    value="0"
-                    onChange={(e) => handleSizeQuantityChange(index, 'quantity', e.target.value)}
+                    value={size.quantity || 0}
+                    onChange={(e) =>
+                      handleSizeQuantityChange(
+                        index,
+                        "quantity",
+                        e.target.value
+                      )
+                    }
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-center"
                   />
                 </div>
@@ -340,7 +445,7 @@ const ProductAdd = () => {
                       <img
                         src={image.url}
                         alt={`Product ${index + 1}`}
-                        className="w-full h-80 object-contain rounded-lg" 
+                        className="w-full h-80 object-contain rounded-lg"
                       />
                       <button
                         onClick={() => removeImage(index)}
@@ -386,6 +491,18 @@ const ProductAdd = () => {
           </button>
         </div>
       </form>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
