@@ -57,7 +57,7 @@ const SimilarProducts = ({ subCategory, productId }) => {
                 className="bg-white border rounded-md overflow-hidden shadow-sm"
               >
                 <img
-                  src={product.images[0].image_url}
+                  src={product.images.length > 0 ? product.images[0].image_url : ""}
                   alt={product.product_name}
                   className="w-full h-auto"
                 />

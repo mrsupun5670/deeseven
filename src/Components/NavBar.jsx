@@ -82,7 +82,7 @@ function NavBar() {
     }, []);
 
   return (
-    <nav className="flex flex-wrap justify-between px-4 mt-2 relative">
+    <nav className="flex flex-wrap justify-between md:p-4 mt-2 relative md:mb-8">
       {/* Hamburger Icon for Mobile */}
       <div className="block md:hidden absolute -top-24 right-2">
         <FontAwesomeIcon

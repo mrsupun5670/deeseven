@@ -18,8 +18,8 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold">SHOP</h3>
           <ul className="text-gray-600 space-y-1 mt-2">
-            <li><a href="#">Women’s Clothing</a></li>
-            <li><a href="#">Men’s Clothing</a></li>
+            <li><a href="/women">Women’s Clothing</a></li>
+            <li><a href="/men">Men’s Clothing</a></li>
           </ul>
         </div>
 

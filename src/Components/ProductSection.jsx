@@ -35,8 +35,8 @@ export default function ProductSection({ title }) {
 
   const filterProducts = products.filter((product) => {
     if (title === "New Arrivals") return product.date_added;
-    if (title === "Men's Collection") return product.category_name == "men";
-    if (title === "Women's Collection") return product.category_name == "women";
+    if (title === "Men's Collection") return product.category_name == "Men";
+    if (title === "Women's Collection") return product.category_name == "Women";
   });
 
   let path = "";
@@ -72,7 +72,7 @@ export default function ProductSection({ title }) {
             }}
             className="w-full"
           >
-            {filterProducts.map((product) => (
+            {filterProducts.slice(0, 10).map((product) => (
               <SwiperSlide key={product.product_id}>
                 <Link
                   to={`/product/${product.product_id}`}

@@ -81,25 +81,24 @@ function CategoryView({ title }) {
                 className="group relative overflow-hidden bg-white rounded-lg shadow-sm transition duration-300 hover:shadow-lg transform hover:-translate-y-1"
               >
                 {/* Image wrapper with aspect ratio */}
-                <div className="relative pb-[125%] overflow-hidden">
-                  <img
-                    src={item.images[0]?.image_url || "/images/placeholder.jpg"}
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-105"
-                  />
+                <Link to={`/product/${item.product_id}`} key={item.product_id}>
+                  <div className="relative pb-[125%] overflow-hidden">
+                    <img
+                      src={
+                        item.images[0]?.image_url || "/images/placeholder.jpg"
+                      }
+                      alt={item.title}
+                      className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-105"
+                    />
 
-                  {/* Quick view button */}
-                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                    <Link
-                      to={`/product/${item.product_id}`}
-                      key={item.product_id}
-                    >
+                    {/* Quick view button */}
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
                       <button className="bg-white text-gray-900 px-4 py-2 rounded-full font-medium text-sm opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition duration-300">
                         Quick View
                       </button>
-                    </Link>
+                    </div>
                   </div>
-                </div>
+                </Link>
 
                 {/* Product info */}
                 <div className="p-4">

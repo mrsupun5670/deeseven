@@ -22,16 +22,13 @@ function LoginForm({ onClose, onSignUp }) {
   }, [userID])
 
   const syncSessionCart = async (id) => {
-    (id);
-    
+
     const cart = JSON.parse(sessionStorage.getItem("cart"));
 
     if (cart) {
       try {
         const cartWithID = cart.map((item) => ({...item, emailID: userID}))
-        ("sync session cart");
-        ("cart: ", cartWithID);
-        
+
         const response = await fetch(`${APIURL}/SyncCartItems.php`, {
           method: "POST",
           headers: {
@@ -40,7 +37,7 @@ function LoginForm({ onClose, onSignUp }) {
           body: JSON.stringify(cartWithID)
         });
         const data = response.json();
-        (data);
+
         
       } catch (error) {
         console.error("Error fetching cart items:", error);
@@ -66,7 +63,6 @@ function LoginForm({ onClose, onSignUp }) {
         sessionStorage.setItem("userRole", "customer");
         sessionStorage.setItem("user", JSON.stringify(data.user));
         setUserID(data.user.id)
-        (data.user.id);
         
         navigate(0);
       } else if (data.response == true && data.role == "admin") {

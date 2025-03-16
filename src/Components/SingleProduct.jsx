@@ -143,6 +143,7 @@ export default function SingleProduct() {
         price: product.price,
         size: selectedSize,
         qty: qty,
+        maxQty: maxQty,
         image: mainImage,
       },
     });
@@ -171,7 +172,7 @@ export default function SingleProduct() {
                 key={index}
                 src={image.image_url}
                 alt={`Thumbnail ${index + 1}`}
-                className={`w-full sm:w-20 h-full sm:h-20 object-cover cursor-pointer border rounded-md ${
+                className={`w-20 md:w:24 lg-w:32 h-full sm:h-20 object-cover cursor-pointer border rounded-md ${
                   mainImage === image ? "border-gray-400" : "border-gray-200"
                 } hover:border-gray-400`}
                 onClick={() => setMainImage(image.image_url)}
@@ -180,7 +181,7 @@ export default function SingleProduct() {
           </div>
 
           {/* Main Image */}
-          <div className="flex justify-center items-center w-[50%] p-2 sm:p-6">
+          <div className="flex justify-center items-center w-full p-2 sm:p-6">
             <ProductImage
               mainImage={mainImage}
               product={product}
