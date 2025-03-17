@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { Download, Plus } from "lucide-react";
@@ -21,10 +21,16 @@ const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message }) => {
         <h2 className="text-xl font-semibold">Confirm Action</h2>
         <p className="mt-2 text-gray-700">{message}</p>
         <div className="mt-4 flex justify-end space-x-2">
-          <Button onClick={onConfirm} className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+          <Button
+            onClick={onConfirm}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
             Yes
           </Button>
-          <Button onClick={onCancel} className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700">
+          <Button
+            onClick={onCancel}
+            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+          >
             No
           </Button>
         </div>
@@ -42,13 +48,16 @@ const ProductsList = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch(`${APIURL}/GetAllProductsListController.php`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-          },
-        });
+        const response = await fetch(
+          `${APIURL}/GetAllProductsListController.php`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+            },
+          }
+        );
 
         if (response.ok) {
           const data = await response.json();
@@ -83,24 +92,32 @@ const ProductsList = () => {
 
   const toggleStatus = async () => {
     try {
-      const newStatus = productToToggle.status === "Active" ? "Inactive" : "Active";
-     
+      const newStatus =
+        productToToggle.status === "Active" ? "Inactive" : "Active";
 
-      const response = await fetch(`${APIURL}/ToggleProductStatusController.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-        },
-        body: JSON.stringify({ productId: productToToggle.id, status: newStatus === "Active" ? 1 : 0 }),
-      });
+      const response = await fetch(
+        `${APIURL}/ToggleProductStatusController.php`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+          body: JSON.stringify({
+            productId: productToToggle.id,
+            status: newStatus === "Active" ? 1 : 0,
+          }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
         if (data.response) {
           setProducts((prevProducts) =>
             prevProducts.map((product) =>
-              product.id === productToToggle.id ? { ...product, status: newStatus } : product
+              product.id === productToToggle.id
+                ? { ...product, status: newStatus }
+                : product
             )
           );
         } else {
@@ -120,7 +137,14 @@ const ProductsList = () => {
     doc.setFontSize(16);
     doc.text("Products", 14, 15);
 
-    const tableColumn = ["Product ID", "Name", "Category", "Price (Rs.)", "Available Sizes", "Status"];
+    const tableColumn = [
+      "Product ID",
+      "Name",
+      "Category",
+      "Price (Rs.)",
+      "Available Sizes",
+      "Status",
+    ];
     const tableRows = products.map((product) => [
       product.id,
       product.title,
@@ -158,13 +182,27 @@ const ProductsList = () => {
         <table className="w-full bg-white rounded-lg shadow min-w-max">
           <thead>
             <tr className="bg-gray-50">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price (Rs.)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Available Sizes</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Product ID
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Name
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Category
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Price (Rs.)
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Available Sizes
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                Status
+              </th>
+              <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white shadow">
@@ -172,12 +210,19 @@ const ProductsList = () => {
               <tr key={product.id}>
                 <td className="px-6 py-4">{product.id}</td>
                 <td className="px-6 py-4">{product.title}</td>
-                <td className="px-6 py-4">{product.category}</td>
+                <td className="px-6 py-4">{product.category.name}</td>
                 <td className="px-6 py-4">{product.price}</td>
                 <td className="px-6 py-4">
-                  {product.sizes.map((size) => size.size_name).join(", ")}
+                  {product.sizes.length > 0 ? (
+                    product.sizes.map((size) => size.size_name).join(", ")
+                  ) : (
+                    <span className="text-red-500">Out of Stock</span>
+                  )}
                 </td>
-                <td className="px-6 py-4 cursor-pointer" onClick={() => openConfirmationModal(product)}>
+                <td
+                  className="px-6 py-4 cursor-pointer"
+                  onClick={() => openConfirmationModal(product)}
+                >
                   <span
                     className={`px-2 py-1 text-xs font-semibold rounded-full ${
                       product.status === "Active"
@@ -191,7 +236,9 @@ const ProductsList = () => {
                 <td className="px-6 py-4">
                   <div className="flex space-x-2 justify-end">
                     <Button
-                      onClick={() => navigate(`/admin/products/edit/${product.id}`)}
+                      onClick={() =>
+                        navigate(`/admin/products/edit`, { state: { product } })
+                      }
                       className="px-3 py-1 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                     >
                       Edit

@@ -415,7 +415,7 @@ const ProductAdd = () => {
                   <input
                     type="number"
                     min="0"
-                    value={size.quantity || 0}
+                    value={size.quantity || ""}
                     onChange={(e) =>
                       handleSizeQuantityChange(
                         index,
