@@ -475,7 +475,7 @@ const ProductEdit = () => {
                   {image ? (
                     <div className="relative group">
                       <img
-                        src={image.url}
+                        src={`${APIURL}/${image.url}`}
                         alt={`Product ${index + 1}`}
                         className="w-full h-80 object-contain rounded-lg"
                       />
