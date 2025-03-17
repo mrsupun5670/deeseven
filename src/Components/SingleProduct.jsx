@@ -44,7 +44,7 @@ export default function SingleProduct() {
         setLoading(true);
         if (data.status) {
           setProduct(data.data);
-          setMainImage(data.data.images[0].image_url);
+          setMainImage(`${APIURL}/${data.data.images[0].image_url}`);
           setSubImages(data.data.images);
         } else {
           navigate("/error");
@@ -170,7 +170,7 @@ export default function SingleProduct() {
             {subImages.map((image, index) => (
               <img
                 key={index}
-                src={image.image_url}
+                src={`${APIURL}/${image.image_url}`}
                 alt={`Thumbnail ${index + 1}`}
                 className={`w-20 md:w:24 lg-w:32 h-full sm:h-20 object-cover cursor-pointer border rounded-md ${
                   mainImage === image ? "border-gray-400" : "border-gray-200"
