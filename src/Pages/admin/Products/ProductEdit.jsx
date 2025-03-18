@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Plus, Upload, X } from "lucide-react";
 
 const ProductEdit = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { product } = location.state || {};
   const APIURL = import.meta.env.VITE_API_URL;
 
@@ -16,14 +17,14 @@ const ProductEdit = () => {
   const [sizes, setSizes] = useState([]);
 
   const [fabricDetails, setFabricDetails] = useState([
-    { key: Date.now(), value: "" },
+    { key: "fabric-" + Date.now(), value: "" },
   ]);
-  const [note, setNote] = useState([{ key: Date.now(), value: "" }]);
+  const [note, setNote] = useState([{ key: "note-" + Date.now(), value: "" }]);
   const [fabricCare, setFabricCare] = useState([
-    { key: Date.now(), value: "" },
+    { key: "care-" + Date.now(), value: "" },
   ]);
   const [addOnFeatures, setAddOnFeatures] = useState([
-    { key: Date.now(), value: "" },
+    { key: "feature-" + Date.now(), value: "" },
   ]);
 
   const [productTitle, setProductTitle] = useState("");
@@ -31,26 +32,51 @@ const ProductEdit = () => {
   const [productCategory, setProductCategory] = useState("");
   const [productPrice, setProductPrice] = useState("");
 
+  const generateUniqueId = (prefix) => {
+    return `${prefix}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  };
+
   useEffect(() => {
     if (product) {
-      console.log(product);
       setProductTitle(product.title);
       setProductDescription(product.description);
       setProductCategory(product.category.id);
       setSelectedSubCategory(product.sub_category.id);
       setProductPrice(product.price);
-      setSizes(product.sizes);
+      setSizes(product.sizes || []);
+     
       setFabricDetails(
-        product.fabric.map((fabric) => ({ key: Date.now(), value: fabric }))
+        product.fabric.map((fabric, index) => ({ 
+          key: generateUniqueId(`fabric-${index}`), 
+          value: fabric 
+        }))
       );
-      setNote(product.notes.map((note) => ({ key: Date.now(), value: note })));
+      
+      setNote(
+        product.notes.map((note, index) => ({ 
+          key: generateUniqueId(`note-${index}`), 
+          value: note 
+        }))
+      );
+      
       setFabricCare(
-        product.fabric_care.map((care) => ({ key: Date.now(), value: care }))
+        product.fabric_care.map((care, index) => ({ 
+          key: generateUniqueId(`care-${index}`), 
+          value: care 
+        }))
       );
+      
       setAddOnFeatures(
-        product.add_on_features.map((feature) => ({
-          key: Date.now(),
+        product.add_on_features.map((feature, index) => ({
+          key: generateUniqueId(`feature-${index}`),
           value: feature,
+        }))
+      );
+
+      setImages(
+        product.images.map((image) => ({
+          url: `/${image}`,
+          name: image.split("/").pop(),
         }))
       );
     }
@@ -92,7 +118,7 @@ const ProductEdit = () => {
   }, []);
 
   useEffect(() => {
-    if (selectedSubCategory) {
+    if (selectedSubCategory && !product) {
       const fetchSizesBySubCategory = async () => {
         try {
           const response = await fetch(`${APIURL}/GetSizeBySubCategory.php`, {
@@ -120,7 +146,7 @@ const ProductEdit = () => {
 
       fetchSizesBySubCategory();
     }
-  }, [selectedSubCategory]);
+  }, [selectedSubCategory, product]);
 
   const handleImageChange = (e) => {
     const files = e.target.files;
@@ -175,6 +201,7 @@ const ProductEdit = () => {
     }
 
     const productData = {
+      productId: product.id,
       title: productTitle,
       description: productDescription,
       category_id: productCategory,
@@ -194,13 +221,13 @@ const ProductEdit = () => {
     formData.append("productData", JSON.stringify(productData));
 
     images.forEach((image, index) => {
-      if (image) {
+      if (image && image.file) {
         formData.append(`image_${index}`, image.file);
       }
     });
 
     try {
-      const response = await fetch(`${APIURL}/AddProductController.php`, {
+      const response = await fetch(`${APIURL}/UpdateProductController.php`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
@@ -211,16 +238,17 @@ const ProductEdit = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.response === true) {
-          toast.success("Product added successfully!");
+          toast.success("Product updated successfully!");
+          navigate('/');
         } else {
           toast.error(data.message);
         }
       } else {
-        toast.error("Failed to add product. Please try again later.");
+        toast.error("Failed to update product. Please try again later.");
       }
     } catch (error) {
       console.error("Error saving product:", error);
-      toast.error("Failed to save product. Please try again later.");
+      toast.error("Failed to update product. Please try again later.");
     }
   };
 
@@ -297,22 +325,9 @@ const ProductEdit = () => {
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter note"
                   />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveField(index, setNote)}
-                    className="px-2 text-red-500"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={() => handleAddField(setNote)}
-                className="px-2 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
+            
             </div>
 
             <div className="space-y-2">
@@ -430,7 +445,7 @@ const ProductEdit = () => {
             <h2 className="text-sm font-medium">Sizes and Quantities</h2>
             <div className="grid grid-cols-2 gap-4">
               {sizes.map((size, index) => (
-                <div key={size.key} className="flex items-center space-x-2">
+                <div key={size.size_id} className="flex items-center space-x-2">
                   <input
                     type="text"
                     value={size.size_name}
@@ -511,6 +526,7 @@ const ProductEdit = () => {
         <div className="flex justify-between md:justify-end space-x-4">
           <button
             type="button"
+            onClick={() => navigate('/')}
             className="px-4 py-2 border rounded-lg hover:bg-gray-50 w-1/3 md:w-full"
           >
             Cancel

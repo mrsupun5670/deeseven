@@ -132,6 +132,37 @@ const ProductsList = () => {
     }
   };
 
+  const handleEdit = async (productId) => {
+    try {
+      const response = await fetch(
+        `${APIURL}/fetchSingleProduct.php?id=`+productId,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          }
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status) {
+          navigate(`../edit/${productId}`, { state: { product: data.product } });
+        } else {
+          alert(data.message);
+          if (data.message === "Unauthorized") {
+            sessionStorage.clear();
+            window.location.href = "/";
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      alert("Failed to fetch product details. Please try again later.");
+    }
+  };
+
   const printPDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(16);
@@ -236,9 +267,7 @@ const ProductsList = () => {
                 <td className="px-6 py-4">
                   <div className="flex space-x-2 justify-end">
                     <Button
-                      onClick={() =>
-                        navigate(`/admin/products/edit`, { state: { product } })
-                      }
+                      onClick={() => handleEdit(product.id)}
                       className="px-3 py-1 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                     >
                       Edit

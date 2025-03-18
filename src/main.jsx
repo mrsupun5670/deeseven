@@ -20,12 +20,13 @@ import CategoryView from "./Pages/CategoryView.jsx";
 import CartProvider from "./context/CartProvider.jsx";
 import SingleProductPage from "./Pages/singleProductView.jsx";
 import Store from "./Pages/Store.jsx";
+import NotFound from "./Pages/NotFound.jsx";
 
 createRoot(document.getElementById("root")).render(
   <CartProvider>
     <BrowserRouter>
       <Routes>
-        <Route path="*" element={<div>404 - Page Not Found</div>} />
+        <Route path="*" element={<NotFound/>} />
         <Route path="/" element={<Index />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/myaccount" element={<MyAccount />} />
@@ -45,7 +46,7 @@ createRoot(document.getElementById("root")).render(
             <Route index element={<ProductsList />} />
             <Route path="view" element={<ProductsList />} />
             <Route path="add" element={<ProductAdd />} />
-            <Route path="edit" element={<ProductEdit />} />
+            <Route path="edit/:id" element={<ProductEdit />} />
             <Route path="categories" element={<ProductCategories />} />
           </Route>
 
