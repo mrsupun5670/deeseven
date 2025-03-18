@@ -175,7 +175,7 @@ export default function SingleProduct() {
                 className={`w-20 md:w-28 lg:w-32 h-full sm:h-20 object-cover cursor-pointer border rounded-md ${
                   mainImage === image ? "border-gray-400" : "border-gray-200"
                 } hover:border-gray-400`}
-                onClick={() => setMainImage(image.image_url)}
+                onClick={() => setMainImage(`${APIURL}/${image.image_url}`)}
               />
             ))}
           </div>

@@ -83,6 +83,7 @@ function CategoryView({ title }) {
                 {/* Image wrapper with aspect ratio */}
                 <Link to={`/product/${item.product_id}`} key={item.product_id}>
                   <div className="relative pb-[125%] overflow-hidden">
+                    {console.log()}
                     <img
                       src={
                         `${APIURL}/${item?.images[0].image_url}` || "/images/placeholder.jpg"
