@@ -166,16 +166,16 @@ export default function SingleProduct() {
       ) : (
         <section className="container mx-auto flex flex-col lg:flex-row gap-4 px-2 sm:px-6">
           {/* Thumbnails - Hidden on small screens */}
-          <div className="hidden md:flex flex-col gap-4">
+          <div className="hidden lg:flex flex-col gap-4">
             {subImages.map((image, index) => (
               <img
                 key={index}
                 src={`${APIURL}/${image.image_url}`}
                 alt={`Thumbnail ${index + 1}`}
-                className={`w-20 md:w:24 lg-w:32 h-full sm:h-20 object-cover cursor-pointer border rounded-md ${
+                className={`w-20 md:w-28 lg:w-32 h-full sm:h-20 object-cover cursor-pointer border rounded-md ${
                   mainImage === image ? "border-gray-400" : "border-gray-200"
                 } hover:border-gray-400`}
-                onClick={() => setMainImage(image.image_url)}
+                onClick={() => setMainImage(`${APIURL}/${image.image_url}`)}
               />
             ))}
           </div>
@@ -185,16 +185,16 @@ export default function SingleProduct() {
             <ProductImage
               mainImage={mainImage}
               product={product}
-              className="object-contain w-full h-[350px] sm:h-[500px] md:h-[700px]"
+              className="object-cover w-full h-[350px] md:h-[700px]"
             />
           </div>
 
           {/* Thumbnails - Visible only on small screens */}
-          <div className="md:hidden flex gap-2 p-2 sm:p-6 overflow-auto">
+          <div className="lg:hidden flex gap-2 p-2 sm:p-6 overflow-auto">
             {subImages.map((image, index) => (
               <img
                 key={index}
-                src={image.image_url}
+                src={`${APIURL}/${image.image_url}`}
                 alt={`Thumbnail ${index + 1}`}
                 className={`w-16 sm:w-20 h-16 sm:h-20 object-cover cursor-pointer border rounded-md ${
                   mainImage === image ? "border-gray-400" : "border-gray-200"
