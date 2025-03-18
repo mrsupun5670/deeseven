@@ -35,6 +35,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/product/:id" element={<SingleProductPage />} />
         <Route path="/account" element={<MyAccount />} />
         <Route path="/store" element={<Store />} />
+        <Route path="/checkout" element={<Checkout />} />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />
