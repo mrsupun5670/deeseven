@@ -269,22 +269,10 @@ const ProductAdd = () => {
                     className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
                     placeholder="Enter note"
                   />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveField(index, setNote)}
-                    className="px-2 text-red-500"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={() => handleAddField(setNote)}
-                className="px-2 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
-              >
-                <Plus className="w-4 h-4" />
-              </button>
+             
             </div>
 
             <div className="space-y-2">
