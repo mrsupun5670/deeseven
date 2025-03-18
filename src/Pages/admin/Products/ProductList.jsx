@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
-import { Download, Plus } from "lucide-react";
+import { Download, Plus, Trash2, Pencil } from "lucide-react";
 
 const APIURL = import.meta.env.VITE_API_URL;
 
@@ -135,13 +135,13 @@ const ProductsList = () => {
   const handleEdit = async (productId) => {
     try {
       const response = await fetch(
-        `${APIURL}/fetchSingleProduct.php?id=`+productId,
+        `${APIURL}/fetchSingleProduct.php?id=${productId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-          }
+          },
         }
       );
 
@@ -179,7 +179,7 @@ const ProductsList = () => {
     const tableRows = products.map((product) => [
       product.id,
       product.title,
-      product.category,
+      product.category.name,
       product.price,
       product.sizes.map((size) => size.size_name).join(", "),
       product.status,
@@ -270,7 +270,7 @@ const ProductsList = () => {
                       onClick={() => handleEdit(product.id)}
                       className="px-3 py-1 text-white bg-blue-600 rounded-lg hover:bg-blue-700"
                     >
-                      Edit
+                      <Pencil size={16} />
                     </Button>
                   </div>
                 </td>

@@ -2,51 +2,18 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Plus, X, Upload, ArrowLeft, Save, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-interface ProductData {
-  id?: number;
-  product_id?: number;
-  title?: string;
-  description?: string;
-  price?: number;
-  category?: { id: string; name: string };
-  sub_category?: { id: string; name: string };
-  images?: string[];
-  sizes?: Array<{ size_id: string; size_name: string; quantity: number }>;
-  fabric?: string[];
-  fabric_care?: string[];
-  notes?: string[];
-  add_on_features?: string[];
-}
-
-interface Category {
-  category_id: string;
-  category_name: string;
-}
-
-interface SubCategory {
-  sub_category_id: string;
-  sub_category_name: string;
-  category_id?: string;
-}
-
-interface Size {
-  size_id: string;
-  size_name: string;
-  quantity?: number;
-}
+import { cn } from "../../../lib/utils";
 
 const ProductEdit = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { product } = (location.state || {}) as { product?: any };
+  const { product } = location.state || {};
   const APIURL = import.meta.env.VITE_API_URL || "";
   
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef(null);
 
   // State for product data
-  const [productData, setProductData] = useState<ProductData>({
+  const [productData, setProductData] = useState({
     title: "",
     description: "",
     price: 0,
@@ -61,30 +28,28 @@ const ProductEdit = () => {
   });
   
   // State for UI data
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
-  const [selectedImages, setSelectedImages] = useState<Array<File | null>>([null, null, null]);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([null, null, null]);
+  const [imageUrls, setImageUrls] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   
-  // Animation control
   const [activeSection, setActiveSection] = useState("basic");
   
-  // Reference for section scrolling
   const sectionRefs = {
-    basic: useRef<HTMLDivElement>(null),
-    details: useRef<HTMLDivElement>(null),
-    inventory: useRef<HTMLDivElement>(null),
-    images: useRef<HTMLDivElement>(null)
+    basic: useRef(null),
+    details: useRef(null),
+    inventory: useRef(null),
+    images: useRef(null)
   };
 
   // Helper functions
-  const createArrayWithEmptyString = (length: number) => Array(length).fill("");
+  const createArrayWithEmptyString = (length) => Array(length).fill("");
   
-  const mapProductDataFromAPI = (apiData: any): ProductData => {
+  const mapProductDataFromAPI = (apiData) => {
     // Parse the API response to our format
-    if (!apiData) return {} as ProductData;
+    if (!apiData) return {};
     
     try {
       return {
@@ -100,21 +65,21 @@ const ProductEdit = () => {
           id: apiData.sub_category_id.toString(), 
           name: apiData.sub_category_name 
         },
-        images: apiData.images.map((img: any) => img.image_url),
-        sizes: (apiData.sizes || []).map((size: any) => ({
+        images: apiData.images.map((img) => img.image_url),
+        sizes: (apiData.sizes || []).map((size) => ({
           size_id: size.size_id || size.id || "",
           size_name: size.size_name,
           quantity: Number(size.quantity) || 0
         })),
-        fabric: (apiData.fabric || []).map((f: any) => f.about),
-        fabric_care: (apiData.fabric_care || []).map((f: any) => f.fabric_care),
+        fabric: (apiData.fabric || []).map((f) => f.about),
+        fabric_care: (apiData.fabric_care || []).map((f) => f.fabric_care),
         notes: apiData.note ? [apiData.note] : [""],
-        add_on_features: (apiData.add_on_features || []).map((f: any) => f.features)
+        add_on_features: (apiData.add_on_features || []).map((f) => f.features)
       };
     } catch (error) {
       console.error("Error mapping product data:", error);
       toast.error("Error processing product data");
-      return {} as ProductData;
+      return {};
     }
   };
 
@@ -192,7 +157,7 @@ const ProductEdit = () => {
           const data = await response.json();
           if (data.response === true) {
             // Map existing quantities to the new sizes
-            const newSizes = data.sizes.map((size: any) => {
+            const newSizes = data.sizes.map((size) => {
               // Find if this size exists in current sizes to keep the quantity
               const existingSize = productData.sizes?.find(s => s.size_id === size.size_id);
               return {
@@ -219,26 +184,26 @@ const ProductEdit = () => {
   }, [productData.sub_category?.id, APIURL, product]);
 
   // Update handler for array fields
-  const handleArrayUpdate = (field: keyof ProductData, index: number, value: string) => {
+  const handleArrayUpdate = (field, index, value) => {
     setProductData(prev => {
-      const currentArray = [...(prev[field] as string[] || [])];
+      const currentArray = [...(prev[field] || [])];
       currentArray[index] = value;
       return { ...prev, [field]: currentArray };
     });
   };
 
   // Add new item to array field
-  const handleAddArrayItem = (field: keyof ProductData) => {
+  const handleAddArrayItem = (field) => {
     setProductData(prev => {
-      const currentArray = [...(prev[field] as string[] || [])];
+      const currentArray = [...(prev[field] || [])];
       return { ...prev, [field]: [...currentArray, ""] };
     });
   };
 
   // Remove item from array field
-  const handleRemoveArrayItem = (field: keyof ProductData, index: number) => {
+  const handleRemoveArrayItem = (field, index) => {
     setProductData(prev => {
-      const currentArray = [...(prev[field] as string[] || [])];
+      const currentArray = [...(prev[field] || [])];
       if (currentArray.length > 1) {
         currentArray.splice(index, 1);
         return { ...prev, [field]: currentArray };
@@ -248,7 +213,7 @@ const ProductEdit = () => {
   };
 
   // Handle size quantity change
-  const handleSizeQuantityChange = (index: number, quantity: number) => {
+  const handleSizeQuantityChange = (index, quantity) => {
     setProductData(prev => {
       const newSizes = [...(prev.sizes || [])];
       if (newSizes[index]) {
@@ -259,7 +224,7 @@ const ProductEdit = () => {
   };
 
   // Handle image selection
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
       const newImages = [...selectedImages];
@@ -278,7 +243,7 @@ const ProductEdit = () => {
   };
 
   // Remove image
-  const handleRemoveImage = (index: number) => {
+  const handleRemoveImage = (index) => {
     const newImages = [...selectedImages];
     const newImageUrls = [...imageUrls];
     
@@ -290,7 +255,7 @@ const ProductEdit = () => {
   };
 
   // Handle category change
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
     const category = categories.find(c => c.category_id === categoryId);
     
@@ -303,7 +268,7 @@ const ProductEdit = () => {
   };
 
   // Handle sub-category change
-  const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSubCategoryChange = (e) => {
     const subCategoryId = e.target.value;
     const subCategory = subCategories.find(sc => sc.sub_category_id === subCategoryId);
     
@@ -315,7 +280,7 @@ const ProductEdit = () => {
   };
 
   // Form submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSaving(true);
     
@@ -412,9 +377,9 @@ const ProductEdit = () => {
   };
 
   // Scroll to section
-  const scrollToSection = (section: string) => {
+  const scrollToSection = (section) => {
     setActiveSection(section);
-    const sectionRef = sectionRefs[section as keyof typeof sectionRefs]?.current;
+    const sectionRef = sectionRefs[section]?.current;
     if (sectionRef) {
       sectionRef.scrollIntoView({ behavior: 'smooth' });
     }
@@ -432,7 +397,7 @@ const ProductEdit = () => {
       ) : (
         <>
           {/* Header with navigation */}
-          <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md border-b border-border/40 shadow-sm">
+          <header className="sticky top-0 z-10  w-full bg-background/80 backdrop-blur-md border-b border-border/40 shadow-sm">
             <div className="container flex h-16 items-center justify-between">
               <div className="flex items-center space-x-4">
                 <button 
@@ -444,34 +409,7 @@ const ProductEdit = () => {
                 <h1 className="text-xl font-semibold">Edit Product</h1>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <button
-                  type="button"
-                  onClick={() => navigate('/')}
-                  className="btn-secondary"
-                  disabled={isSaving}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  className="btn-primary"
-                  disabled={isSaving}
-                >
-                  {isSaving ? (
-                    <>
-                      <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin mr-2"></span>
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save Changes
-                    </>
-                  )}
-                </button>
-              </div>
+            
             </div>
           </header>
           
@@ -501,7 +439,7 @@ const ProductEdit = () => {
               <section 
                 ref={sectionRefs.basic}
                 className="space-y-6 card-glass p-8"
-                style={{ "--delay": "1" } as React.CSSProperties}
+                style={{ "--delay": "1" }}
               >
                 <div className="flex items-center space-x-2">
                   <div className="h-8 w-1 bg-primary rounded-full"></div>
@@ -509,7 +447,7 @@ const ProductEdit = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="field-group" style={{ "--delay": "1" } as React.CSSProperties}>
+                  <div className="field-group" style={{ "--delay": "1" }}>
                     <label className="block text-sm font-medium mb-1 ml-1">Product Title</label>
                     <input
                       type="text"
@@ -520,7 +458,7 @@ const ProductEdit = () => {
                     />
                   </div>
                   
-                  <div className="field-group" style={{ "--delay": "2" } as React.CSSProperties}>
+                  <div className="field-group" style={{ "--delay": "2" }}>
                     <label className="block text-sm font-medium mb-1 ml-1">Price</label>
                     <input
                       type="number"
@@ -528,11 +466,12 @@ const ProductEdit = () => {
                       placeholder="0.00"
                       value={productData.price || ""}
                       onChange={(e) => setProductData(prev => ({ ...prev, price: Number(e.target.value) }))}
+                    min={0}
                     />
                   </div>
                 </div>
                 
-                <div className="field-group" style={{ "--delay": "3" } as React.CSSProperties}>
+                <div className="field-group" style={{ "--delay": "3" }}>
                   <label className="block text-sm font-medium mb-1 ml-1">Description</label>
                   <textarea
                     className="input-field"
@@ -544,7 +483,7 @@ const ProductEdit = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="field-group" style={{ "--delay": "4" } as React.CSSProperties}>
+                  <div className="field-group" style={{ "--delay": "4" }}>
                     <label className="block text-sm font-medium mb-1 ml-1">Category</label>
                     <select
                       className="input-field"
@@ -560,7 +499,7 @@ const ProductEdit = () => {
                     </select>
                   </div>
                   
-                  <div className="field-group" style={{ "--delay": "5" } as React.CSSProperties}>
+                  <div className="field-group" style={{ "--delay": "5" }}>
                     <label className="block text-sm font-medium mb-1 ml-1">Sub Category</label>
                     <select
                       className="input-field"
@@ -584,7 +523,7 @@ const ProductEdit = () => {
               <section 
                 ref={sectionRefs.details}
                 className="space-y-6 card-glass p-8"
-                style={{ "--delay": "2" } as React.CSSProperties}
+                style={{ "--delay": "2" }}
               >
                 <div className="flex items-center space-x-2">
                   <div className="h-8 w-1 bg-primary rounded-full"></div>
@@ -658,7 +597,7 @@ const ProductEdit = () => {
                   
                   {/* Notes */}
                   <div className="space-y-4">
-                    <h3 className="text-base font-medium">Notes</h3>
+                    <h3 className="text-base font-medium">Note</h3>
                     {productData.notes?.map((item, index) => (
                       <div key={`note-${index}`} className="flex items-center space-x-2">
                         <input
@@ -668,24 +607,10 @@ const ProductEdit = () => {
                           value={item}
                           onChange={(e) => handleArrayUpdate('notes', index, e.target.value)}
                         />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveArrayItem('notes', index)}
-                          className="p-2 rounded-full hover:bg-red-50 text-red-500 transition-colors"
-                          disabled={productData.notes?.length === 1}
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
+                      
                       </div>
                     ))}
-                    <button
-                      type="button"
-                      onClick={() => handleAddArrayItem('notes')}
-                      className="flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                    >
-                      <Plus className="h-4 w-4 mr-1" />
-                      Add Note
-                    </button>
+                   
                   </div>
                   
                   {/* Add-on Features */}
@@ -726,7 +651,7 @@ const ProductEdit = () => {
               <section 
                 ref={sectionRefs.inventory}
                 className="space-y-6 card-glass p-8"
-                style={{ "--delay": "3" } as React.CSSProperties}
+                style={{ "--delay": "3" }}
               >
                 <div className="flex items-center space-x-2">
                   <div className="h-8 w-1 bg-primary rounded-full"></div>
@@ -767,7 +692,7 @@ const ProductEdit = () => {
               <section 
                 ref={sectionRefs.images}
                 className="space-y-6 card-glass p-8"
-                style={{ "--delay": "4" } as React.CSSProperties}
+                style={{ "--delay": "4" }}
               >
                 <div className="flex items-center space-x-2">
                   <div className="h-8 w-1 bg-primary rounded-full"></div>
@@ -830,8 +755,8 @@ const ProductEdit = () => {
               </section>
               
               {/* Action buttons - sticky bottom bar */}
-              <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border/40 p-4 shadow-lg z-40">
-                <div className="container flex justify-end space-x-4">
+              <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border/40 p-4 shadow-lg">
+                <div className="container flex justify-between md:justify-end space-x-4">
                   <button
                     type="button"
                     onClick={() => navigate('/')}
@@ -843,7 +768,7 @@ const ProductEdit = () => {
                   <button
                     type="button"
                     onClick={handleSubmit}
-                    className="btn-primary"
+                    className="btn-primary "
                     disabled={isSaving}
                   >
                     {isSaving ? (
@@ -854,7 +779,7 @@ const ProductEdit = () => {
                     ) : (
                       <>
                         <Save className="h-4 w-4 mr-2" />
-                        Save Changes
+                        Update Changes
                       </>
                     )}
                   </button>
