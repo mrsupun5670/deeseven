@@ -1,32 +1,5 @@
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useState } from "react";
 
-const initialState = {
-  firstName: "",
-  lastName: "",
-  streetAddress: "",
-  additionalInfo: "",
-  district: "",
-  city: "",
-  emailAddress: "",
-  mobileNumber: "",
-};
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "SET_CUSTOMER_DATA":
-      return {
-        ...state,
-        ...action.payload,
-      };
-    case "UPDATE_FIELD":
-      return {
-        ...state,
-        [action.field]: action.value,
-      };
-    default:
-      return state;
-  }
-};
 
 const BillingDetails = () => {
   const APIURL = import.meta.env.VITE_API_URL;
@@ -81,20 +54,9 @@ const BillingDetails = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.response) {
+            console.log(data.customer);
             setCustomer(data.customer);
-            dispatch({
-              type: "SET_CUSTOMER_DATA",
-              payload: {
-                firstName: data.customer.fname || "",
-                lastName: data.customer.lname || "",
-                streetAddress: data.customer.line1 || "",
-                additionalInfo: data.customer.line2 || "",
-                district: data.customer.district_id || "",
-                city: data.customer.city_id || "",
-                emailAddress: data.customer.email || "",
-                mobileNumber: data.customer.mobile || "",
-              },
-            });
+           
           } else {
             alert(data.message);
             if (data.message === "Unauthorized") {
@@ -115,28 +77,10 @@ const BillingDetails = () => {
     fetchCustomer();
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    dispatch({
-      type: "UPDATE_FIELD",
-      field: name,
-      value: value,
-    });
-  };
 
   const handleDistrictChange = async (e) => {
     const districtId = e.target.value;
-    dispatch({
-      type: "UPDATE_FIELD",
-      field: "district",
-      value: districtId,
-    });
-    dispatch({
-      type: "UPDATE_FIELD",
-      field: "city",
-      value: "",
-    });
-
+    
     try {
       const response = await fetch(
         `${APIURL}/GetCitiesByDistrictController.php?district_id=${districtId}`,
