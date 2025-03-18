@@ -41,7 +41,7 @@ function CategoryView({ title }) {
   }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const itemsPerPage = 16;
 
   const totalPages = Math.ceil(products.length / itemsPerPage);
 
@@ -85,7 +85,7 @@ function CategoryView({ title }) {
                   <div className="relative pb-[125%] overflow-hidden">
                     <img
                       src={
-                        item.images[0]?.image_url || "/images/placeholder.jpg"
+                        `${APIURL}/${item?.images[0].image_url}` || "/images/placeholder.jpg"
                       }
                       alt={item.title}
                       className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-105"

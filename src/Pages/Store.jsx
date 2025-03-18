@@ -13,7 +13,6 @@ function Store() {
     <>
         <Header />
         <ProductStore searchQuery={searchQuery} />
-        <Footer />
         <BottomNavBar />
         <Footer />
     </>

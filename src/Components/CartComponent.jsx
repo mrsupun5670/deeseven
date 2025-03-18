@@ -99,6 +99,10 @@ function CartComponent({ onClose }) {
     });
   };
 
+  const checkout = () => {
+
+  }
+
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   return (
@@ -207,7 +211,7 @@ function CartComponent({ onClose }) {
           <span>Total</span>
           <span className="font-medium">LKR {total.toLocaleString()}</span>
         </div>
-        <button className="w-full bg-black text-white py-3 rounded font-medium hover:bg-gray-800">
+        <button onClick={checkout} className="w-full bg-black text-white py-3 rounded font-medium hover:bg-gray-800">
           CHECKOUT
         </button>
         <button

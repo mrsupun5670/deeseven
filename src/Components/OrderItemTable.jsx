@@ -1,9 +1,9 @@
 import React from "react";
 
-export default function OrderItemTable({ items }) {
+export default function OrderItemTable({orderItems}) {
 
-  const validOrderItems = Array.isArray(items) ? items : [];
-
+  console.log(orderItems);
+  
   return (
     <div>
       <table className="w-full rounded-lg shadow">
@@ -24,16 +24,16 @@ export default function OrderItemTable({ items }) {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
-          {validOrderItems.length > 0 ? (
-            validOrderItems.map((orderItem) => (
-              <tr key={orderItem.order_item_id}>
+          {orderItems.length > 0 ? (
+            orderItems.map((orderItem, index) => (
+              <tr key={index}>
                 <td className="px-6 py-4">
-                  {orderItem.product_title} - {orderItem.size}
+                  {orderItem.title}
                 </td>
-                <td className="px-6 py-4">{orderItem.qty}</td>
+                <td className="px-6 py-4">{orderItem.order_item_qty}</td>
                 <td className="px-6 py-4">{orderItem.product_price}</td>
                 <td className="px-6 py-4">
-                  {orderItem.qty * orderItem.product_price}
+                  {orderItem.order_item_qty * orderItem.product_price}
                 </td>
               </tr>
             ))
