@@ -174,7 +174,7 @@ function CartComponent({ onClose }) {
             <div className="flex-1">
               <div className="flex justify-between">
                 <div>
-                  <h3 className="font-medium">{item.title}</h3>
+                  <h3 className="font-medium text-start">{item.title}</h3>
                   <p className="text-gray-500 text-sm text-start">
                     {item.size}
                   </p>

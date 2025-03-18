@@ -35,7 +35,7 @@ const SimilarProducts = ({ subCategory, productId }) => {
   };
 
   return (
-    <section className="container mx-auto mt-12 px-14">
+    <section className="container mx-auto mt-12">
       <h3 className="text-xl font-bold mb-6">You May Also Like</h3>
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {loading ? (

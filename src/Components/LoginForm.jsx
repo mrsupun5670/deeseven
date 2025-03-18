@@ -60,7 +60,7 @@ function LoginForm({ onClose, onSignUp }) {
         sessionStorage.setItem("user", JSON.stringify(data.user));
         setUserID(data.user.id);
         
-        // navigate(0);
+        navigate(0);
       } else if (data.response == true && data.role == "admin") {
         sessionStorage.setItem("userRole", "admin");
         sessionStorage.setItem("admin", JSON.stringify(data.user));
