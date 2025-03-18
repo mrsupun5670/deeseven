@@ -5,7 +5,6 @@ import SocialButton from "../Components/SocialButton";
 import model from "../assets/model.webp";
 import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { useNavigate } from "react-router";
-import { toast } from "react-toastify";
 
 function LoginForm({ onClose, onSignUp }) {
   const APIURL = import.meta.env.VITE_API_URL;
@@ -24,21 +23,18 @@ function LoginForm({ onClose, onSignUp }) {
   const syncSessionCart = async (id) => {
 
     const cart = JSON.parse(sessionStorage.getItem("cart"));
-
     if (cart) {
       try {
-        const cartWithID = cart.map((item) => ({...item, emailID: userID}))
+        const cartWithID = cart.map((item) => ({...item, emailID: id}))
 
-        const response = await fetch(`${APIURL}/SyncCartItems.php`, {
+        await fetch(`${APIURL}/SyncCartItems.php`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(cartWithID)
         });
-        const data = response.json();
 
-        
       } catch (error) {
         console.error("Error fetching cart items:", error);
       }
@@ -62,9 +58,9 @@ function LoginForm({ onClose, onSignUp }) {
       if (data.response == true && data.role == "customer") {
         sessionStorage.setItem("userRole", "customer");
         sessionStorage.setItem("user", JSON.stringify(data.user));
-        setUserID(data.user.id)
+        setUserID(data.user.id);
         
-        navigate(0);
+        // navigate(0);
       } else if (data.response == true && data.role == "admin") {
         sessionStorage.setItem("userRole", "admin");
         sessionStorage.setItem("admin", JSON.stringify(data.user));
