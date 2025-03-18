@@ -3,6 +3,7 @@ import { X, Minus, Plus, Share } from "lucide-react";
 import { useCart } from "../context/CartProvider";
 import { useNavigate } from "react-router";
 import HashLoader from "react-spinners/HashLoader";
+import { toast, ToastContainer } from "react-toastify";
 
 function CartComponent({ onClose }) {
   const APIURL = import.meta.env.VITE_API_URL;
@@ -12,13 +13,13 @@ function CartComponent({ onClose }) {
   const navigate = useNavigate();
   const [storedUserId, setStoredUserId] = useState(null);
 
+  const storedUser = JSON.parse(sessionStorage.getItem("user"));
   useEffect(() => {
     // Check if user is logged in
-    const storedUser = JSON.parse(sessionStorage.getItem("user"));
     if (storedUser) {
       syncCartWithDatabase(storedUser.id);
       setStoredUserId(storedUser.id);
-    }
+    }  
   }, []);
 
   const syncCartWithDatabase = async (userId) => {
@@ -59,7 +60,11 @@ function CartComponent({ onClose }) {
       const data = await response.json();
 
       if (data.status) {
-        dispatch({ type: "SYNC_CART", payload: data.cart });
+        dispatch({ type: "REMOVE_FROM_CART",
+          payload: {
+            product_id,
+            size,
+          }, });
       }
     } catch (error) {
       console.error("Error removing item from database:", error);
@@ -87,7 +92,7 @@ function CartComponent({ onClose }) {
 
   const removeItem = (id, product_id, size) => {
     
-    if ((storedUserId)) {
+    if (storedUserId) {
       removeItemFromDatabase(storedUserId, product_id, size);
     }
     dispatch({
@@ -100,7 +105,16 @@ function CartComponent({ onClose }) {
   };
 
   const checkout = () => {
-
+      if(cart.length == 0) {
+        return;
+      } else {
+        if(!storedUserId) {
+          toast.error("please Sign in to continue", {theme: "dark"});
+        } else {
+          navigate("/checkout");
+        }
+        
+      }
   }
 
   const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -143,14 +157,14 @@ function CartComponent({ onClose }) {
 
       {/* Cart Items */}
       <div className="flex-1 overflow-auto p-4 space-y-4">
-        {cart.map((item) => (
-          <div key={`${item.id}-${item.size}`} className="flex gap-4">
+        {cart.map((item, index) => (
+          <div key={index} className="flex gap-4">
             <div
               onClick={() => handleClick(item)}
               className="relative w-24 h-24 rounded cursor-pointer overflow-hidden"
             >
               <img
-                src={item.image}
+                src={storedUser? APIURL +"/"+ item.image: item.image}
                 alt={item.title}
                 className="w-full h-full object-cover"
               />
@@ -214,6 +228,7 @@ function CartComponent({ onClose }) {
         <button onClick={checkout} className="w-full bg-black text-white py-3 rounded font-medium hover:bg-gray-800">
           CHECKOUT
         </button>
+        <ToastContainer />
         <button
           className="w-full py-3 text-center hover:bg-gray-100 rounded"
           onClick={onClose}
