@@ -27,8 +27,8 @@ const BottomNavBar = () => {
     if (tab === "cart") {
       setIsCartOpen(!isCartOpen);
     } else if (tab === "profile") {
-      if (sessionStorage.getItem("userRole") === "customer") {
-        const user = JSON.parse(sessionStorage.getItem("user"));
+      if (localStorage.getItem("userRole") === "customer") {
+        const user = JSON.parse(localStorage.getItem("user"));
         navigate("/account");
       } else {
         setIsSignInOpen(!isSignInOpen);

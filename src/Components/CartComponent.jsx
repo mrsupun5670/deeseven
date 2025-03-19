@@ -13,7 +13,7 @@ function CartComponent({ onClose }) {
   const navigate = useNavigate();
   const [storedUserId, setStoredUserId] = useState(null);
 
-  const storedUser = JSON.parse(sessionStorage.getItem("user"));
+  const storedUser = JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
     // Check if user is logged in
     if (storedUser) {

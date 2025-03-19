@@ -1,5 +1,3 @@
-import React from 'react'
-
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -110,8 +108,8 @@ const ProductEdit = () => {
             
             if (data.message === "Unauthorized") {
               sessionStorage.removeItem("authToken");
-              sessionStorage.removeItem("userRole");
-              sessionStorage.removeItem("admin");
+              localStorage.removeItem("userRole");
+              localStorage.removeItem("admin");
               navigate("/");
             }
           }

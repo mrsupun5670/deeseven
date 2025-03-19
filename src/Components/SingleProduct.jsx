@@ -28,7 +28,7 @@ export default function SingleProduct() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = JSON.parse(sessionStorage.getItem("user"));
+    const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser != null) {
       setStoredUserId(storedUser.id);
     }

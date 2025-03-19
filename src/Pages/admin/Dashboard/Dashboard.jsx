@@ -38,8 +38,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     const checkUserLogin = () => {
-      if(sessionStorage.getItem("userRole") !== "admin") {
-        if(sessionStorage.getItem("admin") === null) {
+      if(localStorage.getItem("userRole") !== "admin") {
+        if(localStorage.getItem("admin") === null) {
         navigate("/");
         }
       }
