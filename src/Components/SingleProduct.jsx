@@ -181,7 +181,7 @@ export default function SingleProduct() {
           </div>
 
           {/* Main Image */}
-          <div className="flex justify-center items-center w-full p-2 sm:p-6">
+          <div className="flex justify-center items-center w-full md:w-3/4 lg:w-1/2 p-2 sm:p-6">
             <ProductImage
               mainImage={mainImage}
               product={product}
@@ -199,7 +199,7 @@ export default function SingleProduct() {
                 className={`w-16 sm:w-20 h-16 sm:h-20 object-cover cursor-pointer border rounded-md ${
                   mainImage === image ? "border-gray-400" : "border-gray-200"
                 } hover:border-gray-400`}
-                onClick={() => setMainImage(image.image_url)}
+                onClick={() => setMainImage(`${APIURL}/${image.image_url}`)}
               />
             ))}
           </div>
