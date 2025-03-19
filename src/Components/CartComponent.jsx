@@ -109,11 +109,10 @@ function CartComponent({ onClose }) {
         return;
       } else {
         if(!storedUserId) {
-          toast.error("please Sign in to continue", {theme: "dark"});
+          toast.error("please Sign in to continue", {theme: "colored"});
         } else {
-          navigate("/checkout");
+          navigate("/checkout", {state: { userID: storedUserId}});
         }
-        
       }
   }
 

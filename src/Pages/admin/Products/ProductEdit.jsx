@@ -1,3 +1,5 @@
+import React from 'react'
+
 import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -793,4 +795,4 @@ const ProductEdit = () => {
   );
 };
 
-export default ProductEdit;
+export default ProductEdit
