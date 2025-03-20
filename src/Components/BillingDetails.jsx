@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 const BillingDetails = () => {
   const APIURL = import.meta.env.VITE_API_URL;
 
-  const [formData, dispatch] = useReducer(reducer, initialState);
   const [districts, setDistricts] = useState([]);
   const [cities, setCities] = useState([]);
   const [customer, setCustomer] = useState(null);
@@ -33,7 +32,7 @@ const BillingDetails = () => {
 
     const fetchCustomer = async () => {
       try {
-        const user = JSON.parse(sessionStorage.getItem("user"));
+        const user = JSON.parse(localStorage.getItem("user"));
         if (!user) {
           alert("User data not found. Please log in again.");
           sessionStorage.clear();
@@ -42,7 +41,7 @@ const BillingDetails = () => {
         }
 
         const response = await fetch(
-          `${APIURL}/GetCheckoutDataController.php?id=${user.customer_id}`,
+          `${APIURL}/GetCheckoutDataController.php?id=${user.id}`,
           {
             method: "GET",
             headers: {
@@ -116,41 +115,38 @@ const BillingDetails = () => {
             <input
               type="text"
               placeholder="First Name"
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
+              name="firstName"             
               className="p-2 border rounded w-full"
             />
             <input
+            require
               type="text"
               placeholder="Last Name"
               name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
+              
               className="p-2 border rounded w-full"
             />
           </div>
           <input
+          required
             type="text"
             placeholder="Street Address"
             name="streetAddress"
-            value={formData.streetAddress}
-            onChange={handleChange}
+            value={""}
+            onChange={""}
             className="p-2 border rounded w-full"
           />
           <input
             type="text"
             placeholder="Additional Address Info"
             name="additionalInfo"
-            value={formData.additionalInfo}
-            onChange={handleChange}
             className="p-2 border rounded w-full"
           />
 
           <div className="flex gap-4 text-gray-400">
             <select
               name="district"
-              value={formData.district}
+              value={""}
               onChange={handleDistrictChange}
               className="p-2 border rounded w-full"
             >
@@ -166,11 +162,8 @@ const BillingDetails = () => {
                   {district.name}
                 </option>
               ))}
-            </select>
-            <select
-              name="city"
-              value={formData.city}
-              onChange={handleChange}
+          </select>
+            <select name="city"
               className="p-2 border rounded w-full"
             >
               <option value="" className="text-gray-400" disabled>
@@ -188,8 +181,8 @@ const BillingDetails = () => {
             type="text"
             placeholder="Email Address"
             name="emailAddress"
-            value={formData.emailAddress}
-            onChange={handleChange}
+            value={""}
+            onChange={""}
             className="p-2 border rounded w-full"
           />
           <div className="flex gap-4">
@@ -197,8 +190,6 @@ const BillingDetails = () => {
               type="text"
               placeholder="Mobile Number"
               name="mobileNumber"
-              value={formData.mobileNumber}
-              onChange={handleChange}
               className="p-2 border rounded w-full"
             />
           </div>

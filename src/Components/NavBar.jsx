@@ -35,8 +35,8 @@ function NavBar() {
   };
 
   const handleSignInClick = () => {
-    if(sessionStorage.getItem("userRole") == "customer"){
-      var user = JSON.parse(sessionStorage.getItem("user"));
+    if(localStorage.getItem("userRole") == "customer"){
+      var user = JSON.parse(localStorage.getItem("user"));
       navigate('/account')
     } else {
       setIsSignInOpen(true);

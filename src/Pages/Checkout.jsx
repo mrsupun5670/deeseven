@@ -3,10 +3,15 @@ import OrderDetails from "../Components/OrderDetails";
 import BillingDetails from "../Components/BillingDetails";
 import ShippingDetails from "../Components/ShippingDetails";
 import logo from "../assets/logo.png";
+import { useLocation } from "react-router";
 
 const APIURL = import.meta.env.VITE_API_URL;
 
 export default function Checkout() {
+
+  const location = useLocation();
+  const { userID } = location.state || {};
+
   const [useBillingForShipping, setUseBillingForShipping] = useState(true);
   const [loading, setLoading] = useState(true);
 
@@ -45,7 +50,7 @@ export default function Checkout() {
           </div>
 
           <div className="md:w-1/3 w-full order-1 md:order-2">
-            <OrderDetails />
+            <OrderDetails userID={userID} />
           </div>
         </div>
       </div>

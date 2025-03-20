@@ -9,7 +9,7 @@ import { useNavigate } from "react-router";
 import { useCart } from "../context/CartProvider";
 
 export default function MyAccount() {
-  if (sessionStorage.getItem("user") == null) {
+  if (localStorage.getItem("user") == null) {
     window.location.href = "/";
     return;
   }
@@ -23,7 +23,7 @@ export default function MyAccount() {
   const { dispatch } = useCart();
 
   const navigate = useNavigate();
-  const user = JSON.parse(sessionStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     if (user) {
@@ -62,8 +62,8 @@ export default function MyAccount() {
   };
 
   const logout = () => {
-    sessionStorage.removeItem("user");
-    sessionStorage.removeItem("userRole");
+    localStorage.removeItem("user");
+    localStorage.removeItem("userRole");
     sessionStorage.removeItem("authToken");
     sessionStorage.removeItem("cart");
 

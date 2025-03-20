@@ -64,8 +64,8 @@ const ProductAdd = () => {
 
             if (data.message === "Unauthorized") {
               sessionStorage.removeItem("authToken");
-              sessionStorage.removeItem("userRole");
-              sessionStorage.removeItem("admin");
+              localStorage.removeItem("userRole");
+              localStorage.removeItem("admin");
               navigate("/");
             }
           }

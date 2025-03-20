@@ -13,7 +13,7 @@ function CartComponent({ onClose }) {
   const navigate = useNavigate();
   const [storedUserId, setStoredUserId] = useState(null);
 
-  const storedUser = JSON.parse(sessionStorage.getItem("user"));
+  const storedUser = JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
     // Check if user is logged in
     if (storedUser) {
@@ -109,11 +109,10 @@ function CartComponent({ onClose }) {
         return;
       } else {
         if(!storedUserId) {
-          toast.error("please Sign in to continue", {theme: "dark"});
+          toast.error("please Sign in to continue", {theme: "colored"});
         } else {
-          navigate("/checkout");
+          navigate("/checkout", {state: { userID: storedUserId}});
         }
-        
       }
   }
 

@@ -40,8 +40,8 @@ const OrdersList = () => {
             alert(data.message);
             if (data.message === "Unauthorized") {
               sessionStorage.removeItem("authToken");
-              sessionStorage.removeItem("userRole");
-              sessionStorage.removeItem("admin");
+              localStorage.removeItem("userRole");
+              localStorage.removeItem("admin");
               window.location.href = "/";
             }
           }
