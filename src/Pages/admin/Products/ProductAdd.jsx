@@ -10,7 +10,6 @@ const ProductAdd = () => {
 
   const fileInputRef = useRef(null);
 
-  // State for product data
   const [productData, setProductData] = useState({
     title: "",
     description: "",
@@ -25,7 +24,6 @@ const ProductAdd = () => {
     add_on_features: [""]
   });
 
-  // State for UI data
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [selectedImages, setSelectedImages] = useState([null, null, null]);
@@ -41,16 +39,13 @@ const ProductAdd = () => {
     images: useRef(null)
   };
 
-  // Helper functions
   const createArrayWithEmptyString = (length) => Array(length).fill("");
 
-  // Load product data on component mount
   useEffect(() => {
     const loadProductData = async () => {
       setIsLoading(true);
 
       try {
-        // First load categories and sub-categories
         const response = await fetch(`${APIURL}/LoadAddProductUIData.php`, {
           method: "GET",
           headers: {
@@ -86,7 +81,6 @@ const ProductAdd = () => {
     loadProductData();
   }, [APIURL, navigate]);
 
-  // Load sizes when sub-category changes
   useEffect(() => {
     const loadSizes = async () => {
       const subCategoryId = productData.sub_category?.id;
@@ -128,7 +122,6 @@ const ProductAdd = () => {
     }
   }, [productData.sub_category?.id, APIURL]);
 
-  // Update handler for array fields
   const handleArrayUpdate = (field, index, value) => {
     setProductData(prev => {
       const currentArray = [...(prev[field] || [])];
@@ -137,7 +130,6 @@ const ProductAdd = () => {
     });
   };
 
-  // Add new item to array field
   const handleAddArrayItem = (field) => {
     setProductData(prev => {
       const currentArray = [...(prev[field] || [])];
@@ -145,7 +137,6 @@ const ProductAdd = () => {
     });
   };
 
-  // Remove item from array field
   const handleRemoveArrayItem = (field, index) => {
     setProductData(prev => {
       const currentArray = [...(prev[field] || [])];
@@ -157,7 +148,6 @@ const ProductAdd = () => {
     });
   };
 
-  // Handle size quantity change
   const handleSizeQuantityChange = (index, quantity) => {
     setProductData(prev => {
       const newSizes = [...(prev.sizes || [])];
@@ -168,7 +158,6 @@ const ProductAdd = () => {
     });
   };
 
-  // Handle image selection
   const handleImageSelect = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
@@ -187,7 +176,6 @@ const ProductAdd = () => {
     }
   };
 
-  // Remove image
   const handleRemoveImage = (index) => {
     const newImages = [...selectedImages];
     const newImageUrls = [...imageUrls];
@@ -199,7 +187,6 @@ const ProductAdd = () => {
     setImageUrls(newImageUrls);
   };
 
-  // Handle category change
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
     const category = categories.find(c => c.category_id === categoryId);
@@ -207,12 +194,12 @@ const ProductAdd = () => {
     setProductData(prev => ({
       ...prev,
       category: { id: categoryId, name: category?.category_name || "" },
-      sub_category: { id: "", name: "" }, // Reset sub-category
-      sizes: [] // Reset sizes
+      sub_category: { id: "", name: "" },
+      sizes: [] 
     }));
   };
 
-  // Handle sub-category change
+
   const handleSubCategoryChange = (e) => {
     const subCategoryId = e.target.value;
     const subCategory = subCategories.find(sc => sc.sub_category_id === subCategoryId);
@@ -220,16 +207,14 @@ const ProductAdd = () => {
     setProductData(prev => ({
       ...prev,
       sub_category: { id: subCategoryId, name: subCategory?.sub_category_name || "" },
-      sizes: [] // Reset sizes when sub-category changes
+      sizes: []
     }));
   };
 
-  // Form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Validate form
       if (!productData.title) {
         toast.error("Product title is required");
         return;

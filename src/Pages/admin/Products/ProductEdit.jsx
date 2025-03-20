@@ -341,14 +341,12 @@ const ProductEdit = () => {
       const formData = new FormData();
       formData.append("productData", JSON.stringify(apiData));
       
-      // Append new images
       selectedImages.forEach((image, index) => {
         if (image) {
           formData.append(`image_${index}`, image);
         }
       });
       
-      // Send to API
       const response = await fetch(`${APIURL}/UpdateProductController.php`, {
         method: "POST",
         headers: {
@@ -396,7 +394,6 @@ const ProductEdit = () => {
         </div>
       ) : (
         <>
-          {/* Header with navigation */}
           <header className="sticky top-0 z-10  w-full bg-background/80 backdrop-blur-md border-b border-border/40 shadow-sm">
             <div className="container flex h-16 items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -413,7 +410,6 @@ const ProductEdit = () => {
             </div>
           </header>
           
-          {/* Navigation tabs */}
           <div className="container mt-8">
             <div className="flex space-x-1 bg-secondary/50 p-1 rounded-lg max-w-xl mx-auto">
               {Object.keys(sectionRefs).map((section) => (
@@ -435,7 +431,6 @@ const ProductEdit = () => {
           
           <div className="container mt-8">
             <form className="max-w-4xl mx-auto space-y-12">
-              {/* Basic Information */}
               <section 
                 ref={sectionRefs.basic}
                 className="space-y-6 card-glass p-8"
@@ -519,7 +514,6 @@ const ProductEdit = () => {
                 </div>
               </section>
               
-              {/* Details Information */}
               <section 
                 ref={sectionRefs.details}
                 className="space-y-6 card-glass p-8"
@@ -531,7 +525,6 @@ const ProductEdit = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  {/* Fabric Details */}
                   <div className="space-y-4">
                     <h3 className="text-base font-medium">About the Fabric</h3>
                     {productData.fabric?.map((item, index) => (
@@ -563,7 +556,6 @@ const ProductEdit = () => {
                     </button>
                   </div>
                   
-                  {/* Fabric Care */}
                   <div className="space-y-4">
                     <h3 className="text-base font-medium">Fabric Care</h3>
                     {productData.fabric_care?.map((item, index) => (
@@ -688,7 +680,6 @@ const ProductEdit = () => {
                 </div>
               </section>
               
-              {/* Images */}
               <section 
                 ref={sectionRefs.images}
                 className="space-y-6 card-glass p-8"
@@ -754,7 +745,6 @@ const ProductEdit = () => {
                 </div>
               </section>
               
-              {/* Action buttons - sticky bottom bar */}
               <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border/40 p-4 shadow-lg">
                 <div className="container flex justify-between md:justify-end space-x-4">
                   <button
