@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const BillingDetails = () => {
+const BillingDetails = ({ setBillingData }) => {
   const APIURL = import.meta.env.VITE_API_URL;
 
   const [districts, setDistricts] = useState([]);
@@ -52,12 +52,28 @@ const BillingDetails = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.response) {
-            console.log(data.customer);
             setCustomer(data.customer);
+            if(data.customer != null) {
+              setBillingData(data.customer);
+            } 
+            
+            // If the customer has a district_id, fetch the corresponding cities
+            if (data.customer.district_id) {
+              fetchCitiesByDistrict(data.customer.district_id);
+            }
           } else {
-            setCustomer(null);
-            console.log(data.message);
-            if (data.message === "Unauthorized") {
+            setBillingData({
+              fname: "",
+              lname: "",
+              line1: "",
+              line2: "",
+              district: "",
+              city: "",
+              email: "",
+              mobile: "",
+            });
+
+            if (data.message === "unathorized") {
               localStorage.clear();
               window.location.href = "/";
             }
@@ -72,11 +88,9 @@ const BillingDetails = () => {
 
     fetchDistricts();
     fetchCustomer();
-  }, []);
+  }, [APIURL, setBillingData]);
 
-  const handleDistrictChange = async (e) => {
-    const districtId = e.target.value;
-
+  const fetchCitiesByDistrict = async (districtId) => {
     try {
       const response = await fetch(
         `${APIURL}/GetCitiesByDistrictController.php?district_id=${districtId}`,
@@ -99,6 +113,48 @@ const BillingDetails = () => {
     }
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    const updatedCustomer = { ...customer, [name]: value };
+    setCustomer(updatedCustomer);
+    setBillingData(updatedCustomer);
+  };
+
+  const handleDistrictChange = async (e) => {
+    const districtId = e.target.value;
+    const selectedDistrict = districts.find(d => d.id === districtId);
+    
+    // Update customer with the selected district
+    const updatedCustomer = { 
+      ...customer, 
+      district: selectedDistrict?.name || "",
+      district_id: districtId,
+      // Clear city when district changes
+      city: "",
+      city_id: "" 
+    };
+    
+    setCustomer(updatedCustomer);
+    setBillingData(updatedCustomer);
+    
+    // Fetch cities for the selected district
+    fetchCitiesByDistrict(districtId);
+  };
+
+  const handleCityChange = (e) => {
+    const cityId = e.target.value;
+    const selectedCity = cities.find(c => c.id === cityId);
+    
+    const updatedCustomer = { 
+      ...customer, 
+      city: selectedCity?.name || "",
+      city_id: cityId 
+    };
+    
+    setCustomer(updatedCustomer);
+    setBillingData(updatedCustomer);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -112,66 +168,56 @@ const BillingDetails = () => {
             <input
               type="text"
               placeholder="First Name"
-              name="firstName"
+              name="fname"
               className="p-2 border rounded w-full"
-              value={customer ? customer.fname : ""}
-              onChange={(e) =>
-                setCustomer({ ...customer, fname: e.target.value })
-              }
+              value={customer?.fname || ""}
+              onChange={handleInputChange}
             />
             <input
               type="text"
               placeholder="Last Name"
-              name="lastName"
-              value={customer ? customer.lname : ""}
-              onChange={(e) =>
-                setCustomer({ ...customer, lname: e.target.value })
-              }
+              name="lname"
+              value={customer?.lname || ""}
+              onChange={handleInputChange}
               className="p-2 border rounded w-full"
             />
           </div>
           <input
             type="text"
             placeholder="Street Address(line 1)"
-            name="streetAddress"
-            value={customer ? customer.line1 : ""}
-            onChange={(e) =>
-              setCustomer({ ...customer, line1: e.target.value })
-            }
+            name="line1"
+            value={customer?.line1 || ""}
+            onChange={handleInputChange}
             className="p-2 border rounded w-full"
           />
           <div className="flex gap-4">
             <input
               type="text"
               placeholder="Additional Address Info(line 2)"
-              name="additionalInfo"
+              name="line2"
               className="p-2 border rounded w-full"
-              value={customer ? customer.line2 : ""}
-              onChange={(e) =>
-                setCustomer({ ...customer, line2: e.target.value })
-              }
+              value={customer?.line2 || ""}
+              onChange={handleInputChange}
             />
             <input
               type="text"
               placeholder="Postal Code"
-              name="postalCode"
+              name="postal_code"
               className="p-2 border rounded w-full"
-              value={customer ? customer.postal_code : ""}
-              onChange={(e) =>
-                setCustomer({ ...customer, postal_code: e.target.value })
-              }
+              value={customer?.postal_code || ""}
+              onChange={handleInputChange}
             />
           </div>
 
-          <div className="flex gap-4 text-gray-400">
+          <div className="flex gap-4">
             <select
               name="district"
-              value={""}
+              value={customer?.district_id || ""}
               onChange={handleDistrictChange}
               className="p-2 border rounded w-full"
             >
-              <option value="" className="text-gray-400" disabled>
-                {customer?customer.district: "District"}
+              <option value="" disabled>
+                Select District
               </option>
               {districts.map((district) => (
                 <option
@@ -183,9 +229,14 @@ const BillingDetails = () => {
                 </option>
               ))}
             </select>
-            <select name="city" className="p-2 border rounded w-full">
-              <option value="" className="text-gray-400" disabled>
-                {customer?customer.city: "City"}
+            <select 
+              name="city" 
+              value={customer?.city_id || ""}
+              onChange={handleCityChange}
+              className="p-2 border rounded w-full"
+            >
+              <option value="" disabled>
+                Select City
               </option>
               {cities.map((city) => (
                 <option key={city.id} value={city.id} className="text-black">
@@ -198,23 +249,19 @@ const BillingDetails = () => {
           <input
             type="text"
             placeholder="Email Address"
-            name="emailAddress"
-            value={customer ? customer.email : ""}
-            onChange={(e) =>
-              setCustomer({ ...customer, email: e.target.value })
-            }
+            name="email"
+            value={customer?.email || ""}
+            onChange={handleInputChange}
             className="p-2 border rounded w-full"
           />
           <div className="flex gap-4">
             <input
               type="text"
               placeholder="Mobile Number"
-              name="mobileNumber"
+              name="mobile"
               className="p-2 border rounded w-full"
-              value={customer ? customer.mobile : ""}
-              onChange={(e) =>
-                setCustomer({ ...customer, mobile: e.target.value })
-              }
+              value={customer?.mobile || ""}
+              onChange={handleInputChange}
             />
           </div>
         </div>
