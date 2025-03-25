@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { Plus, X, Upload, ArrowLeft, Save } from "lucide-react";
 import { cn } from "../../../lib/utils";
+import { toast, ToastContainer } from "react-toastify";
 
 const ProductAdd = () => {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ const ProductAdd = () => {
     fabric: [""],
     fabric_care: [""],
     notes: [""],
-    add_on_features: [""]
+    add_on_features: [""],
   });
 
   const [categories, setCategories] = useState([]);
@@ -36,7 +36,7 @@ const ProductAdd = () => {
     basic: useRef(null),
     details: useRef(null),
     inventory: useRef(null),
-    images: useRef(null)
+    images: useRef(null),
   };
 
   const createArrayWithEmptyString = (length) => Array(length).fill("");
@@ -71,7 +71,7 @@ const ProductAdd = () => {
           }
         }
       } catch (error) {
-        console.error("Error loading data:", error);
+        // console.error("Error loading data:", error);
         toast.error("Failed to load product data");
       } finally {
         setIsLoading(false);
@@ -103,16 +103,16 @@ const ProductAdd = () => {
             const newSizes = data.sizes.map((size) => ({
               size_id: size.size_id,
               size_name: size.size_name,
-              quantity: 0
+              quantity: 0,
             }));
 
-            setProductData(prev => ({ ...prev, sizes: newSizes }));
+            setProductData((prev) => ({ ...prev, sizes: newSizes }));
           } else {
             toast.error(data.message);
           }
         }
       } catch (error) {
-        console.error("Error fetching sizes:", error);
+        // console.error("Error fetching sizes:", error);
         toast.error("Failed to load sizes");
       }
     };
@@ -123,7 +123,7 @@ const ProductAdd = () => {
   }, [productData.sub_category?.id, APIURL]);
 
   const handleArrayUpdate = (field, index, value) => {
-    setProductData(prev => {
+    setProductData((prev) => {
       const currentArray = [...(prev[field] || [])];
       currentArray[index] = value;
       return { ...prev, [field]: currentArray };
@@ -131,14 +131,14 @@ const ProductAdd = () => {
   };
 
   const handleAddArrayItem = (field) => {
-    setProductData(prev => {
+    setProductData((prev) => {
       const currentArray = [...(prev[field] || [])];
       return { ...prev, [field]: [...currentArray, ""] };
     });
   };
 
   const handleRemoveArrayItem = (field, index) => {
-    setProductData(prev => {
+    setProductData((prev) => {
       const currentArray = [...(prev[field] || [])];
       if (currentArray.length > 1) {
         currentArray.splice(index, 1);
@@ -149,7 +149,7 @@ const ProductAdd = () => {
   };
 
   const handleSizeQuantityChange = (index, quantity) => {
-    setProductData(prev => {
+    setProductData((prev) => {
       const newSizes = [...(prev.sizes || [])];
       if (newSizes[index]) {
         newSizes[index] = { ...newSizes[index], quantity };
@@ -189,34 +189,47 @@ const ProductAdd = () => {
 
   const handleCategoryChange = (e) => {
     const categoryId = e.target.value;
-    const category = categories.find(c => c.category_id === categoryId);
+    const category = categories.find((c) => c.category_id === categoryId);
 
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
       category: { id: categoryId, name: category?.category_name || "" },
       sub_category: { id: "", name: "" },
-      sizes: [] 
+      sizes: [],
     }));
   };
 
-
   const handleSubCategoryChange = (e) => {
     const subCategoryId = e.target.value;
-    const subCategory = subCategories.find(sc => sc.sub_category_id === subCategoryId);
+    const subCategory = subCategories.find(
+      (sc) => sc.sub_category_id === subCategoryId
+    );
 
-    setProductData(prev => ({
+    setProductData((prev) => ({
       ...prev,
-      sub_category: { id: subCategoryId, name: subCategory?.sub_category_name || "" },
-      sizes: []
+      sub_category: {
+        id: subCategoryId,
+        name: subCategory?.sub_category_name || "",
+      },
+      sizes: [],
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       if (!productData.title) {
-        toast.error("Product title is required");
+        toast.error("Product title is required", { theme: "light" });
+        return;
+      }
+
+      if (!productData.price || productData.price <= 0) {
+        toast.error("Please enter a valid price");
+        return;
+      }
+
+      if (!productData.description) {
+        toast.error("Please enter description");
         return;
       }
 
@@ -230,47 +243,74 @@ const ProductAdd = () => {
         return;
       }
 
-      if (!productData.price || productData.price <= 0) {
-        toast.error("Please enter a valid price");
+      if (productData.fabric.filter((f) => f.trim() !== "").length === 0) {
+        toast.error("Please add at least one fabric detail");
         return;
       }
 
-      // Check if we have at least one image
-      const hasImages = selectedImages.some(img => img !== null);
+      if (
+        productData.fabric_care.filter((fc) => fc.trim() !== "").length === 0
+      ) {
+        toast.error("Please add at least one fabric care instruction");
+        return;
+      }
+
+      if (productData.notes.filter((n) => n.trim() !== "").length === 0) {
+        toast.error("Please add at least one note");
+        return;
+      }
+
+      if (productData.add_on_features.filter((f) => f.trim() !== "").length === 0) {
+        toast.error("Please add at least one add-on feature");
+        return;
+      }
+
+      const allSizesEmpty = productData.sizes.every(
+        (size) => size.quantity === 0
+      );
+
+      if (allSizesEmpty) {
+        toast.error(
+          "Please add at least one size with a quantity greater than 0"
+        );
+        return;
+      }
+      const hasImages = selectedImages.some((img) => img !== null);
 
       if (!hasImages) {
         toast.error("Please upload at least one product image");
         return;
       }
 
-      // Prepare data for API
+      const filteredSizes = productData.sizes.filter(size => size.quantity > 0);
+
       const apiData = {
         title: productData.title,
         description: productData.description,
         category_id: productData.category?.id,
         sub_category_id: productData.sub_category?.id,
         price: productData.price,
-        fabric_details: productData.fabric?.filter(f => f.trim() !== ""),
-        notes: productData.notes?.filter(n => n.trim() !== ""),
-        fabric_care: productData.fabric_care?.filter(fc => fc.trim() !== ""),
-        add_on_features: productData.add_on_features?.filter(f => f.trim() !== ""),
-        sizes: productData.sizes?.map(size => ({
+        fabric_details: productData.fabric.filter((f) => f.trim() !== ""),
+        notes: productData.notes.filter((n) => n.trim() !== ""),
+        fabric_care: productData.fabric_care.filter((fc) => fc.trim() !== ""),
+        add_on_features: productData.add_on_features.filter(
+          (f) => f.trim() !== ""
+        ),
+        sizes: filteredSizes.map((size) => ({
           size_id: size.size_id,
-          quantity: size.quantity || 0
-        }))
+          quantity: size.quantity || 0,
+        })),
       };
 
       const formData = new FormData();
       formData.append("productData", JSON.stringify(apiData));
 
-      // Append new images
       selectedImages.forEach((image, index) => {
         if (image) {
           formData.append(`image_${index}`, image);
         }
       });
 
-      // Send to API
       const response = await fetch(`${APIURL}/AddProductController.php`, {
         method: "POST",
         headers: {
@@ -283,12 +323,30 @@ const ProductAdd = () => {
         const result = await response.json();
         if (result.response === true) {
           toast.success("Product added successfully");
-          navigate('/products');
+          // console.log("Product added successfully");
+          // Clear all fields to default values
+          setProductData({
+            title: "",
+            description: "",
+            price: 0,
+            category: { id: "", name: "" },
+            sub_category: { id: "", name: "" },
+            images: [],
+            sizes: [],
+            fabric: [""],
+            fabric_care: [""],
+            notes: [""],
+            add_on_features: [""],
+          });
+          setSelectedImages([null, null, null]);
+          setImageUrls([]);
         } else {
           toast.error(result.message || "Failed to add product");
+          console.error(result.message || "Failed to add product");
         }
       } else {
         toast.error("Server error. Please try again later.");
+        console.error("Server error. Please try again later.");
       }
     } catch (error) {
       console.error("Error adding product:", error);
@@ -296,12 +354,11 @@ const ProductAdd = () => {
     }
   };
 
-  // Scroll to section
   const scrollToSection = (section) => {
     setActiveSection(section);
     const sectionRef = sectionRefs[section]?.current;
     if (sectionRef) {
-      sectionRef.scrollIntoView({ behavior: 'smooth' });
+      sectionRef.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -311,16 +368,17 @@ const ProductAdd = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-50">
           <div className="space-y-4 text-center">
             <div className="h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto"></div>
-            <p className="text-muted-foreground animate-pulse">Loading product data...</p>
+            <p className="text-muted-foreground animate-pulse">
+              Loading product data...
+            </p>
           </div>
         </div>
       ) : (
         <>
-          {/* Header with navigation */}
           <header className="sticky top-0 z-10 w-full bg-background/80 backdrop-blur-md border-b border-border/40 shadow-sm">
             <div className="container flex h-16 items-center justify-between">
               <div className="flex items-center space-x-4">
-                <button 
+                <button
                   onClick={() => navigate(-1)}
                   className="p-2 rounded-full hover:bg-secondary transition-colors duration-200"
                 >
@@ -330,8 +388,7 @@ const ProductAdd = () => {
               </div>
             </div>
           </header>
-          
-          {/* Navigation tabs */}
+
           <div className="container mt-8">
             <div className="flex space-x-1 bg-secondary/50 p-1 rounded-lg max-w-xl mx-auto">
               {Object.keys(sectionRefs).map((section) => (
@@ -350,11 +407,10 @@ const ProductAdd = () => {
               ))}
             </div>
           </div>
-          
+
           <div className="container mt-8">
             <form className="max-w-4xl mx-auto space-y-12">
-              {/* Basic Information */}
-              <section 
+              <section
                 ref={sectionRefs.basic}
                 className="space-y-6 card-glass p-8"
                 style={{ "--delay": "1" }}
@@ -363,46 +419,69 @@ const ProductAdd = () => {
                   <div className="h-8 w-1 bg-primary rounded-full"></div>
                   <h2 className="text-2xl font-semibold">Basic Information</h2>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="field-group" style={{ "--delay": "1" }}>
-                    <label className="block text-sm font-medium mb-1 ml-1">Product Title</label>
+                    <label className="block text-sm font-medium mb-1 ml-1">
+                      Product Title
+                    </label>
                     <input
                       type="text"
                       className="input-field"
                       placeholder="Enter product title"
                       value={productData.title || ""}
-                      onChange={(e) => setProductData(prev => ({ ...prev, title: e.target.value }))}
+                      onChange={(e) =>
+                        setProductData((prev) => ({
+                          ...prev,
+                          title: e.target.value,
+                        }))
+                      }
                     />
                   </div>
-                  
+
                   <div className="field-group" style={{ "--delay": "2" }}>
-                    <label className="block text-sm font-medium mb-1 ml-1">Price</label>
+                    <label className="block text-sm font-medium mb-1 ml-1">
+                      Price
+                    </label>
                     <input
                       type="number"
                       className="input-field"
                       placeholder="0.00"
                       value={productData.price || ""}
-                      onChange={(e) => setProductData(prev => ({ ...prev, price: Number(e.target.value) }))}
-                    min={0}
+                      onChange={(e) =>
+                        setProductData((prev) => ({
+                          ...prev,
+                          price: Number(e.target.value),
+                        }))
+                      }
+                      min={0}
                     />
                   </div>
                 </div>
-                
+
                 <div className="field-group" style={{ "--delay": "3" }}>
-                  <label className="block text-sm font-medium mb-1 ml-1">Description</label>
+                  <label className="block text-sm font-medium mb-1 ml-1">
+                    Description
+                  </label>
                   <textarea
                     className="input-field"
                     rows={3}
                     placeholder="Enter product description"
                     value={productData.description || ""}
-                    onChange={(e) => setProductData(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) =>
+                      setProductData((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
                   ></textarea>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="field-group" style={{ "--delay": "4" }}>
-                    <label className="block text-sm font-medium mb-1 ml-1">Category</label>
+                    <label className="block text-sm font-medium mb-1 ml-1">
+                      Category
+                    </label>
                     <select
                       className="input-field"
                       value={productData.category?.id || ""}
@@ -410,36 +489,41 @@ const ProductAdd = () => {
                     >
                       <option value="">Select category</option>
                       {categories.map((category) => (
-                        <option key={category.category_id} value={category.category_id}>
+                        <option
+                          key={category.category_id}
+                          value={category.category_id}
+                        >
                           {category.category_name}
                         </option>
                       ))}
                     </select>
                   </div>
-                  
 
                   <div className="field-group" style={{ "--delay": "5" }}>
-                    <label className="block text-sm font-medium mb-1 ml-1">Sub Category</label>
+                    <label className="block text-sm font-medium mb-1 ml-1">
+                      Sub Category
+                    </label>
                     <select
                       className="input-field"
                       value={productData.sub_category?.id || ""}
                       onChange={handleSubCategoryChange}
                     >
                       <option value="">Select sub-category</option>
-                      {subCategories
-                        .filter(sc => !productData.category?.id || sc.category_id === productData.category.id)
-                        .map((subCategory) => (
-                          <option key={subCategory.sub_category_id} value={subCategory.sub_category_id}>
-                            {subCategory.sub_category_name}
-                          </option>
-                        ))}
+                      {subCategories.map((subCategory) => (
+                        <option
+                          key={subCategory.sub_category_id}
+                          value={subCategory.sub_category_id}
+                        >
+                          {subCategory.sub_category_name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                 </div>
               </section>
-              
+
               {/* Details Information */}
-              <section 
+              <section
                 ref={sectionRefs.details}
                 className="space-y-6 card-glass p-8"
                 style={{ "--delay": "2" }}
@@ -448,23 +532,28 @@ const ProductAdd = () => {
                   <div className="h-8 w-1 bg-primary rounded-full"></div>
                   <h2 className="text-2xl font-semibold">Product Details</h2>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* Fabric Details */}
                   <div className="space-y-4">
                     <h3 className="text-base font-medium">About the Fabric</h3>
                     {productData.fabric?.map((item, index) => (
-                      <div key={`fabric-${index}`} className="flex items-center space-x-2">
+                      <div
+                        key={`fabric-${index}`}
+                        className="flex items-center space-x-2"
+                      >
                         <input
                           type="text"
                           className="input-field"
                           placeholder="Enter fabric details"
                           value={item}
-                          onChange={(e) => handleArrayUpdate('fabric', index, e.target.value)}
+                          onChange={(e) =>
+                            handleArrayUpdate("fabric", index, e.target.value)
+                          }
                         />
                         <button
                           type="button"
-                          onClick={() => handleRemoveArrayItem('fabric', index)}
+                          onClick={() => handleRemoveArrayItem("fabric", index)}
                           className="p-2 rounded-full hover:bg-red-50 text-red-500 transition-colors"
                           disabled={productData.fabric?.length === 1}
                         >
@@ -474,29 +563,40 @@ const ProductAdd = () => {
                     ))}
                     <button
                       type="button"
-                      onClick={() => handleAddArrayItem('fabric')}
+                      onClick={() => handleAddArrayItem("fabric")}
                       className="flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       Add Detail
                     </button>
                   </div>
-                  
+
                   {/* Fabric Care */}
                   <div className="space-y-4">
                     <h3 className="text-base font-medium">Fabric Care</h3>
                     {productData.fabric_care?.map((item, index) => (
-                      <div key={`care-${index}`} className="flex items-center space-x-2">
+                      <div
+                        key={`care-${index}`}
+                        className="flex items-center space-x-2"
+                      >
                         <input
                           type="text"
                           className="input-field"
                           placeholder="Enter fabric care instructions"
                           value={item}
-                          onChange={(e) => handleArrayUpdate('fabric_care', index, e.target.value)}
+                          onChange={(e) =>
+                            handleArrayUpdate(
+                              "fabric_care",
+                              index,
+                              e.target.value
+                            )
+                          }
                         />
                         <button
                           type="button"
-                          onClick={() => handleRemoveArrayItem('fabric_care', index)}
+                          onClick={() =>
+                            handleRemoveArrayItem("fabric_care", index)
+                          }
                           className="p-2 rounded-full hover:bg-red-50 text-red-500 transition-colors"
                           disabled={productData.fabric_care?.length === 1}
                         >
@@ -506,45 +606,61 @@ const ProductAdd = () => {
                     ))}
                     <button
                       type="button"
-                      onClick={() => handleAddArrayItem('fabric_care')}
+                      onClick={() => handleAddArrayItem("fabric_care")}
                       className="flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       Add Instruction
                     </button>
                   </div>
-                  
+
                   {/* Notes */}
                   <div className="space-y-4">
                     <h3 className="text-base font-medium">Note</h3>
                     {productData.notes?.map((item, index) => (
-                      <div key={`note-${index}`} className="flex items-center space-x-2">
+                      <div
+                        key={`note-${index}`}
+                        className="flex items-center space-x-2"
+                      >
                         <input
                           type="text"
                           className="input-field"
                           placeholder="Enter note"
                           value={item}
-                          onChange={(e) => handleArrayUpdate('notes', index, e.target.value)}
+                          onChange={(e) =>
+                            handleArrayUpdate("notes", index, e.target.value)
+                          }
                         />
                       </div>
                     ))}
                   </div>
-                  
+
                   {/* Add-on Features */}
                   <div className="space-y-4">
                     <h3 className="text-base font-medium">Add-on Features</h3>
                     {productData.add_on_features?.map((item, index) => (
-                      <div key={`feature-${index}`} className="flex items-center space-x-2">
+                      <div
+                        key={`feature-${index}`}
+                        className="flex items-center space-x-2"
+                      >
                         <input
                           type="text"
                           className="input-field"
                           placeholder="Enter feature"
                           value={item}
-                          onChange={(e) => handleArrayUpdate('add_on_features', index, e.target.value)}
+                          onChange={(e) =>
+                            handleArrayUpdate(
+                              "add_on_features",
+                              index,
+                              e.target.value
+                            )
+                          }
                         />
                         <button
                           type="button"
-                          onClick={() => handleRemoveArrayItem('add_on_features', index)}
+                          onClick={() =>
+                            handleRemoveArrayItem("add_on_features", index)
+                          }
                           className="p-2 rounded-full hover:bg-red-50 text-red-500 transition-colors"
                           disabled={productData.add_on_features?.length === 1}
                         >
@@ -554,7 +670,7 @@ const ProductAdd = () => {
                     ))}
                     <button
                       type="button"
-                      onClick={() => handleAddArrayItem('add_on_features')}
+                      onClick={() => handleAddArrayItem("add_on_features")}
                       className="flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
                     >
                       <Plus className="h-4 w-4 mr-1" />
@@ -563,9 +679,9 @@ const ProductAdd = () => {
                   </div>
                 </div>
               </section>
-              
+
               {/* Inventory */}
-              <section 
+              <section
                 ref={sectionRefs.inventory}
                 className="space-y-6 card-glass p-8"
                 style={{ "--delay": "3" }}
@@ -574,21 +690,33 @@ const ProductAdd = () => {
                   <div className="h-8 w-1 bg-primary rounded-full"></div>
                   <h2 className="text-2xl font-semibold">Inventory</h2>
                 </div>
-                
+
                 <div className="space-y-4">
-                  <h3 className="text-base font-medium">Sizes and Quantities</h3>
-                  
+                  <h3 className="text-base font-medium">
+                    Sizes and Quantities
+                  </h3>
+
                   {productData.sizes && productData.sizes.length > 0 ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                       {productData.sizes.map((size, index) => (
-                        <div key={`size-${size.size_id}`} className="bg-white rounded-lg p-4 shadow-sm border border-border/50">
-                          <div className="font-medium text-sm mb-2">{size.size_name}</div>
+                        <div
+                          key={`size-${size.size_id}`}
+                          className="bg-white rounded-lg p-4 shadow-sm border border-border/50"
+                        >
+                          <div className="font-medium text-sm mb-2">
+                            {size.size_name}
+                          </div>
                           <input
                             type="number"
                             min="0"
                             className="input-field text-center"
                             value={size.quantity || ""}
-                            onChange={(e) => handleSizeQuantityChange(index, Number(e.target.value))}
+                            onChange={(e) =>
+                              handleSizeQuantityChange(
+                                index,
+                                Number(e.target.value)
+                              )
+                            }
                           />
                         </div>
                       ))}
@@ -596,17 +724,17 @@ const ProductAdd = () => {
                   ) : (
                     <div className="bg-secondary/50 rounded-lg p-6 text-center">
                       <p className="text-muted-foreground">
-                        {productData.sub_category?.id 
-                          ? "No sizes available for this sub-category" 
+                        {productData.sub_category?.id
+                          ? "No sizes available for this sub-category"
                           : "Please select a sub-category to view available sizes"}
                       </p>
                     </div>
                   )}
                 </div>
               </section>
-              
+
               {/* Images */}
-              <section 
+              <section
                 ref={sectionRefs.images}
                 className="space-y-6 card-glass p-8"
                 style={{ "--delay": "4" }}
@@ -615,7 +743,7 @@ const ProductAdd = () => {
                   <div className="h-8 w-1 bg-primary rounded-full"></div>
                   <h2 className="text-2xl font-semibold">Product Images</h2>
                 </div>
-                
+
                 <div className="space-y-4">
                   <input
                     type="file"
@@ -625,58 +753,62 @@ const ProductAdd = () => {
                     multiple
                     onChange={handleImageSelect}
                   />
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {Array(3).fill(null).map((_, index) => (
-                      <div 
-                        key={`image-slot-${index}`}
-                        className={cn(
-                          "h-60 rounded-lg border-2 border-dashed transition-all duration-300",
-                          imageUrls[index] 
-                            ? "border-primary/50 hover:border-primary"
-                            : "border-muted-foreground/25 hover:border-muted-foreground/50"
-                        )}
-                      >
-                        {imageUrls[index] ? (
-                          <div className="relative group h-full">
-                            <img
-                              src={imageUrls[index]}
-                              alt={`Product ${index + 1}`}
-                              className="w-full h-full object-cover rounded-md"
-                            />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md flex items-center justify-center">
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveImage(index)}
-                                className="p-2 bg-white rounded-full shadow-lg text-red-500 transform scale-90 hover:scale-100 transition-all duration-200"
-                              >
-                                <X className="h-5 w-5" />
-                              </button>
+                    {Array(3)
+                      .fill(null)
+                      .map((_, index) => (
+                        <div
+                          key={`image-slot-${index}`}
+                          className={cn(
+                            "h-60 rounded-lg border-2 border-dashed transition-all duration-300",
+                            imageUrls[index]
+                              ? "border-primary/50 hover:border-primary"
+                              : "border-muted-foreground/25 hover:border-muted-foreground/50"
+                          )}
+                        >
+                          {imageUrls[index] ? (
+                            <div className="relative group h-full">
+                              <img
+                                src={imageUrls[index]}
+                                alt={`Product ${index + 1}`}
+                                className="w-full h-full object-contain rounded-md"
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-md flex items-center justify-center">
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveImage(index)}
+                                  className="p-2 bg-white rounded-full shadow-lg text-red-500 transform scale-90 hover:scale-100 transition-all duration-200"
+                                >
+                                  <X className="h-5 w-5" />
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                        ) : (
-                          <div 
-                            className="h-full flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors duration-200 p-4"
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            <Upload className="h-10 w-10 text-muted-foreground mb-2" />
-                            <p className="text-sm text-center text-muted-foreground">
-                              Click to upload<br />product image
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                          ) : (
+                            <div
+                              className="h-full flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors duration-200 p-4"
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              <Upload className="h-10 w-10 text-muted-foreground mb-2" />
+                              <p className="text-sm text-center text-muted-foreground">
+                                Click to upload
+                                <br />
+                                product image
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                   </div>
                 </div>
               </section>
-              
+
               {/* Action buttons - sticky bottom bar */}
               <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-md border-t border-border/40 p-4 shadow-lg">
                 <div className="container flex justify-between md:justify-end space-x-4">
                   <button
                     type="button"
-                    onClick={() => navigate('/products')}
+                    onClick={() => navigate("/products")}
                     className="btn-secondary"
                   >
                     Cancel
@@ -695,6 +827,7 @@ const ProductAdd = () => {
           </div>
         </>
       )}
+      <ToastContainer />
     </div>
   );
 };

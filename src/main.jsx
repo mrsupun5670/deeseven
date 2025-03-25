@@ -47,7 +47,7 @@ createRoot(document.getElementById("root")).render(
             <Route index element={<ProductsList />} />
             <Route path="view" element={<ProductsList />} />
             <Route path="add" element={<ProductAdd />} />
-            <Route path="edit/:id" element={<ProductEdit />} />
+            <Route path="edit/:productId" element={<ProductEdit />} />
             <Route path="categories" element={<ProductCategories />} />
           </Route>
 

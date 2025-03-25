@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { Download, Plus, Trash2, Pencil } from "lucide-react";
+import { toast, ToastContainer } from "react-toastify";
 
 const APIURL = import.meta.env.VITE_API_URL;
 
@@ -72,8 +73,8 @@ const ProductsList = () => {
           }
         }
       } catch (error) {
-        console.error("Error fetching products:", error);
-        alert("Failed to load products. Please try again later.");
+        // console.error("Error fetching products:", error);
+        toast.error("Failed to load products. Please try again later.");
       }
     };
 
@@ -125,42 +126,14 @@ const ProductsList = () => {
         }
       }
     } catch (error) {
-      console.error("Error updating product status:", error);
-      alert("Failed to update product status. Please try again later.");
+      toast.error("Error updating product status");
     } finally {
       closeConfirmationModal();
     }
   };
 
-  const handleEdit = async (productId) => {
-    try {
-      const response = await fetch(
-        `${APIURL}/fetchSingleProduct.php?id=${productId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-          },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.status) {
-          navigate(`../edit/${productId}`, { state: { product: data.product } });
-        } else {
-          alert(data.message);
-          if (data.message === "Unauthorized") {
-            sessionStorage.clear();
-            window.location.href = "/";
-          }
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching product:", error);
-      alert("Failed to fetch product details. Please try again later.");
-    }
+  const handleEdit = (productId) => {
+    navigate(`../edit/${productId}`);
   };
 
   const printPDF = () => {
@@ -286,6 +259,7 @@ const ProductsList = () => {
         onCancel={closeConfirmationModal}
         message="Are you sure you want to change the status?"
       />
+            <ToastContainer />
     </div>
   );
 };
