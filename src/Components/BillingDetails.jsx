@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-
 const BillingDetails = () => {
   const APIURL = import.meta.env.VITE_API_URL;
 
@@ -55,18 +54,17 @@ const BillingDetails = () => {
           if (data.response) {
             console.log(data.customer);
             setCustomer(data.customer);
-           
           } else {
-            alert(data.message);
+            setCustomer(null);
+            console.log(data.message);
             if (data.message === "Unauthorized") {
-              sessionStorage.clear();
+              localStorage.clear();
               window.location.href = "/";
             }
           }
         }
       } catch (error) {
         console.error("Error fetching customer data:", error);
-        alert("Failed to load customer data. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -76,10 +74,9 @@ const BillingDetails = () => {
     fetchCustomer();
   }, []);
 
-
   const handleDistrictChange = async (e) => {
     const districtId = e.target.value;
-    
+
     try {
       const response = await fetch(
         `${APIURL}/GetCitiesByDistrictController.php?district_id=${districtId}`,
@@ -115,33 +112,56 @@ const BillingDetails = () => {
             <input
               type="text"
               placeholder="First Name"
-              name="firstName"             
+              name="firstName"
               className="p-2 border rounded w-full"
+              value={customer ? customer.fname : ""}
+              onChange={(e) =>
+                setCustomer({ ...customer, fname: e.target.value })
+              }
             />
             <input
-            require
               type="text"
               placeholder="Last Name"
               name="lastName"
-              
+              value={customer ? customer.lname : ""}
+              onChange={(e) =>
+                setCustomer({ ...customer, lname: e.target.value })
+              }
               className="p-2 border rounded w-full"
             />
           </div>
           <input
-          required
             type="text"
-            placeholder="Street Address"
+            placeholder="Street Address(line 1)"
             name="streetAddress"
-            value={""}
-            onChange={""}
+            value={customer ? customer.line1 : ""}
+            onChange={(e) =>
+              setCustomer({ ...customer, line1: e.target.value })
+            }
             className="p-2 border rounded w-full"
           />
-          <input
-            type="text"
-            placeholder="Additional Address Info"
-            name="additionalInfo"
-            className="p-2 border rounded w-full"
-          />
+          <div className="flex gap-4">
+            <input
+              type="text"
+              placeholder="Additional Address Info(line 2)"
+              name="additionalInfo"
+              className="p-2 border rounded w-full"
+              value={customer ? customer.line2 : ""}
+              onChange={(e) =>
+                setCustomer({ ...customer, line2: e.target.value })
+              }
+            />
+            <input
+              type="text"
+              placeholder="Postal Code"
+              name="postalCode"
+              className="p-2 border rounded w-full"
+              value={customer ? customer.postal_code : ""}
+              onChange={(e) =>
+                setCustomer({ ...customer, postal_code: e.target.value })
+              }
+            />
+          </div>
 
           <div className="flex gap-4 text-gray-400">
             <select
@@ -151,7 +171,7 @@ const BillingDetails = () => {
               className="p-2 border rounded w-full"
             >
               <option value="" className="text-gray-400" disabled>
-                District
+                {customer?customer.district: "District"}
               </option>
               {districts.map((district) => (
                 <option
@@ -162,12 +182,10 @@ const BillingDetails = () => {
                   {district.name}
                 </option>
               ))}
-          </select>
-            <select name="city"
-              className="p-2 border rounded w-full"
-            >
+            </select>
+            <select name="city" className="p-2 border rounded w-full">
               <option value="" className="text-gray-400" disabled>
-                City
+                {customer?customer.city: "City"}
               </option>
               {cities.map((city) => (
                 <option key={city.id} value={city.id} className="text-black">
@@ -181,8 +199,10 @@ const BillingDetails = () => {
             type="text"
             placeholder="Email Address"
             name="emailAddress"
-            value={""}
-            onChange={""}
+            value={customer ? customer.email : ""}
+            onChange={(e) =>
+              setCustomer({ ...customer, email: e.target.value })
+            }
             className="p-2 border rounded w-full"
           />
           <div className="flex gap-4">
@@ -191,6 +211,10 @@ const BillingDetails = () => {
               placeholder="Mobile Number"
               name="mobileNumber"
               className="p-2 border rounded w-full"
+              value={customer ? customer.mobile : ""}
+              onChange={(e) =>
+                setCustomer({ ...customer, mobile: e.target.value })
+              }
             />
           </div>
         </div>
