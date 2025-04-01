@@ -124,7 +124,6 @@ const ProductEdit = () => {
                     (s) => s.size_name === size.size_name
                   );
 
-                  console.log(productSize);
 
                   return {
                     ...size,
