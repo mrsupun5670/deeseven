@@ -43,6 +43,31 @@ function CartComponent({ onClose }) {
     }
   };
 
+  const updateQuantityInDatabase = async (product_id, size, newQty) => {
+    try {
+      const response = await fetch(`${APIURL}/UpdateCartQuantity.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: storedUserId,
+          product_id: product_id,
+          size: size,
+          quantity: newQty
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!data.status) {
+        console.error("Failed to update quantity in database");
+      }
+    } catch (error) {
+      console.error("Error updating quantity in database:", error);
+    }
+  };
+
   const removeItemFromDatabase = async (storedUserId, product_id, size) => {
     try {
       const response = await fetch(`${APIURL}/RemoveCartItems.php`, {
@@ -88,6 +113,14 @@ function CartComponent({ onClose }) {
       type: "UPDATE_QUANTITY",
       payload: { id, size, qty: newQty },
     });
+
+    if (storedUserId) {
+      const item = cart.find(item => item.id === id && item.size === size);
+      if (item && item.product_id) {
+        updateQuantityInDatabase(item.product_id, size, newQty);
+      }
+    }
+
   };
 
   const removeItem = (id, product_id, size) => {
@@ -111,6 +144,7 @@ function CartComponent({ onClose }) {
         if(!storedUserId) {
           toast.error("please Sign in to continue", {theme: "colored"});
         } else {
+          
           navigate("/checkout", {state: { userID: storedUserId}});
         }
       }

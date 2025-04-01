@@ -30,7 +30,7 @@ export default function Checkout() {
     document.body.appendChild(script);
 
     return () => {
-      document.removeChild(script);
+      document.body.removeChild(script);
     };
   }, []);
 
@@ -94,6 +94,15 @@ export default function Checkout() {
         payhere.onCompleted = function onCompleted(orderId) {
           console.log("Payment completed. OrderID:" + orderId);
           // Note: validate the payment and show success or failure page to the customer
+          const completeOrder = async () => {
+            try {
+              const response = await fetch(
+                `${APIURL}/CompleteOrderController.php`,
+              )
+            } catch (error) {
+              console.error("Error completing order:", error);
+            }
+          }
         };
 
         // Payment window closed
@@ -115,7 +124,7 @@ export default function Checkout() {
           cancel_url: undefined,
           notify_url: "http://sample.com/notify",
           order_id: data.order_id,
-          items: Math.random() * 10000,
+          items: "Product 01",
           amount: data.amount,
           currency: data.currency,
           hash: data.hash, // *Replace with generated hash retrieved from backend
