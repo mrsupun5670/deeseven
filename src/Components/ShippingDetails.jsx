@@ -8,8 +8,8 @@ const ShippingDetails = ({ setShippingData }) => {
     lname: "",
     line1: "",
     line2: "",
-    district: "",
-    city: "",
+    district_id: "", // Consistent naming
+    city_id: "", // Consistent naming
     email: "",
     mobile: "",
   });
@@ -54,8 +54,8 @@ const ShippingDetails = ({ setShippingData }) => {
   const handleDistrictChange = async (e) => {
     const districtId = e.target.value;
 
-    // Update district state
-    setShipping((prev) => ({ ...prev, district: districtId, city: "" })); // Reset city
+    // Update district_id state and reset city_id
+    setShipping((prev) => ({ ...prev, district_id: districtId, city_id: "" }));
 
     try {
       const response = await fetch(
@@ -121,8 +121,8 @@ const ShippingDetails = ({ setShippingData }) => {
 
           <div className="flex gap-4 text-gray-400">
             <select
-              name="district"
-              value={shipping.district}
+              name="district_id"
+              value={shipping.district_id}
               onChange={handleDistrictChange}
               className="p-2 border rounded w-full"
             >
@@ -136,13 +136,12 @@ const ShippingDetails = ({ setShippingData }) => {
               ))}
             </select>
 
-            {/* 🔥 Fix: Ensure value and clear cities when district changes */}
             <select
-              name="city"
-              value={shipping.city}
+              name="city_id"
+              value={shipping.city_id}
               onChange={handleInputChanges}
               className="p-2 border rounded w-full"
-              disabled={!shipping.district} // Disable if no district selected
+              disabled={!shipping.district_id}
             >
               <option value="" className="text-gray-400" disabled>
                 Select City

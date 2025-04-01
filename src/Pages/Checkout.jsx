@@ -34,6 +34,27 @@ export default function Checkout() {
     };
   }, []);
 
+  const saveOrder = async () => {
+    try {
+      const response = await fetch(
+        `${APIURL}/CompleteOrderController.php`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            order_id: orderId,
+            customer_id : userID,
+            shipping_address: shippingAddress,
+            totalAmount: totalAmount,
+          }),
+        }
+      )
+    } catch (error) {
+      console.error("Error completing order:", error);
+    }
+  }
+
   const placeOrder = async () => {
     setError("");
 
@@ -74,90 +95,84 @@ export default function Checkout() {
 
     const shippingAddress = useBillingForShipping ? billingData : shippingData;
 
-    try {
-      const response = await fetch(`${APIURL}/PlaceOrderController.php`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: userID,
-          shipping_address: shippingAddress,
-          totalAmount: totalAmount,
-        }),
-      });
+    console.log(shippingAddress);
+    
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
+    // try {
+    //   const response = await fetch(`${APIURL}/PlaceOrderController.php`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({
+    //       user_id: userID,
+    //       shipping_address: shippingAddress,
+    //       totalAmount: totalAmount,
+    //     }),
+    //   });
 
-        payhere.onCompleted = function onCompleted(orderId) {
-          console.log("Payment completed. OrderID:" + orderId);
-          // Note: validate the payment and show success or failure page to the customer
-          const completeOrder = async () => {
-            try {
-              const response = await fetch(
-                `${APIURL}/CompleteOrderController.php`,
-              )
-            } catch (error) {
-              console.error("Error completing order:", error);
-            }
-          }
-        };
+    //   if (response.ok) {
+    //     const data = await response.json();
 
-        // Payment window closed
-        payhere.onDismissed = function onDismissed() {
-          // Note: Prompt user to pay again or show an error page
-          console.log("Payment dismissed");
-        };
+      //   payhere.onCompleted = function onCompleted(orderId) {
+      //     console.log("Payment completed. OrderID:" + orderId);
+      //     // Note: validate the payment and show success or failure page to the customer
+      //       saveOrder();
+      //     }
 
-        // Error occurred
-        payhere.onError = function onError(error) {
-          // Note: show an error page
-          console.log("Error:" + error);
-        };
+      //   // Payment window closed
+      //   payhere.onDismissed = function onDismissed() {
+      //     // Note: Prompt user to pay again or show an error page
+      //     console.log("Payment dismissed");
+      //   };
 
-        var payment = {
-          sandbox: true,
-          merchant_id: data.merchant_id,
-          return_url: "http://sample.com/notify",
-          cancel_url: undefined,
-          notify_url: "http://sample.com/notify",
-          order_id: data.order_id,
-          items: "Product 01",
-          amount: data.amount,
-          currency: data.currency,
-          hash: data.hash, // *Replace with generated hash retrieved from backend
-          first_name: data.fname,
-          last_name: data.lname,
-          email: data.email,
-          phone: data.mobile,
-          address: data.line1 + " " + data.line2,
-          city: data.city,
-          country: "Sri Lanka",
-          delivery_address:
-            data.line1 +
-            " " +
-            data.line2 +
-            ", " +
-            data.district +
-            " " +
-            data.city +
-            ", " +
-            "Sri Lanka",
-          delivery_city: data.city,
-          delivery_country: "Sri Lanka",
-        };
+      //   // Error occurred
+      //   payhere.onError = function onError(error) {
+      //     // Note: show an error page
+      //     console.log("Error:" + error);
+      //   };
 
-        payhere.startPayment(payment);
+      //   var payment = {
+      //     sandbox: true,
+      //     merchant_id: data.merchant_id,
+      //     return_url: "http://sample.com/notify",
+      //     cancel_url: undefined,
+      //     notify_url: "http://sample.com/notify",
+      //     order_id: data.order_id,
+      //     items: "Product 01",
+      //     amount: data.amount,
+      //     currency: data.currency,
+      //     hash: data.hash, // *Replace with generated hash retrieved from backend
+      //     first_name: data.fname,
+      //     last_name: data.lname,
+      //     email: data.email,
+      //     phone: data.mobile,
+      //     address: data.line1 + " " + data.line2,
+      //     city: data.city,
+      //     country: "Sri Lanka",
+      //     delivery_address:
+      //       data.line1 +
+      //       " " +
+      //       data.line2 +
+      //       ", " +
+      //       data.city +
+      //       " " +
+      //       data.district +
+      //       ", " +
+      //       "Sri Lanka",
+      //     delivery_city: data.city,
+      //     delivery_country: "Sri Lanka",
+      //   };
+
+      //   payhere.startPayment(payment);
         
-      } else {
-        setError("Something went wrong, cannot proceed");
-      }
-    } catch (error) {
-      console.error("Error placing order:", error);
-      setError("Something went wrong, cannot proceed");
-    }
+      // } else {
+      //   setError("Something went wrong, cannot proceed");
+      // }
+    // } catch (error) {
+    //   console.error("Error placing order:", error);
+    //   setError("Something went wrong, cannot proceed");
+    // }
   };
 
   return (
