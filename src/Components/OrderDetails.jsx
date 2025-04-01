@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
-import { Minus, Plus } from "lucide-react";
 import HashLoader from "react-spinners/HashLoader";
 
-export default function OrderDetails({ userID }) {
+export default function OrderDetails({ userID, setTotalAmount }) {
   const APIURL = import.meta.env.VITE_API_URL;
 
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [loading, setLoading] = useState(true);
-
   const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
@@ -46,6 +44,12 @@ export default function OrderDetails({ userID }) {
   );
 
   const shipping = 200;
+
+  const total = subTotal + shipping;
+
+  useEffect(() => {
+    setTotalAmount(total)
+  }, [total, setTotalAmount])
 
   return (
     <>
