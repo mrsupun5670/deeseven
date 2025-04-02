@@ -187,7 +187,6 @@ export default function SingleProduct() {
               product={product}
               className="object-cover w-full h-[350px] md:h-[700px]"
             />
-            
           </div>
 
           {/* Thumbnails - Visible only on small screens */}
