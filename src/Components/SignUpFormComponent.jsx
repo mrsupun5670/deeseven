@@ -46,6 +46,23 @@ function SignUpFormComponent({ onClose, onsignIn }) {
           setLoading(false);
           localStorage.setItem("userRole", "customer");
           localStorage.setItem("user", JSON.stringify(insertedUser));
+
+          //Sync cart if needed
+          const cart = JSON.parse(sessionStorage.getItem("cart"));
+          if (cart) {
+            const cartWithID = cart.map((item) => ({
+              ...item,
+              emailID: data.id,
+            }));
+            await fetch(`${APIURL}/SyncCartItems.php`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(cartWithID),
+            });
+          }
+
           navigate(0);
         } else {
           setErrorMessage(data.message || "Registration failed");

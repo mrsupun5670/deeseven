@@ -123,7 +123,7 @@ const ProductStore = ({ searchQuery = "" }) => {
                         : ""
                     }
                     alt={product.title}
-                    className={`object-cover h-full w-full ${
+                    className={`object-contain h-full w-full ${
                       product.product_status === 0 ? "opacity-50" : ""
                     }`}
                   />

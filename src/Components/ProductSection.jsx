@@ -82,7 +82,7 @@ export default function ProductSection({ title }) {
                     <img
                       src={`${APIURL}/${product.images[0]?.image_url}` || "/images/placeholder.jpg"}
                       alt={product.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                       loading="lazy"
                     />
 
