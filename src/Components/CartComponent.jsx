@@ -199,7 +199,7 @@ function CartComponent({ onClose }) {
               <img
                 src={storedUser? APIURL +"/"+ item.image: item.image}
                 alt={item.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               {/* Hover Overlay */}
               <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-70 transition-opacity"></div>
