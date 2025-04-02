@@ -8,8 +8,9 @@ const ShippingDetails = ({ setShippingData }) => {
     lname: "",
     line1: "",
     line2: "",
-    district_id: "", // Consistent naming
-    city_id: "", // Consistent naming
+    postal_code: "",
+    district_id: "",
+    city_id: "",
     email: "",
     mobile: "",
   });
@@ -102,6 +103,7 @@ const ShippingDetails = ({ setShippingData }) => {
               onChange={handleInputChanges}
             />
           </div>
+
           <input
             type="text"
             name="line1"
@@ -110,14 +112,24 @@ const ShippingDetails = ({ setShippingData }) => {
             value={shipping.line1}
             onChange={handleInputChanges}
           />
-          <input
-            type="text"
-            name="line2"
-            placeholder="Additional Address Info"
-            className="p-2 border rounded w-full"
-            value={shipping.line2}
-            onChange={handleInputChanges}
-          />
+          <div className="flex gap-4">
+            <input
+              type="text"
+              name="line2"
+              placeholder="Additional Address Info"
+              className="p-2 border rounded w-full"
+              value={shipping.line2}
+              onChange={handleInputChanges}
+            />
+            <input
+              type="text"
+              name="postal_code"
+              placeholder="Postal Code"
+              className="p-2 border rounded w-full"
+              value={shipping.postal_code}
+              onChange={handleInputChanges}
+            />
+          </div>
 
           <div className="flex gap-4 text-gray-400">
             <select
@@ -130,7 +142,11 @@ const ShippingDetails = ({ setShippingData }) => {
                 Select District
               </option>
               {districts.map((district) => (
-                <option key={district.id} value={district.id} className="text-black">
+                <option
+                  key={district.id}
+                  value={district.id}
+                  className="text-black"
+                >
                   {district.name}
                 </option>
               ))}
