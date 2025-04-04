@@ -1,14 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 
 const LineChart = () => {
-  const options = {
+  const APIURL = import.meta.env.VITE_API_URL || "";
+
+  const [dateRange, setDateRange] = useState("");
+
+  const [state, setState] = useState({
+    series: [
+      {
+        name: "Number of Orders Over Time",
+        data: [],
+      },
+      {
+        name: "Customer Growth Trend",
+        data: [],
+      },
+    ],
+  });
+
+  const [options, setOptions] = useState({
     legend: {
-      show: false,
+      show: true,
       position: "top",
       horizontalAlign: "left",
     },
-    colors: ["#3C50E0", "#80CAEE"],
+    colors: ["#80CAEE", "#FFA07A"],
     chart: {
       fontFamily: "Satoshi, sans-serif",
       height: 335,
@@ -65,7 +82,7 @@ const LineChart = () => {
     markers: {
       size: 4,
       colors: "#fff",
-      strokeColors: ["#3056D3", "#80CAEE"],
+      strokeColors: ["#80CAEE", "#FFA07A"],
       strokeWidth: 3,
       strokeOpacity: 0.9,
       strokeDashArray: 0,
@@ -78,20 +95,7 @@ const LineChart = () => {
     },
     xaxis: {
       type: "category",
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      categories: [],
       axisBorder: {
         show: false,
       },
@@ -106,36 +110,61 @@ const LineChart = () => {
         },
       },
       min: 0,
-      max: 100,
     },
-  };
-
-  const [state, setState] = useState({
-    series: [
-      {
-        name: "Product One",
-        data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30, 45],
-      },
-        {
-          name: 'Product Two',
-          data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39, 51],
-        },
-    ],
   });
 
-  const handleReset = () => {
-    setState((prevState) => ({
-      ...prevState,
-    }));
-  };
+  useEffect(() => {
+    fetch(`${APIURL}/LoadLineChartData.php`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.response) {
+          const months = data.orders_over_time.map((item) =>
+            new Date(item.month).toLocaleString("default", { month: "long" })
+          );
+
+          const ordersData = data.orders_over_time.map((item) => item.total_orders);
+          const customersData = data.customer_growth.map(
+            (item) => item.total_customers
+          );
+
+          setState({
+            series: [
+              {
+                name: "Number of Orders Over Time",
+                data: ordersData,
+              },
+              {
+                name: "Customer Growth Trend",
+                data: customersData,
+              },
+            ],
+          });
+
+          setOptions((prevOptions) => ({
+            ...prevOptions,
+            xaxis: {
+              ...prevOptions.xaxis,
+              categories: months,
+            },
+          }));
+
+          setDateRange(data.date_range);
+        } else {
+          console.error(data.message);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
 
   return (
     <div className="col-span-12 rounded-sm border border-stroke bg-white px-5 pt-7.5 pb-5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:col-span-8">
       <div className="flex flex-wrap items-start justify-between gap-3 sm:flex-nowrap">
         <div className="flex w-full flex-wrap gap-3 sm:gap-5">
           <div className="flex min-w-47.5 gap-4 p-4 items-end">
-            <h4 className="text-xl font-semibold text-black ">Total Sales</h4>
-            <h3 className="font-medium">07.02.2024 - 06.02.2025</h3>
+            <h4 className="text-xl font-semibold text-black">Total Sales</h4>
+            <h3 className="font-medium">{dateRange}</h3>
           </div>
         </div>
         <div className="flex w-full max-w-45 justify-end">

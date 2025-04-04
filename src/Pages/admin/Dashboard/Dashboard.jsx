@@ -70,10 +70,10 @@ export default function Dashboard() {
         if (response.ok) {
           const data = await response.json();
           if (data.response === true) {
-            setActiveCustomers(data.active_customers);
-            setTodaySales(data.today_sales);
-            setTodaySold(data.today_sold);
-            setTotalProducts(data.total_products);
+            setActiveCustomers(data.active_customers || 0);
+            setTodaySales(data.today_sales || 0);
+            setTodaySold(data.today_sold || 0);
+            setTotalProducts(data.total_products || 0);
 
           } else {
             toast.error(data.message);
@@ -140,7 +140,7 @@ export default function Dashboard() {
             ))}
           </div>
           <div className="flex flex-col lg:flex-row w-full gap-4">
-            <div className="w-full lg:w-2/3">
+            <div className="w-full">
               <AnimatedContent
                 distance={150}
                 direction="vertical"
@@ -154,7 +154,7 @@ export default function Dashboard() {
                 <LineChart />
               </AnimatedContent>
             </div>
-            <div className="w-full lg:w-1/3">
+            {/* <div className="w-full lg:w-1/3"> 
               <AnimatedContent
                 distance={150}
                 direction="vertical"
@@ -167,7 +167,7 @@ export default function Dashboard() {
               >
                 <BarChart />
               </AnimatedContent>
-            </div>
+            </div>*/}
           </div>
           <div className="flex flex-col lg:flex-row w-full gap-4">
             <div className="w-full ">
