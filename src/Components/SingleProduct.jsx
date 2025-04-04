@@ -172,7 +172,7 @@ export default function SingleProduct() {
                 key={index}
                 src={`${APIURL}/${image.image_url}`}
                 alt={`Thumbnail ${index + 1}`}
-                className={`w-20 md:w-28 lg:w-32 h-full sm:h-20 object-cover cursor-pointer border rounded-md ${
+                className={`w-20 md:w-28 lg:w-32 h-full sm:h-20 object-contain cursor-pointer border rounded-md ${
                   mainImage === image ? "border-gray-400" : "border-gray-200"
                 } hover:border-gray-400`}
                 onClick={() => setMainImage(`${APIURL}/${image.image_url}`)}
@@ -196,7 +196,7 @@ export default function SingleProduct() {
                 key={index}
                 src={`${APIURL}/${image.image_url}`}
                 alt={`Thumbnail ${index + 1}`}
-                className={`w-16 sm:w-20 h-16 sm:h-20 object-cover cursor-pointer border rounded-md ${
+                className={`w-16 sm:w-20 h-16 sm:h-20 object-contain cursor-pointer border rounded-md ${
                   mainImage === image ? "border-gray-400" : "border-gray-200"
                 } hover:border-gray-400`}
                 onClick={() => setMainImage(`${APIURL}/${image.image_url}`)}

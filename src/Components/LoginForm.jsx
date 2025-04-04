@@ -31,31 +31,37 @@ function LoginForm({ onClose, onSignUp }) {
       const data = await response.json();
 
       if (data.response === true) {
-        // Store auth token
-        sessionStorage.setItem("authToken", data.token);
-
         if (data.role === "customer") {
-          localStorage.setItem("userRole", "customer");
-          localStorage.setItem("user", JSON.stringify(data.user));
+          if (data.user.status !== 0) {
+            // Store auth token
+            sessionStorage.setItem("authToken", data.token);
+            localStorage.setItem("userRole", "customer");
+            localStorage.setItem("user", JSON.stringify(data.user));
+            // Sync cart if needed
+            const cart = JSON.parse(sessionStorage.getItem("cart"));
+            if (cart) {
+              const cartWithID = cart.map((item) => ({
+                ...item,
+                emailID: data.user.id,
+              }));
+              await fetch(`${APIURL}/SyncCartItems.php`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(cartWithID),
+              });
+            }
 
-          // Sync cart if needed
-          const cart = JSON.parse(sessionStorage.getItem("cart"));
-          if (cart) {
-            const cartWithID = cart.map((item) => ({
-              ...item,
-              emailID: data.user.id,
-            }));
-            await fetch(`${APIURL}/SyncCartItems.php`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(cartWithID),
-            });
+            navigate(0);
+          } else {
+            setErrorMessage(
+              "Your account is disabled by the admin! please contact: admin@deezeven.com"
+            );
           }
-
-          navigate(0);
         } else if (data.role === "admin") {
+          // Store auth token
+          sessionStorage.setItem("authToken", data.token);
           localStorage.setItem("userRole", "admin");
           localStorage.setItem("admin", JSON.stringify(data.user));
           navigate("/admin/dashboard");

@@ -89,7 +89,7 @@ function CategoryView({ title }) {
                         `${APIURL}/${item?.images[0].image_url}` || "/images/placeholder.jpg"
                       }
                       alt={item.title}
-                      className="absolute inset-0 w-full h-full object-cover transition duration-500 group-hover:scale-105"
+                      className="absolute inset-0 w-full h-full object-contain transition duration-500 group-hover:scale-105"
                     />
 
                     {/* Quick view button */}

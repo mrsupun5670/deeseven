@@ -21,6 +21,7 @@ import CartProvider from "./context/CartProvider.jsx";
 import SingleProductPage from "./Pages/singleProductView.jsx";
 import Store from "./Pages/Store.jsx";
 import NotFound from "./Pages/NotFound.jsx";
+import PaymentSuccess from "./Pages/PaymentSuccess.jsx";
 
 createRoot(document.getElementById("root")).render(
   <CartProvider>
@@ -36,6 +37,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/account" element={<MyAccount />} />
         <Route path="/store" element={<Store />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />

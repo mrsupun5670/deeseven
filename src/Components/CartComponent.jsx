@@ -43,6 +43,31 @@ function CartComponent({ onClose }) {
     }
   };
 
+  const updateQuantityInDatabase = async (product_id, size, newQty) => {
+    try {
+      const response = await fetch(`${APIURL}/UpdateCartQuantity.php`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: storedUserId,
+          product_id: product_id,
+          size: size,
+          quantity: newQty
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!data.status) {
+        console.error("Failed to update quantity in database");
+      }
+    } catch (error) {
+      console.error("Error updating quantity in database:", error);
+    }
+  };
+
   const removeItemFromDatabase = async (storedUserId, product_id, size) => {
     try {
       const response = await fetch(`${APIURL}/RemoveCartItems.php`, {
@@ -88,6 +113,14 @@ function CartComponent({ onClose }) {
       type: "UPDATE_QUANTITY",
       payload: { id, size, qty: newQty },
     });
+
+    if (storedUserId) {
+      const item = cart.find(item => item.id === id && item.size === size);
+      if (item && item.product_id) {
+        updateQuantityInDatabase(item.product_id, size, newQty);
+      }
+    }
+
   };
 
   const removeItem = (id, product_id, size) => {
@@ -111,6 +144,7 @@ function CartComponent({ onClose }) {
         if(!storedUserId) {
           toast.error("please Sign in to continue", {theme: "colored"});
         } else {
+          
           navigate("/checkout", {state: { userID: storedUserId}});
         }
       }
@@ -165,7 +199,7 @@ function CartComponent({ onClose }) {
               <img
                 src={storedUser? APIURL +"/"+ item.image: item.image}
                 alt={item.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               {/* Hover Overlay */}
               <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-70 transition-opacity"></div>
