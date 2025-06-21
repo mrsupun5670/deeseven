@@ -107,10 +107,10 @@ function NavBar() {
         <a href="/store">
             <li className="hover:text-[#ffb700]">Store</li>
           </a>
-        <a href="#">
+        <a href="/about_us">
           <li className="hover:text-[#ffb700]">About Us</li>
         </a>
-        <a href="#">
+        <a href="/contact_us">
           <li className="hover:text-[#ffb700]">Contact</li>
         </a>
       </ul>
