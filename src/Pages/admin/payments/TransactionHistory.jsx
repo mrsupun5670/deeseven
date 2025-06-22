@@ -52,7 +52,7 @@ const TransactionHistory = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6  mx-auto">
       <h1 className="text-2xl font-bold mb-6">Transaction History</h1>
       
       {/* Main Transaction Table */}

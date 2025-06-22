@@ -225,7 +225,7 @@ const ProductCategories = () => {
   );
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen">
+    <div className="w-full mx-auto p-6 bg-gray-50 min-h-screen">
       {isLoading ? (
         <div className="fixed inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-50">
           <div className="space-y-4 text-center">

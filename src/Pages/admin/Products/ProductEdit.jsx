@@ -412,7 +412,7 @@ const ProductEdit = () => {
           </header>
 
           <div className="container mt-8">
-            <div className="flex space-x-1 bg-secondary/50 p-1 rounded-lg max-w-xl mx-auto">
+            <div className="flex space-x-1 bg-secondary/50 p-1 rounded-lg  mx-auto">
               {Object.keys(sectionRefs).map((section) => (
                 <button
                   key={section}
@@ -431,7 +431,7 @@ const ProductEdit = () => {
           </div>
 
           <div className="container mt-8">
-            <form className="max-w-4xl mx-auto space-y-12">
+            <form className="mx-auto space-y-12">
               <section
                 ref={sectionRefs.basic}
                 className="space-y-6 card-glass p-8"
