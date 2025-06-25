@@ -20,6 +20,34 @@ const sampleTrendData = [
   { day: "Sun", Men: 3490, Women: 4300, Kids: 2100 },
 ];
 
+const requestSalesTrendData = async () => {
+  const APIURL = import.meta.env.VITE_API_URL || "";
+  try {
+    const response = await fetch(`${APIURL}/LoadSalesTrend.php`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+      },
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.response === true) {
+        return data.trend_data || [];
+      } else {
+        console.error("Failed to fetch sales trend data:", data.message);
+        return [];
+      }
+    } else {
+      console.error("Failed to fetch sales trend data:", response.statusText);
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching sales trend data:", error);
+    return [];
+  }
+};
+
 export default function SalesTrend() {
   return (
     <div className="bg-white p-6 rounded-lg shadow">

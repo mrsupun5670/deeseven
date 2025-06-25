@@ -52,6 +52,7 @@ export default function Checkout() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
         },
         body: JSON.stringify({
           user_id: userID,
@@ -88,6 +89,7 @@ export default function Checkout() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
           },
           body: JSON.stringify({
             line1: shippingData.line1,
@@ -119,6 +121,7 @@ export default function Checkout() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
         },
         body: JSON.stringify({
           order_id: orderId,
