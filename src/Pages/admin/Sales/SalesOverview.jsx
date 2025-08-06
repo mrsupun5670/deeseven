@@ -13,7 +13,7 @@ import DonutChart from "../../../Components/DonutChart"; // custom component for
 import TopProducts from "../../../Components/TopProducts";
 import SalesTrend from "../../../Components/SalesTrend"; // multi-line trend chart
 import SalesHeatmap from "../../../Components/SalesHeatmap"; // optional heatmap calendar
-
+//  d
 const StatCard = ({ title, value, icon: Icon, color = "text-amber-500" }) => (
   <AnimatedContent
     distance={150}
