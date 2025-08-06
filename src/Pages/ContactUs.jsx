@@ -22,11 +22,10 @@ export default function ContactUs() {
                 <h2 className="text-xl font-semibold">Email</h2>
                 <p>
                   <a
-                    href="mailto:support@deesevenclothing.com"
+                    href="mailto:info@deezevenclothing.com"
                     className="text-blue-600 underline"
                   >
-                    support@deesevenclothing.com
-                  </a>
+                    info@deezevenclothing.com                  </a>
                 </p>
               </div>
 

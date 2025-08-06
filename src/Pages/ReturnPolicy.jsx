@@ -12,7 +12,7 @@ export default function ReturnPolicy() {
           <h1 className="text-3xl font-bold mb-6 text-center">Return & Refund Policy</h1>
 
           <p className="mb-6">
-            Thank you for shopping with <strong>Deeseven</strong>. We value your satisfaction and want to ensure that your shopping experience is smooth and transparent. Please review our policy below.
+            Thank you for shopping with <strong>Deezeven</strong>. We value your satisfaction and want to ensure that your shopping experience is smooth and transparent. Please review our policy below.
           </p>
 
           <div className="space-y-10">
@@ -59,7 +59,7 @@ export default function ReturnPolicy() {
               <h2 className="text-2xl font-semibold mb-2">Defective Items</h2>
               <p>
                 If your item arrives damaged or faulty, contact us within 7 days of delivery. Email a clear image of the defect to{' '}
-                <a href="mailto:support@deesevenclothing.com" className="text-blue-600 underline">support@deesevenclothing.com</a>. Once reviewed and approved, we will guide you through the exchange process.
+                <a href="mailto:info@deezevenclothing.com" className="text-blue-600 underline">info@deezevenclothing.com</a>. Once reviewed and approved, we will guide you through the exchange process.
               </p>
             </section>
 
@@ -76,7 +76,7 @@ export default function ReturnPolicy() {
               <h2 className="text-2xl font-semibold mb-2">Contact Us</h2>
               <p>
                 If you have any questions about returns, exchanges, or refunds, please reach out to our team at{' '}
-                <a href="mailto:support@deesevenclothing.com" className="text-blue-600 underline">support@deesevenclothing.com</a>. We’re here to help!
+                <a href="mailto:info@deezevenclothing.com" className="text-blue-600 underline">info@deezevenclothing.com</a>. We’re here to help!
               </p>
             </section>
           </div>

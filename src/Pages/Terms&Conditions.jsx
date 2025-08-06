@@ -12,9 +12,9 @@ export default function TermsConditions() {
           <h1 className="text-3xl font-bold mb-6 text-center">Terms & Conditions</h1>
 
           <p className="mb-6">
-            Welcome to <strong>Deeseven</strong>. These Terms and Conditions govern your use of our website (
-            <a href="https://www.deeseven.com" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">
-              www.deeseven.com
+            Welcome to <strong>Deezeven</strong>. These Terms and Conditions govern your use of our website (
+            <a href="https://www.deezeven.com" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">
+              www.deezeven.com
             </a>) and any purchases made through our platform. By accessing or using our website, you agree to comply with the following terms.
           </p>
 
@@ -90,7 +90,7 @@ export default function TermsConditions() {
             <section>
               <h2 className="text-2xl font-semibold mb-2">Intellectual Property</h2>
               <p>
-                All content on this website—including logos, text, images, and graphics—is owned by Deeseven or its licensors. You may not reuse, reproduce, or modify any part of the content without written permission.
+                All content on this website—including logos, text, images, and graphics—is owned by Deezeven or its licensors. You may not reuse, reproduce, or modify any part of the content without written permission.
               </p>
             </section>
 
@@ -104,14 +104,14 @@ export default function TermsConditions() {
             <section>
               <h2 className="text-2xl font-semibold mb-2">Limitation of Liability</h2>
               <p>
-                Deeseven is not liable for any indirect or consequential damages resulting from use of this site, order errors, delivery issues, or unauthorized access to personal data.
+                Deezeven is not liable for any indirect or consequential damages resulting from use of this site, order errors, delivery issues, or unauthorized access to personal data.
               </p>
             </section>
 
             <section>
               <h2 className="text-2xl font-semibold mb-2">Indemnification</h2>
               <p>
-                You agree to indemnify and hold harmless Deeseven and its affiliates from any claims, liabilities, or losses arising from your misuse of the website or breach of these terms.
+                You agree to indemnify and hold harmless Deezeven and its affiliates from any claims, liabilities, or losses arising from your misuse of the website or breach of these terms.
               </p>
             </section>
 
@@ -126,9 +126,8 @@ export default function TermsConditions() {
               <h2 className="text-2xl font-semibold mb-2">Contact</h2>
               <p>
                 For any questions, feel free to contact us at{' '}
-                <a href="mailto:support@deesevenclothing.com" className="text-blue-600 underline">
-                  support@deesevenclothing.com
-                </a>.
+                <a href="mailto:info@deezevenclothing.com" className="text-blue-600 underline">
+                  info@deezevenclothing.com                </a>.
               </p>
             </section>
           </div>

@@ -12,14 +12,14 @@ export default function AboutUs() {
           <h1 className="text-3xl font-bold mb-6 text-center">About Us</h1>
 
           <p className="mb-6 text-lg text-gray-700">
-            <strong>Deeseven</strong> is more than just a textile shop – we are a celebration of comfort, elegance, and individuality. Founded with a passion for authentic style and everyday fashion, we bring thoughtfully designed garments that blend timeless craftsmanship with modern sensibilities.
+            <strong>Deezeven</strong> is more than just a textile shop – we are a celebration of comfort, elegance, and individuality. Founded with a passion for authentic style and everyday fashion, we bring thoughtfully designed garments that blend timeless craftsmanship with modern sensibilities.
           </p>
 
           <div className="space-y-10">
             <section>
               <h2 className="text-2xl font-semibold mb-2">Our Story</h2>
               <p>
-                Starting from humble beginnings, Deeseven was built on the belief that quality fashion should be accessible, expressive, and trustworthy. What began as a small online store has grown into a beloved destination for shoppers who value both comfort and detail in what they wear.
+                Starting from humble beginnings, Deezeven was built on the belief that quality fashion should be accessible, expressive, and trustworthy. What began as a small online store has grown into a beloved destination for shoppers who value both comfort and detail in what they wear.
               </p>
             </section>
 
@@ -35,7 +35,7 @@ export default function AboutUs() {
             <section>
               <h2 className="text-2xl font-semibold mb-2">Why Shop With Us?</h2>
               <p>
-                With fast shipping, clear policies, and attentive customer service, we ensure a smooth and satisfying experience from cart to closet. Whether you're upgrading your wardrobe or shopping for a special occasion, Deeseven is your trusted style partner.
+                With fast shipping, clear policies, and attentive customer service, we ensure a smooth and satisfying experience from cart to closet. Whether you're upgrading your wardrobe or shopping for a special occasion, Deezeven is your trusted style partner.
               </p>
             </section>
 

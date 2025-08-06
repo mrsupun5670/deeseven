@@ -53,7 +53,7 @@ export default function SalesOverview() {
     const loadSalesOverview = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch(`${APIURL}/LoadSalesOverview.php`, {
+        const response = await fetch(`${APIURL}/LoadSalesData.php`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -95,10 +95,7 @@ export default function SalesOverview() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Sales Overview</h1>
-        <button className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded flex items-center gap-2">
-          <DownloadCloud className="w-4 h-4" />
-          Download Report
-        </button>
+       
       </div>
 
       {isLoading ? (
@@ -133,9 +130,7 @@ export default function SalesOverview() {
             <TopProducts />
           </AnimatedContent>
 
-          <AnimatedContent>
-            <SalesHeatmap />
-          </AnimatedContent>
+       
         </>
       )}
 

@@ -12,7 +12,7 @@ export default function Policy() {
           <h1 className="text-3xl font-bold mb-6 text-center">Privacy Policy</h1>
 
           <p className="mb-6">
-            At <strong>Deeseven</strong>, we are committed to protecting your privacy and ensuring that your personal information is handled securely and responsibly. By using our website, you agree to the practices outlined in this policy.
+            At <strong>Deezeven</strong>, we are committed to protecting your privacy and ensuring that your personal information is handled securely and responsibly. By using our website, you agree to the practices outlined in this policy.
           </p>
 
           <div className="space-y-10">
@@ -41,7 +41,7 @@ export default function Policy() {
               <h2 className="text-2xl font-semibold mb-2">Marketing Communications</h2>
               <p>
                 If you opt in, we may contact you with updates, promotions, or new product announcements via email or SMS. You can unsubscribe anytime by clicking the link in our emails or contacting us at{" "}
-                <a href="mailto:support@deesevenclothing.com" className="text-blue-600 underline">support@deesevenclothing.com</a>.
+                <a href="mailto:info@deezevenclothing.com" className="text-blue-600 underline">info@deezevenclothing.com</a>.
               </p>
             </section>
 
@@ -56,7 +56,7 @@ export default function Policy() {
                 <li>Marketing communication under our direct control</li>
               </ul>
               <p className="mt-2">
-                These providers are contractually obligated to keep your data secure and use it only to support Deeseven operations.
+                These providers are contractually obligated to keep your data secure and use it only to support Deezeven operations.
               </p>
             </section>
 
@@ -71,7 +71,7 @@ export default function Policy() {
               <h2 className="text-2xl font-semibold mb-2">Children’s Privacy</h2>
               <p>
                 We do not knowingly collect personal information from children under the age of 13. If you believe a child has submitted data to us, please email us at{" "}
-                <a href="mailto:support@deesevenclothing.com" className="text-blue-600 underline">support@deesevenclothing.com</a> and we will remove the data promptly.
+                <a href="mailto:info@deezevenclothing.com" className="text-blue-600 underline">info@deezevenclothing.com</a> and we will remove the data promptly.
               </p>
             </section>
 
@@ -121,7 +121,7 @@ export default function Policy() {
               <h2 className="text-2xl font-semibold mb-2">Contact Us</h2>
               <p>
                 For questions about this Privacy Policy, email us at{" "}
-                <a href="mailto:support@deesevenclothing.com" className="text-blue-600 underline">support@deesevenclothing.com</a>. We're happy to assist you.
+                <a href="mailto:info@deezevenclothing.com" className="text-blue-600 underline">info@deezevenclothing.com</a>. We're happy to assist you.
               </p>
             </section>
           </div>
