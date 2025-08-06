@@ -34,6 +34,7 @@ export default function MyAccount() {
             {
               headers: {
                 "Content-Type": "application/json",
+                Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
               },
             }
           );

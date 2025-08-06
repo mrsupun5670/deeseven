@@ -25,7 +25,7 @@ function CartComponent({ onClose }) {
   const syncCartWithDatabase = async (userId) => {
     setLoading(true);
     try {
-      const response = await fetch(`${APIURL}/FetchCartItems.php`, {
+      const response = await fetch(`${APIURL}/fetchCartItems.php`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
