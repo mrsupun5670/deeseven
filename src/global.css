@@ -1,0 +1,68 @@
+@font-face {
+  font-family: 'Beyonders';
+  src: url('./assets/Beyonders.ttf') format('truetype');
+}
+
+.font-beyonder {
+  font-family: 'Beyonders', sans-serif;
+}
+
+.magnifier-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.magnifier-container:hover .main-image {
+  transform: scale(2);
+}
+
+.magnifier {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: none;
+  display: none;
+}
+
+.magnifier-container:hover .magnifier {
+  display: block;
+}
+
+/* Ensure arrows are vertically centered */
+.swiper-button-prev,
+.swiper-button-next {
+  color: #FFB700 !important; /* Arrow color */
+  font-size: 16px !important; /* Arrow size */
+  width: 50px !important; /* Background size */
+  height: 50px !important;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Center arrows properly */
+  top: 50% !important;  
+  transform: translateY(-50%) !important;
+}
+
+/* Hide arrows on small screens */
+@media (max-width: 640px) {
+  .swiper-button-prev,
+  .swiper-button-next {
+    display: none !important;
+  }
+}
+
