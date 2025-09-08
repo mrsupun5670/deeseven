@@ -11,8 +11,7 @@ import CustomersList from "./Pages/admin/Customers/CustomersList.jsx";
 import OrdersList from "./Pages/admin/Orders/OrdersList.jsx";
 import ProductCategories from "./Pages/admin/Products/ProductCategories.jsx";
 import SalesOverview from "./Pages/admin/Sales/SalesOverview.jsx";
-import SalesReports from "./Pages/admin/Sales/SalesReports.jsx";
-import TransactionHistory from "./Pages/admin/payments/TransactionHistory.jsx";
+import Returns from "./Pages/admin/returns/Returns.jsx";
 import Index from "./Pages/index.jsx";
 import MyAccount from "./Pages/MyAccount.jsx";
 import TermsConditions from "./Pages/Terms&Conditions.jsx";
@@ -65,16 +64,10 @@ createRoot(document.getElementById("root")).render(
 
           <Route path="customers" element={<CustomersList />} />
 
-          <Route path="sales">
-            <Route index element={<SalesOverview />} />
-            <Route path="overview" element={<SalesOverview />} />
-            <Route path="reports" element={<SalesReports />} />
-          </Route>
+          <Route path="sales-overview" element={<SalesOverview />} />
 
-          <Route path="payments">
-            <Route index element={<TransactionHistory />} />
-            <Route path="history" element={<TransactionHistory />} />
-          </Route>
+         
+            <Route path="returns" element={<Returns />} />
         </Route>
       </Routes>
     </BrowserRouter>

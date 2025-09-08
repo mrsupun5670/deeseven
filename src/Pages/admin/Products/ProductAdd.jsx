@@ -26,6 +26,7 @@ const ProductAdd = () => {
 
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
+  const [availableSizes, setAvailableSizes] = useState([]);
   const [selectedImages, setSelectedImages] = useState([null, null, null]);
   const [imageUrls, setImageUrls] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -55,8 +56,8 @@ const ProductAdd = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.response === true) {
-            setCategories(data.categories);
-            setSubCategories(data.sub_categories);
+            setCategories(data.categories || []);
+            setSubCategories(data.sub_categories || []);
           } else {
             toast.error(data.message);
 
@@ -67,8 +68,11 @@ const ProductAdd = () => {
               navigate("/");
             }
           }
+        } else {
+          toast.error("Failed to fetch product data");
         }
       } catch (error) {
+        console.error("Error loading product data:", error);
         toast.error("Failed to load product data");
       } finally {
         setIsLoading(false);
@@ -82,7 +86,11 @@ const ProductAdd = () => {
     const loadSizes = async () => {
       const subCategoryId = productData.sub_category?.id;
 
-      if (!subCategoryId) return;
+      if (!subCategoryId) {
+        setAvailableSizes([]);
+        setProductData((prev) => ({ ...prev, sizes: [] }));
+        return;
+      }
 
       try {
         const response = await fetch(`${APIURL}/GetSizeBySubCategory.php`, {
@@ -97,6 +105,8 @@ const ProductAdd = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.response === true) {
+            setAvailableSizes(data.sizes || []);
+            
             const newSizes = data.sizes.map((size) => ({
               size_id: size.size_id,
               size_name: size.size_name,
@@ -106,10 +116,19 @@ const ProductAdd = () => {
             setProductData((prev) => ({ ...prev, sizes: newSizes }));
           } else {
             toast.error(data.message);
+            setAvailableSizes([]);
+            setProductData((prev) => ({ ...prev, sizes: [] }));
           }
+        } else {
+          toast.error("Failed to fetch sizes");
+          setAvailableSizes([]);
+          setProductData((prev) => ({ ...prev, sizes: [] }));
         }
       } catch (error) {
+        console.error("Error loading sizes:", error);
         toast.error("Failed to load sizes");
+        setAvailableSizes([]);
+        setProductData((prev) => ({ ...prev, sizes: [] }));
       }
     };
 
@@ -148,7 +167,7 @@ const ProductAdd = () => {
     setProductData((prev) => {
       const newSizes = [...(prev.sizes || [])];
       if (newSizes[index]) {
-        newSizes[index] = { ...newSizes[index], quantity };
+        newSizes[index] = { ...newSizes[index], quantity: parseInt(quantity) || 0 };
       }
       return { ...prev, sizes: newSizes };
     });
@@ -175,6 +194,10 @@ const ProductAdd = () => {
   const handleRemoveImage = (index) => {
     const newImages = [...selectedImages];
     const newImageUrls = [...imageUrls];
+
+    if (newImageUrls[index]) {
+      URL.revokeObjectURL(newImageUrls[index]);
+    }
 
     newImages[index] = null;
     newImageUrls[index] = "";
@@ -211,11 +234,36 @@ const ProductAdd = () => {
     }));
   };
 
+  const resetForm = () => {
+    setProductData({
+      title: "",
+      description: "",
+      price: 0,
+      category: { id: "", name: "" },
+      sub_category: { id: "", name: "" },
+      images: [],
+      sizes: [],
+      fabric: [""],
+      fabric_care: [""],
+      notes: [""],
+      add_on_features: [""],
+    });
+    setSelectedImages([null, null, null]);
+    // Clean up existing image URLs
+    imageUrls.forEach(url => {
+      if (url) URL.revokeObjectURL(url);
+    });
+    setImageUrls([]);
+    setAvailableSizes([]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
-      if (!productData.title) {
-        toast.error("Product title is required", { theme: "light" });
+      // Validation
+      if (!productData.title?.trim()) {
+        toast.error("Product title is required");
         return;
       }
 
@@ -224,7 +272,7 @@ const ProductAdd = () => {
         return;
       }
 
-      if (!productData.description) {
+      if (!productData.description?.trim()) {
         toast.error("Please enter description");
         return;
       }
@@ -239,62 +287,56 @@ const ProductAdd = () => {
         return;
       }
 
-      if (productData.fabric.filter((f) => f.trim() !== "").length === 0) {
+      const validFabricDetails = productData.fabric.filter((f) => f.trim() !== "");
+      if (validFabricDetails.length === 0) {
         toast.error("Please add at least one fabric detail");
         return;
       }
 
-      if (
-        productData.fabric_care.filter((fc) => fc.trim() !== "").length === 0
-      ) {
+      const validFabricCare = productData.fabric_care.filter((fc) => fc.trim() !== "");
+      if (validFabricCare.length === 0) {
         toast.error("Please add at least one fabric care instruction");
         return;
       }
 
-      if (productData.notes.filter((n) => n.trim() !== "").length === 0) {
+      const validNotes = productData.notes.filter((n) => n.trim() !== "");
+      if (validNotes.length === 0) {
         toast.error("Please add at least one note");
         return;
       }
 
-      if (productData.add_on_features.filter((f) => f.trim() !== "").length === 0) {
+      const validFeatures = productData.add_on_features.filter((f) => f.trim() !== "");
+      if (validFeatures.length === 0) {
         toast.error("Please add at least one add-on feature");
         return;
       }
 
-      const allSizesEmpty = productData.sizes.every(
-        (size) => size.quantity === 0
-      );
-
-      if (allSizesEmpty) {
-        toast.error(
-          "Please add at least one size with a quantity greater than 0"
-        );
+      const sizesWithQuantity = productData.sizes.filter(size => size.quantity > 0);
+      if (sizesWithQuantity.length === 0) {
+        toast.error("Please add at least one size with a quantity greater than 0");
         return;
       }
-      const hasImages = selectedImages.some((img) => img !== null);
 
+      const hasImages = selectedImages.some((img) => img !== null);
       if (!hasImages) {
         toast.error("Please upload at least one product image");
         return;
       }
 
-      const filteredSizes = productData.sizes.filter(size => size.quantity > 0);
-
+      // Prepare API data
       const apiData = {
-        title: productData.title,
-        description: productData.description,
-        category_id: productData.category?.id,
-        sub_category_id: productData.sub_category?.id,
-        price: productData.price,
-        fabric_details: productData.fabric.filter((f) => f.trim() !== ""),
-        notes: productData.notes.filter((n) => n.trim() !== ""),
-        fabric_care: productData.fabric_care.filter((fc) => fc.trim() !== ""),
-        add_on_features: productData.add_on_features.filter(
-          (f) => f.trim() !== ""
-        ),
-        sizes: filteredSizes.map((size) => ({
+        title: productData.title.trim(),
+        description: productData.description.trim(),
+        category_id: productData.category.id,
+        sub_category_id: productData.sub_category.id,
+        price: parseFloat(productData.price),
+        fabric_details: validFabricDetails,
+        notes: validNotes,
+        fabric_care: validFabricCare,
+        add_on_features: validFeatures,
+        sizes: sizesWithQuantity.map((size) => ({
           size_id: size.size_id,
-          quantity: size.quantity || 0,
+          quantity: size.quantity,
         })),
       };
 
@@ -319,21 +361,7 @@ const ProductAdd = () => {
         const result = await response.json();
         if (result.response === true) {
           toast.success("Product added successfully");
-          setProductData({
-            title: "",
-            description: "",
-            price: 0,
-            category: { id: "", name: "" },
-            sub_category: { id: "", name: "" },
-            images: [],
-            sizes: [],
-            fabric: [""],
-            fabric_care: [""],
-            notes: [""],
-            add_on_features: [""],
-          });
-          setSelectedImages([null, null, null]);
-          setImageUrls([]);
+          resetForm();
         } else {
           toast.error(result.message || "Failed to add product");
         }
@@ -453,13 +481,14 @@ const ProductAdd = () => {
                     </label>
                     <input
                       type="number"
+                      step="0.01"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       placeholder="0.00"
                       value={productData.price || ""}
                       onChange={(e) =>
                         setProductData((prev) => ({
                           ...prev,
-                          price: Number(e.target.value),
+                          price: parseFloat(e.target.value) || 0,
                         }))
                       }
                       min={0}
@@ -515,6 +544,7 @@ const ProductAdd = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       value={productData.sub_category?.id || ""}
                       onChange={handleSubCategoryChange}
+                      disabled={!productData.category?.id}
                     >
                       <option value="">Select sub-category</option>
                       {subCategories.map((subCategory) => (
@@ -648,8 +678,24 @@ const ProductAdd = () => {
                               handleArrayUpdate("notes", index, e.target.value)
                             }
                           />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveArrayItem("notes", index)}
+                            className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"
+                            disabled={productData.notes?.length === 1}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
                         </div>
                       ))}
+                      <button
+                        type="button"
+                        onClick={() => handleAddArrayItem("notes")}
+                        className="flex items-center text-sm font-medium text-yellow-600 hover:text-yellow-700 transition-colors"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Note
+                      </button>
                     </div>
                   </div>
 
@@ -734,7 +780,7 @@ const ProductAdd = () => {
                             onChange={(e) =>
                               handleSizeQuantityChange(
                                 index,
-                                Number(e.target.value)
+                                e.target.value
                               )
                             }
                           />

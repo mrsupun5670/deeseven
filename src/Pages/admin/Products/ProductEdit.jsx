@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import { Plus, X, Upload, ArrowLeft, Save, Trash2, Package, Layers, Edit, Image } from "lucide-react";
-import { cn } from "../../../lib/utils";
 
 const ProductEdit = () => {
   const navigate = useNavigate();
@@ -12,6 +11,7 @@ const ProductEdit = () => {
   const fileInputRef = useRef(null);
 
   const [productData, setProductData] = useState({
+    id: "",
     title: "",
     description: "",
     price: 0,
@@ -25,10 +25,12 @@ const ProductEdit = () => {
     add_on_features: [""],
   });
 
+  const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [availableSizes, setAvailableSizes] = useState([]);
   const [selectedImages, setSelectedImages] = useState([null, null, null]);
   const [imageUrls, setImageUrls] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sizes, setSizes] = useState([]);
 
   const [activeSection, setActiveSection] = useState("basic");
 
@@ -39,112 +41,113 @@ const ProductEdit = () => {
     images: useRef(null),
   };
 
-  const mapProductDataFromAPI = (apiData) => {
-    if (!apiData || !apiData.data) return {};
-    try {
-      const product = apiData.data;
-
-      const sizes = product.sizes.map((size) => ({
-        size_name: size.size_name,
-        quantity: Number(size.quantity) || 0,
-      }));
-
-      const category = {
-        id: product.category_id.toString(),
-        name: product.category_name,
-      };
-
-      const subCategory = {
-        id: product.sub_category_id.toString(),
-        name: product.sub_category_name,
-      };
-
-      return {
-        id: product.product_id,
-        title: product.title || "",
-        description: product.description || "",
-        price: Number(product.price) || 0,
-        category: category,
-        sub_category: subCategory,
-        images: product.images.map((img) => img.image_url),
-        sizes: sizes,
-        fabric: product.fabric.map((f) => f.about) || [""],
-        fabric_care: product.fabric_care.map((fc) => fc.fabric_care) || [""],
-        notes: product.note ? [product.note] : [""],
-        add_on_features: product.add_on_features.map((f) => f.features) || [""],
-      };
-    } catch (error) {
-      console.error("Error mapping product data:", error);
-      toast.error("Error processing product data");
-      return {};
-    }
-  };
-
+  // Load initial data (categories, subcategories)
   useEffect(() => {
-    const loadProductData = async () => {
-      setIsLoading(true);
-
+    const loadInitialData = async () => {
       try {
-        if (productId) {
-          const productResponse = await fetch(
-            `${APIURL}/fetchSingleProduct.php?id=${productId}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-              },
-            }
-          );
+        const response = await fetch(`${APIURL}/LoadAddProductUIData.php`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+          },
+        });
 
-          if (productResponse.ok) {
-            const productData = await productResponse.json();
-            if (productData.status) {
-              const mappedProduct = mapProductDataFromAPI(productData);
-
-              if (mappedProduct.images && mappedProduct.images.length > 0) {
-                const loadedImages = mappedProduct.images.map((img) => {
-                  return {
-                    name: img.split("/").pop(),
-                    size: 0,
-                    type: "image/jpeg",
-                  };
-                });
-                setSelectedImages(loadedImages);
-                setImageUrls(
-                  mappedProduct.images.map((img) => `${APIURL}/${img}`)
-                );
-              }
-
-              if (mappedProduct.sub_category.id) {
-                await fetchSizesForSubCategory(mappedProduct.sub_category.id);
-
-                const mergedSizes = sizes.map((size) => {
-                  const productSize = mappedProduct.sizes.find(
-                    (s) => s.size_name === size.size_name
-                  );
-
-                  return {
-                    ...size,
-                    quantity: productSize ? productSize.quantity : 0,
-                  };
-                });
-
-                setProductData((prev) => ({
-                  ...prev,
-                  ...mappedProduct,
-                  sizes: mergedSizes,
-                }));
-              }
-            } else {
-              toast.error(productData.message);
-            }
+        if (response.ok) {
+          const data = await response.json();
+          if (data.response === true) {
+            setCategories(data.categories || []);
+            setSubCategories(data.sub_categories || []);
           } else {
-            toast.error("Failed to fetch product details.");
+            toast.error(data.message);
           }
         }
       } catch (error) {
-        console.error("Error loading data:", error);
+        console.error("Error loading initial data:", error);
+        toast.error("Failed to load initial data");
+      }
+    };
+
+    loadInitialData();
+  }, [APIURL]);
+
+  // Load product data
+  useEffect(() => {
+    const loadProductData = async () => {
+      if (!productId) return;
+
+      setIsLoading(true);
+
+      try {
+        const productResponse = await fetch(
+          `${APIURL}/fetchEditSingleProduct.php?id=${productId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+            },
+          }
+        );
+
+        if (productResponse.ok) {
+          const productData = await productResponse.json();
+          if (productData.status) {
+            const product = productData.data;
+
+            // Map the product data to component state
+            const mappedProduct = {
+              id: product.product_id,
+              title: product.title || "",
+              description: product.description || "",
+              price: Number(product.price) || 0,
+              category: {
+                id: product.category_id.toString(),
+                name: product.category_name,
+              },
+              sub_category: {
+                id: product.sub_category_id.toString(),
+                name: product.sub_category_name,
+              },
+              images: product.images.map((img) => img.image_url),
+              sizes: product.sizes || [],
+              fabric: product.fabric.map((f) => f.about) || [""],
+              fabric_care: product.fabric_care.map((fc) => fc.fabric_care) || [""],
+              notes: product.notes.map((n) => n.note) || [""],
+              add_on_features: product.add_on_features.map((f) => f.features) || [""],
+            };
+
+            // Set product data
+            setProductData(mappedProduct);
+
+            // Set existing images
+            if (mappedProduct.images && mappedProduct.images.length > 0) {
+              const imageUrlsWithAPI = mappedProduct.images.map((img) => `${APIURL}/${img}`);
+              setImageUrls(imageUrlsWithAPI);
+              
+              // Create mock file objects for existing images
+              const mockFiles = mappedProduct.images.map((img, index) => ({
+                name: img.split("/").pop(),
+                size: 0,
+                type: "image/jpeg",
+                isExisting: true
+              }));
+              setSelectedImages(mockFiles);
+            }
+
+            // Load available sizes for the sub-category
+            if (mappedProduct.sub_category.id) {
+              await loadSizesForSubCategory(mappedProduct.sub_category.id);
+            }
+
+          } else {
+            toast.error(productData.message || "Failed to load product");
+          }
+        } else {
+          toast.error("Failed to fetch product details");
+        }
+      } catch (error) {
+        console.error("Error loading product data:", error);
         toast.error("Failed to load product data");
       } finally {
         setIsLoading(false);
@@ -152,138 +155,9 @@ const ProductEdit = () => {
     };
 
     loadProductData();
-  }, [productId, APIURL, navigate]);
+  }, [productId, APIURL]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (!productData.title) {
-        toast.error("Product title is required");
-        return;
-      }
-
-      if (!productData.price || productData.price <= 0) {
-        toast.error("Please enter a valid price");
-        return;
-      }
-
-      if (!productData.description) {
-        toast.error("Please enter description");
-        return;
-      }
-
-      if (!productData.category?.id) {
-        toast.error("Please select a category");
-        return;
-      }
-
-      if (!productData.sub_category?.id) {
-        toast.error("Please select a sub-category");
-        return;
-      }
-
-      if (productData.fabric.filter((f) => f.trim() !== "").length === 0) {
-        toast.error("Please add at least one fabric detail");
-        return;
-      }
-
-      if (
-        productData.fabric_care.filter((fc) => fc.trim() !== "").length === 0
-      ) {
-        toast.error("Please add at least one fabric care instruction");
-        return;
-      }
-
-      if (productData.notes.filter((n) => n.trim() !== "").length === 0) {
-        toast.error("Please add at least one note");
-        return;
-      }
-
-      if (
-        productData.add_on_features.filter((f) => f.trim() !== "").length === 0
-      ) {
-        toast.error("Please add at least one add-on feature");
-        return;
-      }
-
-      const allSizesEmpty = productData.sizes.every(
-        (size) => size.quantity === 0
-      );
-
-      if (allSizesEmpty) {
-        toast.error(
-          "Please add at least one size with a quantity greater than 0"
-        );
-        return;
-      }
-
-      const hasImages =
-        selectedImages.some((img) => img !== null) ||
-        imageUrls.some((url) => url !== "");
-
-      if (!hasImages) {
-        toast.error("Please upload at least one product image");
-        return;
-      }
-
-      const filteredSizes = productData.sizes.filter(
-        (size) => size.quantity > 0
-      );
-
-      const apiData = {
-        productId: productData.id,
-        title: productData.title,
-        description: productData.description,
-        category_id: productData.category?.id,
-        sub_category_id: productData.sub_category?.id,
-        price: productData.price,
-        fabric_details: productData.fabric.filter((f) => f.trim() !== ""),
-        notes: productData.notes.filter((n) => n.trim() !== ""),
-        fabric_care: productData.fabric_care.filter((fc) => fc.trim() !== ""),
-        add_on_features: productData.add_on_features.filter(
-          (f) => f.trim() !== ""
-        ),
-        sizes: filteredSizes.sizes.map((size) => ({
-          size_id: size.size_id,
-          quantity: size.quantity || 0,
-        })),
-      };
-
-      const formData = new FormData();
-      formData.append("productData", JSON.stringify(apiData));
-
-      selectedImages.forEach((image, index) => {
-        if (image) {
-          formData.append(`image_${index}`, image);
-        }
-      });
-
-      const response = await fetch(`${APIURL}/UpdateProductController.php`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
-        },
-        body: formData,
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        if (result.response === true) {
-          toast.success("Product updated successfully");
-          navigate("../");
-        } else {
-          toast.error(result.message || "Failed to update product");
-        }
-      } else {
-        toast.error("Server error. Please try again later.");
-      }
-    } catch (error) {
-      console.error("Error updating product:", error);
-      toast.error("Failed to update product");
-    }
-  };
-
-  const fetchSizesForSubCategory = async (subCategoryId) => {
+  const loadSizesForSubCategory = async (subCategoryId) => {
     try {
       const sizesResponse = await fetch(`${APIURL}/GetSizeBySubCategory.php`, {
         method: "POST",
@@ -297,16 +171,32 @@ const ProductEdit = () => {
       if (sizesResponse.ok) {
         const sizesData = await sizesResponse.json();
         if (sizesData.response === true) {
-          setSizes(sizesData.sizes);
+          setAvailableSizes(sizesData.sizes || []);
+          
+          // Merge available sizes with existing product sizes
+          const mergedSizes = sizesData.sizes.map((availableSize) => {
+            const existingSize = productData.sizes.find(
+              (productSize) => productSize.size_id === availableSize.size_id
+            );
+            
+            return {
+              size_id: availableSize.size_id,
+              size_name: availableSize.size_name,
+              quantity: existingSize ? parseInt(existingSize.quantity) || 0 : 0,
+            };
+          });
+
+          setProductData((prev) => ({
+            ...prev,
+            sizes: mergedSizes,
+          }));
         } else {
           toast.error(sizesData.message);
         }
-      } else {
-        toast.error("Failed to fetch sizes for sub-category.");
       }
     } catch (error) {
-      console.error("Error fetching sizes:", error);
-      toast.error("Failed to fetch sizes for sub-category.");
+      console.error("Error loading sizes:", error);
+      toast.error("Failed to load sizes");
     }
   };
 
@@ -340,7 +230,7 @@ const ProductEdit = () => {
     setProductData((prev) => {
       const newSizes = [...(prev.sizes || [])];
       if (newSizes[index]) {
-        newSizes[index] = { ...newSizes[index], quantity };
+        newSizes[index] = { ...newSizes[index], quantity: parseInt(quantity) || 0 };
       }
       return { ...prev, sizes: newSizes };
     });
@@ -368,11 +258,135 @@ const ProductEdit = () => {
     const newImages = [...selectedImages];
     const newImageUrls = [...imageUrls];
 
+    // Clean up URL if it was created by createObjectURL
+    if (newImageUrls[index] && newImageUrls[index].startsWith('blob:')) {
+      URL.revokeObjectURL(newImageUrls[index]);
+    }
+
     newImages[index] = null;
     newImageUrls[index] = "";
 
     setSelectedImages(newImages);
     setImageUrls(newImageUrls);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      // Validation
+      if (!productData.title?.trim()) {
+        toast.error("Product title is required");
+        return;
+      }
+
+      if (!productData.price || productData.price <= 0) {
+        toast.error("Please enter a valid price");
+        return;
+      }
+
+      if (!productData.description?.trim()) {
+        toast.error("Please enter description");
+        return;
+      }
+
+      if (!productData.category?.id) {
+        toast.error("Please select a category");
+        return;
+      }
+
+      if (!productData.sub_category?.id) {
+        toast.error("Please select a sub-category");
+        return;
+      }
+
+      const validFabricDetails = productData.fabric.filter((f) => f.trim() !== "");
+      if (validFabricDetails.length === 0) {
+        toast.error("Please add at least one fabric detail");
+        return;
+      }
+
+      const validFabricCare = productData.fabric_care.filter((fc) => fc.trim() !== "");
+      if (validFabricCare.length === 0) {
+        toast.error("Please add at least one fabric care instruction");
+        return;
+      }
+
+      const validNotes = productData.notes.filter((n) => n.trim() !== "");
+      if (validNotes.length === 0) {
+        toast.error("Please add at least one note");
+        return;
+      }
+
+      const validFeatures = productData.add_on_features.filter((f) => f.trim() !== "");
+      if (validFeatures.length === 0) {
+        toast.error("Please add at least one add-on feature");
+        return;
+      }
+
+      const sizesWithQuantity = productData.sizes.filter(size => size.quantity > 0);
+      if (sizesWithQuantity.length === 0) {
+        toast.error("Please add at least one size with a quantity greater than 0");
+        return;
+      }
+
+      const hasImages = selectedImages.some((img) => img !== null) || imageUrls.some((url) => url !== "");
+      if (!hasImages) {
+        toast.error("Please upload at least one product image");
+        return;
+      }
+
+      // Prepare API data
+      const apiData = {
+        productId: productData.id,
+        title: productData.title.trim(),
+        description: productData.description.trim(),
+        category_id: productData.category.id,
+        sub_category_id: productData.sub_category.id,
+        price: parseFloat(productData.price),
+        fabric_details: validFabricDetails,
+        notes: validNotes,
+        fabric_care: validFabricCare,
+        add_on_features: validFeatures,
+        sizes: sizesWithQuantity.map((size) => ({
+          size_id: size.size_id,
+          quantity: size.quantity,
+        })),
+      };
+
+      const formData = new FormData();
+      formData.append("productData", JSON.stringify(apiData));
+
+      // Only append new images (not existing ones)
+      selectedImages.forEach((image, index) => {
+        if (image && !image.isExisting) {
+          formData.append(`image_${index}`, image);
+        }
+      });
+
+      const response = await fetch(`${APIURL}/UpdateProductController.php`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.response === true) {
+          toast.success("Product updated successfully");
+          navigate("../");
+        } else {
+          toast.error(result.message || "Failed to update product");
+        }
+      } else {
+        toast.error("Server error. Please try again later.");
+      }
+    } catch (error) {
+      console.error("Error updating product:", error);
+      toast.error("Failed to update product");
+    }
   };
 
   const scrollToSection = (section) => {
@@ -482,13 +496,14 @@ const ProductEdit = () => {
                     </label>
                     <input
                       type="number"
+                      step="0.01"
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
                       placeholder="0.00"
                       value={productData.price || ""}
                       onChange={(e) =>
                         setProductData((prev) => ({
                           ...prev,
-                          price: Number(e.target.value),
+                          price: parseFloat(e.target.value) || 0,
                         }))
                       }
                       min={0}
@@ -667,8 +682,24 @@ const ProductEdit = () => {
                               handleArrayUpdate("notes", index, e.target.value)
                             }
                           />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveArrayItem("notes", index)}
+                            className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"
+                            disabled={productData.notes?.length === 1}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
                         </div>
                       ))}
+                      <button
+                        type="button"
+                        onClick={() => handleAddArrayItem("notes")}
+                        className="flex items-center text-sm font-medium text-yellow-600 hover:text-yellow-700 transition-colors"
+                      >
+                        <Plus className="h-4 w-4 mr-1" />
+                        Add Note
+                      </button>
                     </div>
                   </div>
 
@@ -738,7 +769,7 @@ const ProductEdit = () => {
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                     {productData.sizes.map((size, index) => (
                       <div
-                        key={`size-${index}`}
+                        key={`size-${size.size_id || index}`}
                         className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-yellow-300 transition-colors"
                       >
                         <div className="text-center">
@@ -753,7 +784,7 @@ const ProductEdit = () => {
                             onChange={(e) =>
                               handleSizeQuantityChange(
                                 index,
-                                Number(e.target.value)
+                                e.target.value
                               )
                             }
                           />
@@ -766,9 +797,7 @@ const ProductEdit = () => {
                   <div className="bg-gray-50 rounded-lg p-8 text-center">
                     <Package className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-600">
-                      {productData.sub_category?.id
-                        ? "No sizes available for this sub-category"
-                        : "Please select a sub-category to view available sizes"}
+                      No sizes available for this product
                     </p>
                   </div>
                 )}

@@ -67,6 +67,7 @@ const ProductsList = () => {
   const [productToToggle, setProductToToggle] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [filterStock, setFilterStock] = useState("all");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -170,12 +171,12 @@ const ProductsList = () => {
       "Available Sizes",
       "Status",
     ];
-    const tableRows = products.map((product) => [
+    const tableRows = filteredProducts.map((product) => [
       product.id,
       product.title,
       product.category.name,
       product.price,
-      product.sizes.map((size) => size.size_name).join(", "),
+      product.sizes.map((size) => size.size_name).join(", ") || "Out of Stock",
       product.status,
     ]);
 
@@ -191,7 +192,7 @@ const ProductsList = () => {
     window.open(doc.output("bloburl"), "_blank");
   };
 
-  // Filter products based on search and status
+  // Filter products based on search, status, and stock
   const filteredProducts = products.filter(product => {
     const matchesSearch = 
       product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -201,12 +202,17 @@ const ProductsList = () => {
     const matchesStatus = filterStatus === "all" || 
       product.status.toLowerCase() === filterStatus.toLowerCase();
     
-    return matchesSearch && matchesStatus;
+    const matchesStock = filterStock === "all" || 
+      (filterStock === "in-stock" && product.sizes.length > 0) ||
+      (filterStock === "out-of-stock" && product.sizes.length === 0);
+    
+    return matchesSearch && matchesStatus && matchesStock;
   });
 
   const activeProducts = products.filter(p => p.status === "Active").length;
   const inactiveProducts = products.filter(p => p.status === "Inactive").length;
   const outOfStock = products.filter(p => p.sizes.length === 0).length;
+  const inStock = products.filter(p => p.sizes.length > 0).length;
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6">
@@ -236,7 +242,7 @@ const ProductsList = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
             <div className="flex items-center justify-between">
               <div>
@@ -261,14 +267,14 @@ const ProductsList = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-600 text-sm font-medium">Inactive Products</p>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">{inactiveProducts}</h3>
+                <p className="text-gray-600 text-sm font-medium">In Stock</p>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">{inStock}</h3>
               </div>
-              <div className="p-3 bg-red-100 rounded-full">
-                <Package size={24} className="text-red-600" />
+              <div className="p-3 bg-blue-100 rounded-full">
+                <Layers size={24} className="text-blue-600" />
               </div>
             </div>
           </div>
@@ -281,6 +287,18 @@ const ProductsList = () => {
               </div>
               <div className="p-3 bg-orange-100 rounded-full">
                 <AlertTriangle size={24} className="text-orange-600" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-red-500">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-gray-600 text-sm font-medium">Inactive Products</p>
+                <h3 className="text-2xl font-bold text-gray-900 mt-1">{inactiveProducts}</h3>
+              </div>
+              <div className="p-3 bg-red-100 rounded-full">
+                <Package size={24} className="text-red-600" />
               </div>
             </div>
           </div>
@@ -301,17 +319,31 @@ const ProductsList = () => {
                 />
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Filter size={20} className="text-gray-400" />
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-              </select>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2">
+                <Filter size={20} className="text-gray-400" />
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                >
+                  <option value="all">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
+              </div>
+              <div className="flex items-center gap-2">
+                <Layers size={20} className="text-gray-400" />
+                <select
+                  value={filterStock}
+                  onChange={(e) => setFilterStock(e.target.value)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                >
+                  <option value="all">All Stock</option>
+                  <option value="in-stock">In Stock</option>
+                  <option value="out-of-stock">Out of Stock</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
