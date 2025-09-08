@@ -39,6 +39,7 @@ export default function MyAccount() {
             }
           );
           const data = await response.json();
+          console.log(data);
           if (data.status) {
             setOrders(data.data);
           } else {

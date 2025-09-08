@@ -85,9 +85,9 @@ function CategoryView({ title }) {
                   <div className="relative pb-[125%] overflow-hidden">
                     {console.log()}
                     <img
-                      src={
-                        `${APIURL}/${item?.images[0].image_url}` || "/images/placeholder.jpg"
-                      }
+                      src={`${APIURL}/${
+                        item?.images?.[0]?.image_url || "images/placeholder.jpg"
+                      }`}
                       alt={item.title}
                       className="absolute inset-0 w-full h-full object-contain transition duration-500 group-hover:scale-105"
                     />
