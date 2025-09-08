@@ -1,51 +1,106 @@
 import React from "react";
+import { Package, ShoppingBag } from "lucide-react";
 
-export default function OrderItemTable({orderItems}) {
-
-  console.log(orderItems);
+export default function OrderItemTable({ items }) {
   
+  if (!items || items.length === 0) {
+    return (
+      <div className="bg-gray-50 rounded-lg p-8 text-center">
+        <Package size={48} className="mx-auto text-gray-300 mb-4" />
+        <p className="text-gray-500 text-lg">No order items found</p>
+        <p className="text-gray-400">This order appears to be empty</p>
+      </div>
+    );
+  }
+
+  // Calculate total order amount
+  const totalAmount = items.reduce((sum, item) => {
+    const qty = parseInt(item.order_item_qty) || 0;
+    const price = parseFloat(item.product_price) || 0;
+    return sum + (qty * price);
+  }, 0);
+
   return (
-    <div>
-      <table className="w-full rounded-lg shadow">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Product
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Quantity
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Unit Price (Rs.)
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Total (Rs.)
-            </th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200 bg-white">
-          {orderItems.length > 0 ? (
-            orderItems.map((orderItem, index) => (
-              <tr key={index}>
-                <td className="px-6 py-4">
-                  {orderItem.title}
-                </td>
-                <td className="px-6 py-4">{orderItem.order_item_qty}</td>
-                <td className="px-6 py-4">{orderItem.product_price}</td>
-                <td className="px-6 py-4">
-                  {orderItem.order_item_qty * orderItem.product_price}
-                </td>
-              </tr>
-            ))
-          ) : (
+    <div className="bg-white rounded-lg border border-gray-200">
+      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <ShoppingBag size={20} className="text-gray-600 mr-2" />
+            <h3 className="text-lg font-semibold text-gray-900">Order Items</h3>
+          </div>
+          <span className="text-sm text-gray-500">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+        </div>
+      </div>
+      
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className="bg-gray-50">
             <tr>
-              <td colSpan="4" className="text-center p-2">
-                No order items found.
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Product
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Size
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Quantity
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Unit Price
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Total
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 bg-white">
+            {items.map((item, index) => {
+              const qty = parseInt(item.order_item_qty) || 0;
+              const price = parseFloat(item.product_price) || 0;
+              const itemTotal = qty * price;
+              
+              return (
+                <tr key={item.order_item_id || index} className="hover:bg-gray-50">
+                  <td className="px-6 py-4">
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {item.title || item.product_title || 'Unknown Product'}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Product ID: {item.product_id}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {item.order_item_size || 'N/A'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-gray-900 font-medium">
+                    {qty}
+                  </td>
+                  <td className="px-6 py-4 text-gray-900">
+                    Rs. {price.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 font-medium text-gray-900">
+                    Rs. {itemTotal.toFixed(2)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot className="bg-gray-50">
+            <tr>
+              <td colSpan="4" className="px-6 py-4 text-right font-medium text-gray-900">
+                Total Order Amount:
+              </td>
+              <td className="px-6 py-4 font-bold text-lg text-gray-900">
+                Rs. {totalAmount.toFixed(2)}
               </td>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </tfoot>
+        </table>
+      </div>
     </div>
   );
 }

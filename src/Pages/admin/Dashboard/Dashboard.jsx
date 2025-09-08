@@ -187,29 +187,22 @@ export default function Dashboard() {
       title: "View Sales Overview",
       description: "Detailed sales analytics and trends",
       icon: BarChart2,
-      onClick: () => navigate("/sales-overview"),
+      onClick: () => navigate("../sales-overview"),
       color: COLORS.primary
     },
     {
       title: "Manage Orders",
       description: "View and update order status",
       icon: Package,
-      onClick: () => navigate("/orders"),
+      onClick: () => navigate("../orders"),
       color: COLORS.info
     },
     {
       title: "Customer Management",
       description: "View customer details and status",
       icon: Users,
-      onClick: () => navigate("/customers"),
+      onClick: () => navigate("../customers"),
       color: COLORS.success
-    },
-    {
-      title: "Generate Reports",
-      description: "Create detailed business reports",
-      icon: Activity,
-      onClick: () => navigate("/reports"),
-      color: COLORS.secondary
     }
   ];
 
@@ -268,7 +261,7 @@ export default function Dashboard() {
         {/* Quick Actions */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
             {quickActions.map((action) => (
               <QuickActionCard key={action.title} {...action} />
             ))}

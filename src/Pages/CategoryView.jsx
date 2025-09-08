@@ -83,11 +83,14 @@ function CategoryView({ title }) {
                 {/* Image wrapper with aspect ratio */}
                 <Link to={`/product/${item.product_id}`} key={item.product_id}>
                   <div className="relative pb-[125%] overflow-hidden">
-                    {console.log()}
                     <img
-                      src={`${APIURL}/${
-                        item?.images?.[0]?.image_url || "images/placeholder.jpg"
-                      }`}
+                      src={
+                        item?.images &&
+                        item.images.length > 0 &&
+                        item.images[0]?.image_url
+                          ? `${APIURL}/${item.images[0].image_url}`
+                          : `${APIURL}/uploads/placeholder.jpg`
+                      }
                       alt={item.title}
                       className="absolute inset-0 w-full h-full object-contain transition duration-500 group-hover:scale-105"
                     />

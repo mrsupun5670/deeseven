@@ -36,21 +36,13 @@ const navigationConfig = [
   },
   {
     title: "Sales",
-    path: "/admin/sales",
+    path: "/admin/sales-overview",
     icon: BarChart2,
-    submenu: [
-      { title: "Sales Overview", path: "/admin/sales/overview" },
-      { title: "Reports", path: "/admin/sales/reports" },
-    ],
   },
   {
-    title: "Payments",
-    path: "/admin/payments",
+    title: "Returns",
+    path: "/admin/returns",
     icon: CreditCard,
-    submenu: [
-      { title: "Transaction History", path: "/admin/payments/history" }
-      
-    ],
   },
 ];
 
