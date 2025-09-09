@@ -89,8 +89,8 @@ export default function Sidebar({ isOpen, onClose }) {
         // Show success message
         toast.success('Logged out successfully');
         
-        // Redirect to login page
-        navigate('/admin/login');
+        // Redirect to home page
+        window.location.href = 'http://localhost:3000/';
       } else {
         toast.error(data.message || 'Logout failed');
       }
@@ -103,7 +103,7 @@ export default function Sidebar({ isOpen, onClose }) {
       sessionStorage.removeItem('adminId');
       
       toast.info('Session cleared');
-      navigate('/admin/login');
+      window.location.href = 'http://localhost:3000/';
     } finally {
       setIsLoggingOut(false);
     }
