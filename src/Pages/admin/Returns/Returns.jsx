@@ -12,10 +12,345 @@ import {
   Filter,
   Plus,
   Edit,
-  Phone
+  Phone,
+  Mail
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 
+// Enhanced Return Modal Component
+const EnhancedReturnModal = ({ isOpen, onClose, onReturnCreated, APIURL }) => {
+  const [step, setStep] = useState(1); // 1: Verification, 2: Item Selection, 3: Confirmation
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Step 1: Order Verification
+  const [verification, setVerification] = useState({
+    orderNumber: '',
+    customerPhone: '',
+    customerEmail: ''
+  });
+  
+  // Step 2: Order Details & Item Selection
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [returnReason, setReturnReason] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
+
+  const handleVerifyOrder = async () => {
+    if (!verification.orderNumber || (!verification.customerPhone && !verification.customerEmail)) {
+      toast.error('Please provide order number and either phone or email');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${APIURL}/GetOrderForReturn.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify({
+          orderNumber: verification.orderNumber,
+          customerPhone: verification.customerPhone,
+          customerEmail: verification.customerEmail
+        }),
+      });
+
+      const data = await response.json();
+      if (data.response) {
+        setOrderDetails(data.order_details);
+        setWhatsappNumber(data.order_details.customer.mobile || '');
+        setStep(2);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error verifying order:', error);
+      toast.error('Failed to verify order');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleItemSelection = (orderItemId, productId, maxQuantity, isSelected, quantity = 1) => {
+    if (isSelected) {
+      setSelectedItems(prev => [...prev, {
+        order_item_id: orderItemId,
+        product_id: productId,
+        quantity_to_return: quantity,
+        condition: 'Defective/Damaged'
+      }]);
+    } else {
+      setSelectedItems(prev => prev.filter(item => item.order_item_id !== orderItemId));
+    }
+  };
+
+  const handleCreateReturn = async () => {
+    if (selectedItems.length === 0 || !returnReason || !whatsappNumber) {
+      toast.error('Please select items, provide return reason and WhatsApp number');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch(`${APIURL}/AddEnhancedReturnController.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify({
+          orderId: orderDetails.order_id,
+          customerId: orderDetails.customer.customer_id,
+          whatsappNumber,
+          returnReason,
+          selectedItems
+        }),
+      });
+
+      const data = await response.json();
+      if (data.response) {
+        setStep(3);
+        onReturnCreated && onReturnCreated();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.error('Error creating return:', error);
+      toast.error('Failed to create return');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetModal = () => {
+    setStep(1);
+    setVerification({ orderNumber: '', customerPhone: '', customerEmail: '' });
+    setOrderDetails(null);
+    setSelectedItems([]);
+    setReturnReason('');
+    setWhatsappNumber('');
+  };
+
+  const handleClose = () => {
+    resetModal();
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
+      <div className="bg-white p-8 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center">
+            <div className="p-3 bg-yellow-100 rounded-full mr-4">
+              <Package size={24} className="text-yellow-600" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Create Return Request</h2>
+              <p className="text-gray-500">Step {step} of 3</p>
+            </div>
+          </div>
+          <button onClick={handleClose} className="text-gray-500 hover:text-gray-700">
+            <XCircle size={24} />
+          </button>
+        </div>
+
+        {/* Step 1: Order Verification */}
+        {step === 1 && (
+          <div className="space-y-6">
+            <div className="bg-blue-50 rounded-lg p-4">
+              <div className="flex items-start">
+                <AlertTriangle size={16} className="text-blue-600 mt-0.5 mr-2" />
+                <div>
+                  <p className="text-sm text-blue-800 font-medium">Order Verification Required</p>
+                  <p className="text-sm text-blue-700 mt-1">
+                    To prevent fraud, we need to verify this order belongs to the customer requesting the return.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Order Number *
+                </label>
+                <input
+                  type="text"
+                  value={verification.orderNumber}
+                  onChange={(e) => setVerification(prev => ({ ...prev, orderNumber: e.target.value }))}
+                  placeholder="e.g., 1234"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Customer Phone
+                </label>
+                <div className="relative">
+                  <Phone size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={verification.customerPhone}
+                    onChange={(e) => setVerification(prev => ({ ...prev, customerPhone: e.target.value }))}
+                    placeholder="e.g., 0771234567"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center text-gray-500">OR</div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Customer Email
+              </label>
+              <div className="relative">
+                <Mail size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="email"
+                  value={verification.customerEmail}
+                  onChange={(e) => setVerification(prev => ({ ...prev, customerEmail: e.target.value }))}
+                  placeholder="customer@example.com"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                onClick={handleVerifyOrder}
+                disabled={isLoading}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
+              >
+                {isLoading ? 'Verifying...' : 'Verify Order'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Item Selection */}
+        {step === 2 && orderDetails && (
+          <div className="space-y-6">
+            <div className="bg-green-50 rounded-lg p-4">
+              <div className="flex items-start">
+                <CheckCircle size={16} className="text-green-600 mt-0.5 mr-2" />
+                <div>
+                  <p className="text-sm text-green-800 font-medium">Order Verified Successfully</p>
+                  <p className="text-sm text-green-700 mt-1">
+                    Order #{orderDetails.order_number} for {orderDetails.customer.customer_name}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Items to Return</h3>
+              <div className="space-y-3">
+                {orderDetails.items.map((item) => (
+                  <div key={item.order_item_id} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id={`item-${item.order_item_id}`}
+                          onChange={(e) => handleItemSelection(
+                            item.order_item_id,
+                            item.product_id,
+                            item.quantity_ordered,
+                            e.target.checked,
+                            1
+                          )}
+                          className="mr-3"
+                        />
+                        <div>
+                          <p className="font-medium text-gray-900">{item.product_title}</p>
+                          <p className="text-sm text-gray-500">Size: {item.size} | Quantity: {item.quantity_ordered} | Price: Rs.{item.product_price}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  WhatsApp Number *
+                </label>
+                <input
+                  type="text"
+                  value={whatsappNumber}
+                  onChange={(e) => setWhatsappNumber(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Return Reason *
+              </label>
+              <textarea
+                value={returnReason}
+                onChange={(e) => setReturnReason(e.target.value)}
+                placeholder="Describe the defect or damage..."
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+              />
+            </div>
+
+            <div className="flex justify-between">
+              <button
+                onClick={() => setStep(1)}
+                className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+              >
+                Back
+              </button>
+              <button
+                onClick={handleCreateReturn}
+                disabled={isLoading}
+                className="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium disabled:opacity-50"
+              >
+                {isLoading ? 'Creating...' : 'Create Return'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Confirmation */}
+        {step === 3 && (
+          <div className="text-center space-y-6">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+              <CheckCircle size={32} className="text-green-600" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">Return Request Created!</h3>
+              <p className="text-gray-600">
+                The return request has been created successfully. The customer will be contacted via WhatsApp for further processing.
+              </p>
+            </div>
+            <button
+              onClick={handleClose}
+              className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            >
+              Done
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Main Returns Component (updated)
 const Returns = () => {
   const APIURL = import.meta.env.VITE_API_URL;
   
@@ -26,13 +361,6 @@ const Returns = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Add new return form state
-  const [newReturn, setNewReturn] = useState({
-    orderNumber: '',
-    whatsappNumber: '',
-    returnReason: '',
-  });
 
   const returnStatuses = {
     1: { name: 'Requested', color: 'bg-yellow-100 text-yellow-800', icon: Clock },
@@ -68,53 +396,6 @@ const Returns = () => {
     } catch (error) {
       console.error('Error fetching returns:', error);
       toast.error('Failed to load returns');
-    }
-  };
-
-  const handleAddReturn = async () => {
-    if (!newReturn.orderNumber || !newReturn.whatsappNumber || !newReturn.returnReason) {
-      toast.error('Please fill in all required fields');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${APIURL}/AddReturnController.php`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${sessionStorage.getItem('authToken')}`,
-        },
-        body: JSON.stringify({
-          orderNumber: newReturn.orderNumber,
-          whatsappNumber: newReturn.whatsappNumber,
-          returnReason: newReturn.returnReason,
-          items: [] // Empty for now since manual entry doesn't require specific items
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.response) {
-          toast.success('Return added successfully');
-          setIsAddModalOpen(false);
-          setNewReturn({
-            orderNumber: '',
-            whatsappNumber: '',
-            returnReason: '',
-          });
-          fetchReturns(); // Refresh the list
-        } else {
-          toast.error(data.message);
-        }
-      } else {
-        toast.error('Failed to add return');
-      }
-    } catch (error) {
-      console.error('Error adding return:', error);
-      toast.error('Failed to add return');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -527,99 +808,13 @@ const Returns = () => {
         </div>
       )}
 
-      {/* Add Return Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50">
-          <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full mx-4">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center">
-                <div className="p-3 bg-yellow-100 rounded-full mr-4">
-                  <Plus size={24} className="text-yellow-600" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Add New Return</h2>
-                  <p className="text-gray-500">Create a new return request</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <XCircle size={24} />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Order Number *
-                </label>
-                <input
-                  type="text"
-                  value={newReturn.orderNumber}
-                  onChange={(e) => setNewReturn(prev => ({ ...prev, orderNumber: e.target.value }))}
-                  placeholder="Enter order number (e.g., 1234)"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  WhatsApp Number *
-                </label>
-                <input
-                  type="text"
-                  value={newReturn.whatsappNumber}
-                  onChange={(e) => setNewReturn(prev => ({ ...prev, whatsappNumber: e.target.value }))}
-                  placeholder="Enter WhatsApp number (e.g., +94701234567)"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Return Reason *
-                </label>
-                <textarea
-                  value={newReturn.returnReason}
-                  onChange={(e) => setNewReturn(prev => ({ ...prev, returnReason: e.target.value }))}
-                  placeholder="Describe the defect or damage (e.g., Product arrived damaged, stitching issues, color fading, etc.)"
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
-                />
-              </div>
-
-              <div className="bg-yellow-50 rounded-lg p-4">
-                <div className="flex items-start">
-                  <AlertTriangle size={16} className="text-yellow-600 mt-0.5 mr-2" />
-                  <div>
-                    <p className="text-sm text-yellow-800 font-medium">Return Policy</p>
-                    <p className="text-sm text-yellow-700 mt-1">
-                      We only accept returns for defective or damaged products. No cash refunds - we provide replacement items only.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={handleAddReturn}
-                disabled={isLoading}
-                className="flex-1 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? 'Adding...' : 'Add Return'}
-              </button>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="flex-1 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Enhanced Return Modal */}
+      <EnhancedReturnModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)}
+        onReturnCreated={fetchReturns}
+        APIURL={APIURL}
+      />
 
       <ToastContainer />
     </div>
