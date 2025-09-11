@@ -133,13 +133,13 @@ const ProductStore = ({ searchQuery = "" }) => {
                       Quick View
                     </button>
                   </div>
-                  {product.product_status === 0 && (
+                  {/* {product.product_status === 0 && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
                       <span className="text-white text-sm md:text-lg font-bold bg-red-600 px-2 py-1 md:px-4 md:py-2 rounded-full">
                         Out of Stock
                       </span>
                     </div>
-                  )}
+                  )} */}
                 </div>
 
                 <div className="mt-4 text-center">

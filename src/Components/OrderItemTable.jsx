@@ -1,20 +1,20 @@
 import React from "react";
 import { Package, ShoppingBag } from "lucide-react";
 
-export default function OrderItemTable({ items }) {
-  
-  if (!items || items.length === 0) {
+export default function OrderItemTable({ orderItems }) {
+
+  if (!orderItems || orderItems.length === 0) {
     return (
       <div className="bg-gray-50 rounded-lg p-8 text-center">
         <Package size={48} className="mx-auto text-gray-300 mb-4" />
-        <p className="text-gray-500 text-lg">No order items found</p>
+        <p className="text-gray-500 text-lg">No order orderItems found</p>
         <p className="text-gray-400">This order appears to be empty</p>
       </div>
     );
   }
 
   // Calculate total order amount
-  const totalAmount = items.reduce((sum, item) => {
+  const totalAmount = orderItems.reduce((sum, item) => {
     const qty = parseInt(item.order_item_qty) || 0;
     const price = parseFloat(item.product_price) || 0;
     return sum + (qty * price);
@@ -23,12 +23,12 @@ export default function OrderItemTable({ items }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200">
       <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
+        <div className="flex orderItems-center justify-between">
+          <div className="flex orderItems-center">
             <ShoppingBag size={20} className="text-gray-600 mr-2" />
-            <h3 className="text-lg font-semibold text-gray-900">Order Items</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Order orderItems</h3>
           </div>
-          <span className="text-sm text-gray-500">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+          <span className="text-sm text-gray-500">{orderItems.length} item{orderItems.length !== 1 ? 's' : ''}</span>
         </div>
       </div>
       
@@ -54,7 +54,7 @@ export default function OrderItemTable({ items }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
-            {items.map((item, index) => {
+            {orderItems.map((item, index) => {
               const qty = parseInt(item.order_item_qty) || 0;
               const price = parseFloat(item.product_price) || 0;
               const itemTotal = qty * price;
@@ -72,7 +72,7 @@ export default function OrderItemTable({ items }) {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span className="inline-flex orderItems-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {item.order_item_size || 'N/A'}
                     </span>
                   </td>

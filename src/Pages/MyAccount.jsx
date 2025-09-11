@@ -39,7 +39,6 @@ export default function MyAccount() {
             }
           );
           const data = await response.json();
-          console.log(data);
           if (data.status) {
             setOrders(data.data);
           } else {
@@ -104,7 +103,7 @@ export default function MyAccount() {
               Back to Orders
             </button>
             <OrderItemTable orderItems={orderItems} />
-            {console.log(orderItems)}
+            {/* {console.log(orderItems)} */}
           </div>
         ) : (
           <div className="overflow-x-auto mt-10">
@@ -121,7 +120,7 @@ export default function MyAccount() {
                     Status
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Total (Rs.)
+                    Total + Shipping (Rs.)
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                     Date

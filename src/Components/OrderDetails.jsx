@@ -8,6 +8,7 @@ export default function OrderDetails({ userID, setTotalAmount, setOrderItems }) 
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
+  const [shipping, setShipping] = useState(0);
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -20,8 +21,7 @@ export default function OrderDetails({ userID, setTotalAmount, setOrderItems }) 
         if (data.status) {
           setCartItems(data.data);
           setOrderItems(data.data);
-          setLoading(false);
-          // setMainImage(`${APIURL}/${data.data.images[0].image_url}`);
+          
         } else {
           setLoading(false);
         }
@@ -45,8 +45,23 @@ export default function OrderDetails({ userID, setTotalAmount, setOrderItems }) 
     0
   );
 
-  const shipping = 200;
-
+  useEffect(() => {
+    const fetchShippingPrice = async () => {
+      try {
+        const response = await fetch(`${APIURL}/GetShippingPrice.php`);
+        const data = await response.json();
+        if (data.status) {
+          setShipping(data.price);
+        } else {
+          console.log(data.message);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchShippingPrice();
+  }, [])
+  
   const total = subTotal + shipping;
 
   useEffect(() => {

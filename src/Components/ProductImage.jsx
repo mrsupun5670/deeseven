@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function ProductImage({ mainImage, product }) {
+export default function ProductImage({ mainImage, product, selectedSize }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e) => {
@@ -24,13 +24,27 @@ export default function ProductImage({ mainImage, product }) {
           transformOrigin: `${position.x}% ${position.y}%`,
         }}
       />
-      {product.product_status === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
-          <span className="text-white text-sm md:text-lg font-bold bg-red-600 px-2 py-1 md:px-4 md:py-2 rounded-full">
-            Out of Stock
-          </span>
-        </div>
-      )}
+      {product.sizes.map((size) => {
+        if (size.size_name === selectedSize) {
+          if (size.quantity == 0) {
+            console.log("out of stock");
+            return (
+              <div
+                key={size.size_name}
+                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40"
+              >
+                <span className="text-white text-sm md:text-lg font-bold bg-red-600 px-2 py-1 md:px-4 md:py-2 rounded-full">
+                  Out of Stock
+                </span>
+              </div>
+            );
+          } else {
+            console.log("in stock");
+            return null; // nothing to render
+          }
+        }
+        return null;
+      })}
       <div
         className="magnifier"
         style={{

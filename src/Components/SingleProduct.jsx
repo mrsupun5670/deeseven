@@ -185,6 +185,7 @@ export default function SingleProduct() {
             <ProductImage
               mainImage={mainImage}
               product={product}
+              selectedSize={selectedSize}
               className="object-cover w-full h-[350px] md:h-[700px]"
             />
           </div>
@@ -274,7 +275,9 @@ export default function SingleProduct() {
                   {product.sizes.map((size, index) => (
                     <button
                       key={index}
-                      onClick={() => handleSizeClick(size.size_name, size.quantity)}
+                      onClick={() =>
+                        handleSizeClick(size.size_name, size.quantity)
+                      }
                       className={`border rounded-lg px-3 py-2 text-sm sm:text-base hover:bg-gray-200 focus:ring-2 focus:ring-gray-400 ${
                         selectedSize === size.size_name
                           ? "bg-gray-400 text-white"
@@ -318,7 +321,7 @@ export default function SingleProduct() {
                   </button>
                 ) : (
                   <button
-                  disabled
+                    disabled
                     className="bg-black disabled:opacity-50 text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
                     onClick={addToCart}
                   >
