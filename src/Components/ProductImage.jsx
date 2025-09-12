@@ -27,7 +27,6 @@ export default function ProductImage({ mainImage, product, selectedSize }) {
       {product.sizes.map((size) => {
         if (size.size_name === selectedSize) {
           if (size.quantity == 0) {
-            console.log("out of stock");
             return (
               <div
                 key={size.size_name}
@@ -39,7 +38,6 @@ export default function ProductImage({ mainImage, product, selectedSize }) {
               </div>
             );
           } else {
-            console.log("in stock");
             return null; // nothing to render
           }
         }

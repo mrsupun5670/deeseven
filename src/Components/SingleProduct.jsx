@@ -23,9 +23,11 @@ export default function SingleProduct() {
   const [maxQty, setMaxQty] = useState(0);
   const [addToCartClicked, setIsAddToCartClicked] = useState(false);
   const [storedUserId, setStoredUserId] = useState(null);
+  const [open, setOpen] = useState(false);
 
   const { id } = useParams();
   const navigate = useNavigate();
+  const isWomen = product?.category_name?.toLowerCase() === "women";
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -131,7 +133,7 @@ export default function SingleProduct() {
     }
 
     if (storedUserId) {
-      (storedUserId);
+      storedUserId;
       addToCartDatabase(storedUserId, selectedSize, qty, product.product_id);
     }
 
@@ -311,27 +313,177 @@ export default function SingleProduct() {
                 </button>
               </div>
 
+              {!selectedSize && (
+                <span className="text-red-600 text-sm">
+                  Please select a size
+                </span>
+              )}
+
               <div className="w-full flex gap-4 flex-wrap">
-                {product.product_status === 1 ? (
-                  <button
-                    className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
-                    onClick={addToCart}
-                  >
-                    ADD TO CART
-                  </button>
-                ) : (
-                  <button
-                    disabled
-                    className="bg-black disabled:opacity-50 text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
-                    onClick={addToCart}
-                  >
-                    ADD TO CART
-                  </button>
-                )}
+                {product.sizes.map((size, index) => {
+                  if (size.size_name === selectedSize) {
+                    if (size.quantity == 0) {
+                      return (
+                        <button
+                          key={index}
+                          disabled
+                          className="bg-black disabled:opacity-50 text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
+                          onClick={addToCart}
+                        >
+                          ADD TO CART
+                        </button>
+                      );
+                    } else {
+                      return (
+                        <button
+                          key={index}
+                          className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 w-full sm:w-auto"
+                          onClick={addToCart}
+                        >
+                          ADD TO CART
+                        </button>
+                      );
+                    }
+                  }
+                  return null;
+                })}
+
                 <ToastContainer />
-                <button className="text-black px-6 py-2 rounded-lg hover:bg-neutral-400 hover:border-black border w-full sm:w-auto">
+                <button
+                  onClick={() => setOpen(true)}
+                  className="text-black px-6 py-2 rounded-lg hover:bg-neutral-400 hover:border-black border w-full sm:w-auto"
+                >
                   Size Guide
                 </button>
+                {open && (
+                  <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                    <div className="bg-white rounded-lg shadow-lg max-w-2xl w-full p-6 relative">
+                      {/* Close Button */}
+                      <button
+                        onClick={() => setOpen(false)}
+                        className="absolute top-3 right-3 text-gray-600 hover:text-black"
+                      >
+                        ✕
+                      </button>
+
+                      {/* Title */}
+                      <h2 className="text-xl font-bold mb-4">Size Guide</h2>
+
+                      {/* Size Table */}
+                      <div className="overflow-x-auto">
+                        <table className="w-full border-collapse border border-gray-300 text-sm">
+                          <thead>
+                            <tr className="bg-gray-100">
+                              <th className="border border-gray-300 px-4 py-2">
+                                Size
+                              </th>
+                              <th className="border border-gray-300 px-4 py-2">
+                                Chest
+                              </th>
+                              <th className="border border-gray-300 px-4 py-2">
+                                Shoulder
+                              </th>
+                              <th className="border border-gray-300 px-4 py-2">
+                                Sleeve
+                              </th>
+                              <th className="border border-gray-300 px-4 py-2">
+                                Length
+                              </th>
+                              <th className="border border-gray-300 px-4 py-2">
+                                Collar
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {isWomen ? (
+                              // Women Size Guide
+                              <>
+                                <tr>
+                                  <td className="border px-4 py-2">S</td>
+                                  <td className="border px-4 py-2">17</td>
+                                  <td className="border px-4 py-2">15</td>
+                                  <td className="border px-4 py-2">7</td>
+                                  <td className="border px-4 py-2">25</td>
+                                  <td className="border px-4 py-2">14</td>
+                                </tr>
+                                <tr>
+                                  <td className="border px-4 py-2">M</td>
+                                  <td className="border px-4 py-2">18</td>
+                                  <td className="border px-4 py-2">15 3/4</td>
+                                  <td className="border px-4 py-2">7 1/2</td>
+                                  <td className="border px-4 py-2">26</td>
+                                  <td className="border px-4 py-2">14 1/2</td>
+                                </tr>
+                                <tr>
+                                  <td className="border px-4 py-2">L</td>
+                                  <td className="border px-4 py-2">19</td>
+                                  <td className="border px-4 py-2">16 1/2</td>
+                                  <td className="border px-4 py-2">8</td>
+                                  <td className="border px-4 py-2">27</td>
+                                  <td className="border px-4 py-2">15</td>
+                                </tr>
+                                <tr>
+                                  <td className="border px-4 py-2">XL</td>
+                                  <td className="border px-4 py-2">20</td>
+                                  <td className="border px-4 py-2">17 1/4</td>
+                                  <td className="border px-4 py-2">8 1/2</td>
+                                  <td className="border px-4 py-2">28</td>
+                                  <td className="border px-4 py-2">15 1/2</td>
+                                </tr>
+                              </>
+                            ) : (
+                              // Men Size Guide
+                              <>
+                                <tr>
+                                  <td className="border px-4 py-2">S</td>
+                                  <td className="border px-4 py-2">19</td>
+                                  <td className="border px-4 py-2">16 1/4</td>
+                                  <td className="border px-4 py-2">8 1/4</td>
+                                  <td className="border px-4 py-2">27</td>
+                                  <td className="border px-4 py-2">15 3/8</td>
+                                </tr>
+                                <tr>
+                                  <td className="border px-4 py-2">M</td>
+                                  <td className="border px-4 py-2">20</td>
+                                  <td className="border px-4 py-2">17 3/4</td>
+                                  <td className="border px-4 py-2">8 1/2</td>
+                                  <td className="border px-4 py-2">28</td>
+                                  <td className="border px-4 py-2">16 1/4</td>
+                                </tr>
+                                <tr>
+                                  <td className="border px-4 py-2">L</td>
+                                  <td className="border px-4 py-2">21 1/2</td>
+                                  <td className="border px-4 py-2">19 1/4</td>
+                                  <td className="border px-4 py-2">9</td>
+                                  <td className="border px-4 py-2">29</td>
+                                  <td className="border px-4 py-2">17 1/8</td>
+                                </tr>
+                                <tr>
+                                  <td className="border px-4 py-2">XL</td>
+                                  <td className="border px-4 py-2">23</td>
+                                  <td className="border px-4 py-2">20 3/4</td>
+                                  <td className="border px-4 py-2">9 3/4</td>
+                                  <td className="border px-4 py-2">30 1/2</td>
+                                  <td className="border px-4 py-2">17 7/8</td>
+                                </tr>
+                              </>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Notes */}
+                      <ul className="mt-4 text-sm text-gray-700 list-disc pl-6">
+                        <li>All dimensions are given in inches</li>
+                        <li>සියලුම මානයන් අඟල් වලින් දක්වා ඇත.</li>
+                        <li>
+                          அனைத்து பரிமாணங்களும் அங்குலங்களில்
+                          கொடுக்கப்பட்டுள்ளன.
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
