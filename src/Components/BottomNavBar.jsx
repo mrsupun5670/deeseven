@@ -1,6 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Home, ShoppingBag, Store, User } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import CartComponent from "./CartComponent";
 import SignUpFormComponent from "./SignUpFormComponent";
 import LoginForm from "./LoginForm";
@@ -11,6 +11,7 @@ const BottomNavBar = () => {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const popupRef = useRef(null);
 
@@ -23,16 +24,21 @@ const BottomNavBar = () => {
   };
 
   const toggleTab = (tab) => {
-    setActiveTab(tab); 
     if (tab === "cart") {
+      setActiveTab(tab);
       setIsCartOpen(!isCartOpen);
     } else if (tab === "profile") {
-      if (localStorage.getItem("userRole") === "customer") {
-        const user = JSON.parse(localStorage.getItem("user"));
+      if (localStorage.getItem("user") != null) {
+        // Close any open modals first
+        setIsCartOpen(false);
+        setIsSignInOpen(false);
+        setIsSignUpOpen(false);
         navigate("/account");
       } else {
+        setActiveTab(tab);
         setIsSignInOpen(!isSignInOpen);
         setIsSignUpOpen(false);
+        setIsCartOpen(false);
       }
     }
   };
@@ -41,6 +47,21 @@ const BottomNavBar = () => {
     setIsSignUpOpen(true);
     setIsSignInOpen(false);
   };
+
+  // Sync activeTab with current route
+  useEffect(() => {
+    const path = location.pathname;
+    // Only update activeTab if we're not in cart modal mode
+    if (!isCartOpen) {
+      if (path === "/") {
+        setActiveTab("home");
+      } else if (path === "/store") {
+        setActiveTab("store");
+      } else if (path === "/account" || path === "/myaccount") {
+        setActiveTab("profile");
+      }
+    }
+  }, [location.pathname, isCartOpen]);
 
   React.useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
@@ -56,7 +77,6 @@ const BottomNavBar = () => {
           className={`flex flex-col items-center space-y-1 flex-1 py-2 ${
             activeTab === "home" ? "text-[#ffb700]" : "text-white"
           }`}
-          onClick={() => setActiveTab("home")}
         >
           <Home
             className={`w-6 h-6 ${
@@ -66,11 +86,9 @@ const BottomNavBar = () => {
           <span className="text-xs">Home</span>
         </Link>
 
-        {/* Search Button */}
+        {/* Store Button */}
         <Link
           to={"/store"}
-          key={activeTab}
-          onClick={() => setActiveTab("store")}
           className={`flex flex-col items-center space-y-1 flex-1 py-2 ${
             activeTab === "store" ? "text-[#ffb700]" : "text-white"
           }`}
