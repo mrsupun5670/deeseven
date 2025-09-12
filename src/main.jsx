@@ -26,10 +26,48 @@ import ReturnPolicy from "./Pages/ReturnPolicy.jsx";
 import Policy from "./Pages/Policy.jsx";
 import ContactUs from "./Pages/ContactUs.jsx";
 import AboutUs from "./Pages/AboutUs.jsx";
+import Snowfall from "react-snowfall";
+import { useState, useEffect } from "react";
 
-createRoot(document.getElementById("root")).render(
+
+const month = new Date().getMonth();
+const isDecember = month === 11;
+
+const SnowfallComponent = () => {
+  const [snowflakeImage, setSnowflakeImage] = useState(null);
+
+  useEffect(() => {
+    const img = new Image();
+    img.onload = () => setSnowflakeImage(img);
+    img.src = "/src/assets/snowflake.png";
+  }, []);
+
+  if (!isDecember) return null;
+
+  return (
+    <Snowfall
+      snowflakeCount={100}
+      images={snowflakeImage ? [snowflakeImage] : undefined}
+      color={snowflakeImage ? undefined : "#ffffff"}
+      radius={[10, 20]}
+      speed={[0.5, 2.0]}
+      wind={[-0.5, 2.0]}
+      style={{
+        position: "fixed",
+        width: "100vw",
+        height: "100vh",
+        zIndex: 9999,
+        pointerEvents: "none",
+      }}
+    />
+  );
+};
+
+const root = createRoot(document.getElementById("root"));
+root.render(
   <CartProvider>
     <BrowserRouter>
+      <SnowfallComponent />
       <Routes>
         <Route path="*" element={<NotFound />} />
         <Route path="/" element={<Index />} />
