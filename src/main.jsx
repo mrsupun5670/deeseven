@@ -26,6 +26,7 @@ import ReturnPolicy from "./Pages/ReturnPolicy.jsx";
 import Policy from "./Pages/Policy.jsx";
 import ContactUs from "./Pages/ContactUs.jsx";
 import AboutUs from "./Pages/AboutUs.jsx";
+import AdminLoginVerify from "./Pages/AdminLoginVerify.jsx";
 import Snowfall from "react-snowfall";
 import { useState, useEffect } from "react";
 
@@ -85,6 +86,7 @@ root.render(
         <Route path="/store" element={<Store />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/admin-login-verify" element={<AdminLoginVerify />} />
 
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Dashboard />} />

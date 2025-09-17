@@ -89,14 +89,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     const checkUserLogin = () => {
-      if (localStorage.getItem("userRole") !== "admin") {
-        if (localStorage.getItem("admin") === null) {
-          navigate("/");
-        }
+      const userRole = localStorage.getItem("userRole");
+      const adminData = localStorage.getItem("admin");
+      const authToken = sessionStorage.getItem("authToken");
+      
+      if (userRole !== "admin" || !adminData || !authToken) {
+        navigate("/");
       }
     };
     checkUserLogin();
-  }, []);
+  }, [navigate]);
 
   const loadProductData = async () => {
     setIsLoading(true);

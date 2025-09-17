@@ -181,13 +181,7 @@ function CartComponent({ onClose }) {
           </div>
         </div>
       )}
-      {/* Free Shipping Banner */}
-      {/* <div className="bg-gray-50 p-2 text-center text-sm">
-        <p className="text-purple-600 font-medium">
-          CONGRATS! FREE SHIPPING UNLOCKED
-        </p>
-      </div> */}
-
+      
       {/* Cart Items */}
       <div className="flex-1 overflow-auto p-4 space-y-4">
         {cart.map((item, index) => (
@@ -196,8 +190,9 @@ function CartComponent({ onClose }) {
               onClick={() => handleClick(item)}
               className="relative w-24 h-24 rounded cursor-pointer overflow-hidden"
             >
+              {/* {console.log(item.image)} */}
               <img
-                src={storedUser? APIURL +"/"+ item.image: item.image}
+                src={storedUser ? `${APIURL}/${item.image}` : item.image}
                 alt={item.title}
                 className="w-full h-full object-contain"
               />
@@ -223,7 +218,11 @@ function CartComponent({ onClose }) {
                     <X className="w-4 h-4" />
                   </button>
                   <button className="p-1 hover:bg-gray-100 rounded-full">
-                    <Share className="w-5 h-5" />
+                    <Share onClick={() => {
+                      navigator.clipboard.writeText(`https://deezevenclothing.com/product/${item.id}`);
+                      toast.success("Link copied to clipboard");
+
+                    }} className="w-5 h-5" />
                   </button>
                 </div>
               </div>

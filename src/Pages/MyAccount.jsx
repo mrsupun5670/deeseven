@@ -49,12 +49,49 @@ export default function MyAccount() {
       } catch (error) {
         console.log(error);
       }
+    } else {
+      navigate("/");
     }
   }, []);
 
   const handleView = (order) => {
     setSelectedOrder(order);
     setOrderItems(order.items || []);
+  };
+
+  const handleReturn = (order) => {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
+    const orderDetails = `
+*Return Request*
+
+Order ID: ${order.order_number}
+Tracking No: ${order.tracking_number}
+Order Date: ${order.order_date}
+Order Amount: Rs. ${order.order_amount}
+Customer: ${order.customer.fname} ${order.customer.lname}
+Phone: ${order.customer.mobile}
+Email: ${order.customer.email}
+
+I would like to return this order. Please assist me with the return process.
+
+Thank you.
+    `.trim();
+
+    const encodedMessage = encodeURIComponent(orderDetails);
+
+    const whatsappNumber = "94788915271";
+
+    let whatsappUrl;
+    if (isMobile) {
+      whatsappUrl = `whatsapp://send?phone=${whatsappNumber}&text=${encodedMessage}`;
+    } else {
+      whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
+    }
+
+    window.open(whatsappUrl, "_blank");
   };
 
   const handleBack = () => {
@@ -173,6 +210,13 @@ export default function MyAccount() {
                         >
                           View
                         </button>
+                        /
+                        <button
+                          onClick={() => handleReturn(order)}
+                          className="px-3 py-1 text-yellow-600 text:hover:bg-gray-700"
+                        >
+                          Return
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -190,39 +234,55 @@ export default function MyAccount() {
         {orders.length > 0 && (
           <div className="flex flex-col md:flex-row w-full mt-10 gap-4">
             {orders.map((order, index) => (
-            <div key={index} className="w-full  bg-white border rounded-md p-8">
-              <p className="font-bold text-2xl mb-2">Billing Address</p>
-              <p>{order.customer.fname + " " + order.customer.lname},</p>
-              <p>{order.billing_address.line1 + "" + order.billing_address.line2},</p>
-              <p>{order.billing_address.city}</p>
-              <p>{order.billing_address.postal_code}</p>
-              <div className="flex flex-row gap-2 items-center">
-                <Mail className="w-4 h-4 " />
-                <span>{order.customer.email}</span>
+              <div
+                key={index}
+                className="w-full  bg-white border rounded-md p-8"
+              >
+                <p className="font-bold text-2xl mb-2">Billing Address</p>
+                <p>{order.customer.fname + " " + order.customer.lname},</p>
+                <p>
+                  {order.billing_address.line1 +
+                    "" +
+                    order.billing_address.line2}
+                  ,
+                </p>
+                <p>{order.billing_address.city}</p>
+                <p>{order.billing_address.postal_code}</p>
+                <div className="flex flex-row gap-2 items-center">
+                  <Mail className="w-4 h-4 " />
+                  <span>{order.customer.email}</span>
+                </div>
+                <div className="flex flex-row gap-2 items-center">
+                  <Phone className="w-4 h-4 " />
+                  <span>{order.customer.mobile}</span>
+                </div>
               </div>
-              <div className="flex flex-row gap-2 items-center">
-                <Phone className="w-4 h-4 " />
-                <span>{order.customer.mobile}</span>
-              </div>
-            </div>
-          ))}
+            ))}
             {orders.map((order, index) => (
-            <div key={index} className="w-full  bg-white border rounded-md p-8">
-              <p className="font-bold text-2xl mb-2">Shipping Address</p>
-              <p>{order.customer.fname + " " + order.customer.lname},</p>
-              <p>{order.shipping_address.line1 + "" + order.shipping_address.line2},</p>
-              <p>{order.shipping_address.city}</p>
-              <p>{order.shipping_address.postal_code}</p>
-              <div className="flex flex-row gap-2 items-center">
-                <Mail className="w-4 h-4 " />
-                <span>{order.customer.email}</span>
+              <div
+                key={index}
+                className="w-full  bg-white border rounded-md p-8"
+              >
+                <p className="font-bold text-2xl mb-2">Shipping Address</p>
+                <p>{order.customer.fname + " " + order.customer.lname},</p>
+                <p>
+                  {order.shipping_address.line1 +
+                    "" +
+                    order.shipping_address.line2}
+                  ,
+                </p>
+                <p>{order.shipping_address.city}</p>
+                <p>{order.shipping_address.postal_code}</p>
+                <div className="flex flex-row gap-2 items-center">
+                  <Mail className="w-4 h-4 " />
+                  <span>{order.customer.email}</span>
+                </div>
+                <div className="flex flex-row gap-2 items-center">
+                  <Phone className="w-4 h-4 " />
+                  <span>{order.customer.mobile}</span>
+                </div>
               </div>
-              <div className="flex flex-row gap-2 items-center">
-                <Phone className="w-4 h-4 " />
-                <span>{order.customer.mobile}</span>
-              </div>
-            </div>
-          ))}
+            ))}
           </div>
         )}
       </div>

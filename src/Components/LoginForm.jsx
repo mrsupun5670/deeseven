@@ -56,15 +56,16 @@ function LoginForm({ onClose, onSignUp }) {
             navigate(0);
           } else {
             setErrorMessage(
-              "Your account is disabled by the admin! please contact: admin@deezeven.com"
+              "Your account is disabled by the admin! please contact: info@deezevenhingclot.com"
             );
           }
         } else if (data.role === "admin") {
-          // Store auth token
-          sessionStorage.setItem("authToken", data.token);
-          localStorage.setItem("userRole", "admin");
-          localStorage.setItem("admin", JSON.stringify(data.user));
-          navigate("/admin/dashboard");
+          if (data.email_sent) {
+            alert("Verification email sent! Please check your email and click the link to access the admin dashboard.");
+            onClose(); 
+          } else {
+            setErrorMessage("Failed to send verification email. Please try again.");
+          }
         }
       } else {
         // Show error message from backend

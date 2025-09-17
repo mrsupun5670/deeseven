@@ -201,7 +201,7 @@ function NavBar() {
           <div ref={popupRef}>
             <SignUpFormComponent
               onClose={() => setIsSignUpOpen(false)}
-              onSignIn={() => setIsSignInOpen(true)}
+              onSignIn={handleSignInClick}
             />
           </div>
         </div>

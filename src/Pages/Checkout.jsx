@@ -14,8 +14,11 @@ export default function Checkout() {
   const user = localStorage.getItem("user");
   const sessionCart = sessionStorage.getItem("cart");
   
-  if (user === null || sessionCart === null || JSON.parse(sessionCart).length === 0) {
-      sessionStorage.clear();
+  if (user === null) {
+      window.location.href = "/";
+  }
+  
+  if (sessionCart === null || (sessionCart && JSON.parse(sessionCart).length === 0)) {
       window.location.href = "/";
   }
   

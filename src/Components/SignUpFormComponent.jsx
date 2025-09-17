@@ -5,7 +5,7 @@ import model from "../assets/model.webp";
 import { useNavigate } from "react-router";
 import HashLoader from "react-spinners/HashLoader";
 
-function SignUpFormComponent({ onClose, onsignIn }) {
+function SignUpFormComponent({ onClose, onSignIn }) {
   const APIURL = import.meta.env.VITE_API_URL;
   const navigate = useNavigate();
 
@@ -172,7 +172,7 @@ function SignUpFormComponent({ onClose, onsignIn }) {
           <p className="text-center text-sm text-gray-600">
             Already have an account?{" "}
             <button
-              onClick={onsignIn}
+              onClick={onSignIn}
               className="text-yellow-500 hover:underline"
             >
               Sign in
